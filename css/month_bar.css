@@ -1,0 +1,65 @@
+.month-bar {
+    display: grid;
+    width: 100%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin: 50px 0;
+    overflow-x: auto;
+}
+
+/* Use CSS custom property for dynamic grid columns */
+.month-bar[data-duration="3"] { grid-template-columns: repeat(3, 1fr); }
+.month-bar[data-duration="4"] { grid-template-columns: repeat(4, 1fr); }
+.month-bar[data-duration="5"] { grid-template-columns: repeat(5, 1fr); }
+.month-bar[data-duration="6"] { grid-template-columns: repeat(6, 1fr); }
+/* Add more as needed */
+
+.month-btn {
+    width: 100%;
+    min-width: 80px;
+    padding: 12px 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 0;
+    font-size: 1.1em;
+}
+
+/* Dynamic max-width based on duration */
+.month-bar[data-duration="3"] .month-btn { max-width: calc(100vw / 3); }
+.month-bar[data-duration="4"] .month-btn { max-width: calc(100vw / 4); }
+.month-bar[data-duration="5"] .month-btn { max-width: calc(100vw / 5); }
+.month-bar[data-duration="6"] .month-btn { max-width: calc(100vw / 6); }
+/* Add more as needed */
+
+.month-btn:last-child {
+    border-right: none;
+}
+
+.month-btn.active {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.month-btn:hover {
+    color: var(--primary-color);
+}
+
+.month-btn.hidden {
+    display: none;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 480px) {
+    .month-bar {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+    .month-btn {
+        max-width: calc(100vw / 3) !important;
+    }
+}

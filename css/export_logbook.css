@@ -1,0 +1,96 @@
+.btn-export {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+}
+
+.btn-export:hover {
+    background-color: #1976D2;
+}
+
+.btn-export:disabled {
+    background-color: #90CAF9;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+}
+
+.btn-secondary:hover {
+    background-color: #d5d5d5;
+}
+
+/* Export mode styles */
+.log-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    padding: 0 15px;
+}
+
+.entry-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    transform: scale(1.2);
+}
+
+.entry-checkbox:hover{
+    color: var(--primary-color);
+}
+
+/* Export controls styles */
+#exportControls {
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+    background: white;
+}
+
+.export-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.selected-count {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.select-all {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.export-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+#previewArea {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+/* Button container */
+.button-container {
+    background: white;
+    position: relative;
+}
+
+#regularButtons {
+    display: flex;
+    gap: 10px;
+}

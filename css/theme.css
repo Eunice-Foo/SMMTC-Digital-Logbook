@@ -1,0 +1,150 @@
+/* Import Google Fonts - only Inter with various weights */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* Color palette */
+    --primary-color: #4CAF50;
+    --primary-hover: #45a049;
+    --secondary-color: #2196F3;
+    --danger-color: #f44336;
+    --warning-color: #ff9800;
+    --success-color: #4CAF50;
+    --info-color: #2196F3;
+    
+    /* Background colors */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #f5f5f5;
+    
+    /* Text colors */
+    --text-primary: #333333;
+    --text-secondary: #666666;
+    --text-light: #ffffff;
+    
+    /* Border colors */
+    --border-color: #dee2e6;
+    
+    /* Shadow */
+    --box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    
+    /* Font families - single font */
+    --font-primary: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Global styles */
+body {
+    font-family: var(--font-primary);
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    line-height: 1.6;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-primary);
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Links */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+/* Buttons */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 400;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: var(--text-light);
+}
+
+/* Form elements */
+input, select, textarea, button {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px;
+    font-family: var(--font-primary);
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+/* Tables */
+table {
+    background-color: var(--bg-primary);
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+}
+
+/* Table headers */
+th {
+    background-color: var(--bg-tertiary);
+    color: var (--text-primary);
+    font-family: var(--font-primary);
+    font-weight: 500;
+}
+
+/* Cards/Containers */
+.card, .container {
+    background-color: var(--bg-primary);
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+}
+
+/* Status colors */
+.status-active {
+    color: var(--success-color);
+}
+
+.status-inactive {
+    color: var (--danger-color);
+}
+
+.pending-logs {
+    color: var(--warning-color);
+}
+
+/* Navigation */
+.sidenav {
+    font-family: var(--font-primary);
+}
+
+.main-content {
+    flex: 1;
+    margin-left: 250px;
+    padding: 50px;
+    width: calc(100% - 250px);
+    box-sizing: border-box;
+    position: relative;
+    top: 0;
+}

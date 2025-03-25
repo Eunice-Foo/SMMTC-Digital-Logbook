@@ -1,0 +1,212 @@
+@media print {
+    .no-print {
+        display: none;
+    }
+    
+    @page {
+        size: A4;
+        margin: 50mm; /* Set consistent margins for all pages */
+    }
+    
+    body {
+        background: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .preview-container {
+        width: 170mm; /* 210mm - (2 * 20mm margin) */
+        min-height: 257mm; /* 297mm - (2 * 20mm margin) */
+        margin: 0;
+        padding: 0; /* Remove padding since we're using page margins */
+        box-shadow: none;
+    }
+
+    .log-entry {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 40px;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 20px;
+        position: relative; /* Add this */
+    }
+
+    /* First log entry on each page */
+    .log-entry:first-child,
+    .log-entry[style*="break-before"] {
+        margin-top: 50mm; /* Remove top margin since page margin handles it */
+    }
+
+    /* Special handling for entries that start a new page */
+    .log-entry:not(:first-child) {
+        break-before: auto;
+        page-break-before: auto;
+    }
+
+    /* Remove the page-break-after since we're using proper page margins */
+    .preview-container {
+        page-break-after: auto;
+    }
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    background: #f5f5f5;
+}
+
+.log-description {
+    text-align: justify;
+}
+
+.preview-container {
+    width: 210mm;  /* A4 width */
+    min-height: 297mm; /* A4 height */
+    margin: 0 auto;
+    background: white;
+    padding: 20mm; /* Standard margin for printing */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.document-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #000;
+}
+
+.student-info {
+    margin-bottom: 30px;
+}
+
+.log-entry {
+    margin-bottom: 40px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 20px;
+    break-inside: avoid; /* Prevent log entries from breaking across pages */
+    page-break-inside: avoid; /* For older browsers */
+}
+
+.entry-header {
+    margin-bottom: 15px;
+}
+
+.entry-meta {
+    color: #666;
+    font-size: 0.9em;
+    margin: 10px 0;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+}
+
+/* Media gallery styles */
+.media-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.media-item {
+    height: 150px; /* Fixed height */
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: #f5f5f5;
+}
+
+.image-container {
+    width: auto; /* Allow width to adjust based on aspect ratio */
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.image-container img {
+    height: 100%; /* Fixed height */
+    width: auto; /* Allow width to adjust */
+    max-width: none; /* Remove max-width constraint */
+    object-fit: contain; /* Change to contain to preserve aspect ratio */
+}
+
+/* Ensure video thumbnails display properly */
+.video-thumbnail {
+    position: relative;
+    width: auto;
+    height: 100%;
+    background-color: #f5f5f5;
+    overflow: hidden;
+}
+
+.thumbnail-container {
+    width: auto;
+    height: 100%;
+    position: relative;
+}
+
+.video-thumbnail img,
+.video-canvas {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    z-index: 2;
+}
+
+.supervisor-feedback {
+    background: #f8f9fa;
+    padding: 15px;
+    margin-top: 15px;
+    border-left: 3px solid #4CAF50;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.print-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 15px 30px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+/* Screen-specific styles */
+@media screen {
+    body {
+        background: #f5f5f5;
+        padding: 20px;
+    }
+
+    .preview-container {
+        margin: 20px auto;
+    }
+}
