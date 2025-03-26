@@ -1,54 +1,3 @@
-@media print {
-    .no-print {
-        display: none;
-    }
-    
-    @page {
-        size: A4;
-        margin: 50mm; /* Set consistent margins for all pages */
-    }
-    
-    body {
-        background: none;
-        margin: 0;
-        padding: 0;
-    }
-
-    .preview-container {
-        width: 170mm; /* 210mm - (2 * 20mm margin) */
-        min-height: 257mm; /* 297mm - (2 * 20mm margin) */
-        margin: 0;
-        padding: 0; /* Remove padding since we're using page margins */
-        box-shadow: none;
-    }
-
-    .log-entry {
-        break-inside: avoid;
-        page-break-inside: avoid;
-        margin-bottom: 40px;
-        border-bottom: 1px solid #ddd;
-        padding-bottom: 20px;
-        position: relative; /* Add this */
-    }
-
-    /* First log entry on each page */
-    .log-entry:first-child,
-    .log-entry[style*="break-before"] {
-        margin-top: 50mm; /* Remove top margin since page margin handles it */
-    }
-
-    /* Special handling for entries that start a new page */
-    .log-entry:not(:first-child) {
-        break-before: auto;
-        page-break-before: auto;
-    }
-
-    /* Remove the page-break-after since we're using proper page margins */
-    .preview-container {
-        page-break-after: auto;
-    }
-}
-
 body {
     padding: 0;
     margin: 0;
@@ -64,7 +13,7 @@ body {
     min-height: 297mm; /* A4 height */
     margin: 0 auto;
     background: white;
-    padding: 20mm; /* Standard margin for printing */
+    padding: 1in; /* Standard margin for printing */
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
@@ -79,12 +28,14 @@ body {
     margin-bottom: 30px;
 }
 
+/* Log entry styles with print consideration */
 .log-entry {
     margin-bottom: 40px;
     border-bottom: 1px solid #ddd;
     padding-bottom: 20px;
     break-inside: avoid; /* Prevent log entries from breaking across pages */
     page-break-inside: avoid; /* For older browsers */
+    page-break-before: auto; /* Allow breaks before entries */
 }
 
 .entry-header {
@@ -181,7 +132,7 @@ body {
     background: #f8f9fa;
     padding: 15px;
     margin-top: 15px;
-    border-left: 3px solid #4CAF50;
+    border-left: 3px solid var(--primary-color);
     break-inside: avoid;
     page-break-inside: avoid;
 }
@@ -190,12 +141,9 @@ body {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    padding: 15px 30px;
     background: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 25px;
-    cursor: pointer;
     box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
 
@@ -209,4 +157,65 @@ body {
     .preview-container {
         margin: 20px auto;
     }
+}
+
+/* Print styles */
+@media print {
+    /* Hide everything by default */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Only show preview container and its contents */
+    .preview-container,
+    .preview-container * {
+        visibility: visible;
+    }
+
+    /* Ensure preview container takes full page with proper margins */
+    .preview-container {
+        position: relative !important;
+        width: auto !important;
+        height: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Remove background colors and shadows */
+    body {
+        background: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Hide print button */
+    .print-button {
+        display: none !important;
+    }
+
+    /* Ensure proper page breaks for log entries */
+    .log-entry {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 2em;
+    }
+
+    /* Keep media galleries together */
+    .media-gallery {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    /* Keep supervisor feedback together */
+    .supervisor-feedback {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
+
+/* Set page size and margins */
+@page {
+    size: A4;
+    margin: 1in; /* Standard 1 inch margin on all sides */
 }
