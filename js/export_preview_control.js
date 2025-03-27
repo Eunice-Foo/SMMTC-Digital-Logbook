@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize font size controls
     let currentFontSize = 11;
     const minFontSize = 9;
     const maxFontSize = 16;
@@ -31,48 +30,47 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Recalculate page breaks
-        reorganizePages();
-
-        console.log(`Font size adjusted to: ${currentFontSize}pt`);
+        // Wait for DOM update then check overflow
+        setTimeout(checkAllPagesOverflow, 0);
     };
 
-    function reorganizePages() {
-        const mainContainer = document.querySelector('.preview-section');
-        const logEntries = Array.from(document.querySelectorAll('.log-entry'));
-        const header = document.querySelector('.document-header');
-
-        // Clear existing pages
-        mainContainer.innerHTML = '';
-
-        // Create first page
-        let currentPage = createNewPage();
-        mainContainer.appendChild(currentPage);
-
-        // Add header to first page
-        if (header) {
-            currentPage.appendChild(header.cloneNode(true));
-        }
-
-        // Calculate available height
-        const pageHeight = 297 * 3.78; // A4 height in pixels
-        const marginHeight = 96 * 2; // 2 inches margins
-        const headerHeight = header ? header.offsetHeight : 0;
-        const availableHeight = pageHeight - marginHeight - headerHeight;
-
-        logEntries.forEach((entry, index) => {
-            const entryHeight = entry.offsetHeight;
-            const currentContentHeight = Array.from(currentPage.children)
-                .reduce((total, child) => total + child.offsetHeight, 0);
-
-            // Check if entry needs new page
-            if (currentContentHeight + entryHeight > availableHeight) {
-                currentPage = createNewPage();
-                mainContainer.appendChild(currentPage);
-            }
-
-            currentPage.appendChild(entry.cloneNode(true));
+    function checkAllPagesOverflow() {
+        console.log('Checking all pages for overflow');
+        const pages = document.querySelectorAll('.preview-container');
+        let currentPage = pages[0];
+        
+        pages.forEach((page, index) => {
+            const safeAreaHeight = page.offsetHeight - (96 * 2); // Height minus 2-inch margins
+            const entries = page.querySelectorAll('.log-entry');
+            
+            entries.forEach(entry => {
+                const entryBottom = entry.offsetTop + entry.offsetHeight;
+                console.log(`Page ${index + 1}, Entry bottom: ${entryBottom}, Safe area: ${safeAreaHeight}`);
+                
+                if (entryBottom > safeAreaHeight) {
+                    // If entry overflows, move it to next page
+                    console.log(`Entry overflows on page ${index + 1}`);
+                    let nextPage = pages[index + 1];
+                    
+                    // Create new page if needed
+                    if (!nextPage) {
+                        nextPage = createNewPage();
+                        page.parentNode.insertBefore(nextPage, page.nextSibling);
+                    }
+                    
+                    nextPage.insertBefore(entry, nextPage.firstChild);
+                }
+            });
         });
+
+        // Remove empty pages
+        pages.forEach(page => {
+            if (!page.querySelector('.log-entry')) {
+                page.remove();
+            }
+        });
+
+        console.log('Overflow check complete');
     }
 
     function createNewPage() {

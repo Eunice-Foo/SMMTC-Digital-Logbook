@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     initializePages();
+    setTimeout(checkContentOverflow, 0);
 });
 
 function initializePages() {
@@ -58,4 +59,26 @@ function createNewPage() {
     const page = document.createElement('div');
     page.className = 'preview-container';
     return page;
+}
+
+function checkContentOverflow() {
+    const containers = document.querySelectorAll('.preview-container');
+    
+    containers.forEach(container => {
+        const contentHeight = Array.from(container.children)
+            .reduce((total, child) => total + child.offsetHeight, 0);
+        const availableHeight = container.offsetHeight - (96 * 2); // Subtract 2 inches (96px each)
+        
+        console.log('Content height:', contentHeight);
+        console.log('Available height:', availableHeight);
+        
+        if (contentHeight > availableHeight) {
+            const lastEntry = container.querySelector('.log-entry:last-child');
+            if (lastEntry) {
+                const newContainer = createNewPage();
+                container.parentNode.insertBefore(newContainer, container.nextSibling);
+                newContainer.appendChild(lastEntry);
+            }
+        }
+    });
 }
