@@ -78,8 +78,8 @@ try {
                 <div class="entry-header">
                     <div class="log-datetime">
                         <h3><?php 
-                            $timestamp = strtotime($entry['entry_date'] . ' ' . $entry['entry_time']);
-                            echo date('M d, Y (l), g:i A', $timestamp);
+                            $timestamp = strtotime($entry['entry_date']);
+                            echo date('M d, Y (l)', $timestamp);
                         ?></h3>
                     </div>
                 </div>
@@ -100,11 +100,11 @@ try {
                     <div class="media-gallery">
                         <?php 
                         $media_files = explode(',', $entry['media_files']);
-                        $media_types = !empty($entry['media_types']) ? explode(',', $entry['media_types']) : array();
-                        
                         foreach ($media_files as $index => $file): 
-                            $is_video = isset($media_types[$index]) && strpos($media_types[$index], 'video/') === 0;
-                            ?>
+                            // Check file extension to determine type
+                            $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                            $is_video = in_array($extension, ['mp4', 'mov']);
+                        ?>
                             <div class="media-item">
                                 <?php if ($is_video): ?>
                                     <?php 
@@ -115,10 +115,17 @@ try {
                                     <div class="image-container">
                                         <?php 
                                         $image_path = 'uploads/' . $file;
-                                        if (file_exists($image_path)): ?>
+                                        // Check if file is actually an image
+                                        if (file_exists($image_path) && getimagesize($image_path)): ?>
                                             <img src="<?php echo htmlspecialchars($image_path); ?>" alt="Entry Media">
                                         <?php else: ?>
-                                            <div class="image-placeholder">Image not found</div>
+                                            <div class="image-placeholder">
+                                                <?php if (file_exists($image_path)): ?>
+                                                    Invalid image format
+                                                <?php else: ?>
+                                                    Image not found
+                                                <?php endif; ?>
+                                            </div>
                                         <?php endif; ?>
                                     </div>
                                 <?php endif; ?>
@@ -129,9 +136,8 @@ try {
 
                 <?php if (!empty($entry['supervisor_remarks'])): ?>
                     <div class="supervisor-feedback">
-                        <h4>Supervisor Remarks</h4>
+                        <h4>Supervisor's Remarks</h4>
                         <p><?php echo nl2br(htmlspecialchars($entry['supervisor_remarks'])); ?></p>
-                        <small>Signed on: <?php echo date('F j, Y g:i A', strtotime($entry['signature_date'] . ' ' . $entry['signature_time'])); ?></small>
                     </div>
                 <?php endif; ?>
             </div>

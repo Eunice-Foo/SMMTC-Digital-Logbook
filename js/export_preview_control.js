@@ -35,12 +35,36 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function checkAllPagesOverflow() {
-        console.log('Checking all pages for overflow');
-        const pages = document.querySelectorAll('.preview-container');
-        let currentPage = pages[0];
+        console.log('Checking all pages for overflow and underflow');
+        const pages = Array.from(document.querySelectorAll('.preview-container'));
         
+        // First check for underflow (moving entries back to previous pages)
+        for (let i = pages.length - 1; i > 0; i--) {
+            const currentPage = pages[i];
+            const previousPage = pages[i - 1];
+            const entries = currentPage.querySelectorAll('.log-entry');
+            
+            // Try to move entries back to previous page
+            Array.from(entries).forEach(entry => {
+                const safeAreaHeight = previousPage.offsetHeight - (96 * 2);
+                const previousPageContent = Array.from(previousPage.children);
+                const currentContentHeight = previousPageContent.reduce((total, child) => 
+                    total + child.offsetHeight, 0);
+                
+                // Check if entry can fit in previous page
+                const entryHeight = entry.offsetHeight;
+                console.log(`Checking if entry can move back: Entry height ${entryHeight}, Available space: ${safeAreaHeight - currentContentHeight}`);
+                
+                if (currentContentHeight + entryHeight <= safeAreaHeight) {
+                    console.log('Moving entry back to previous page');
+                    previousPage.appendChild(entry);
+                }
+            });
+        }
+
+        // Then check for overflow (moving entries to next pages)
         pages.forEach((page, index) => {
-            const safeAreaHeight = page.offsetHeight - (96 * 2); // Height minus 2-inch margins
+            const safeAreaHeight = page.offsetHeight - (96 * 2);
             const entries = page.querySelectorAll('.log-entry');
             
             entries.forEach(entry => {
@@ -48,14 +72,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log(`Page ${index + 1}, Entry bottom: ${entryBottom}, Safe area: ${safeAreaHeight}`);
                 
                 if (entryBottom > safeAreaHeight) {
-                    // If entry overflows, move it to next page
                     console.log(`Entry overflows on page ${index + 1}`);
                     let nextPage = pages[index + 1];
                     
-                    // Create new page if needed
                     if (!nextPage) {
                         nextPage = createNewPage();
                         page.parentNode.insertBefore(nextPage, page.nextSibling);
+                        pages.push(nextPage);
                     }
                     
                     nextPage.insertBefore(entry, nextPage.firstChild);
@@ -63,14 +86,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Remove empty pages
+        // Clean up empty pages
         pages.forEach(page => {
             if (!page.querySelector('.log-entry')) {
                 page.remove();
             }
         });
 
-        console.log('Overflow check complete');
+        console.log('Page reorganization complete');
     }
 
     function createNewPage() {
