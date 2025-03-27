@@ -8,13 +8,29 @@ body {
     text-align: justify;
 }
 
+/* Preview section container */
+.preview-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* A4 container base styles */
 .preview-container {
-    width: 210mm;  /* A4 width */
-    min-height: 297mm; /* A4 height */
-    margin: 0 auto;
+    width: 210mm;
+    height: 297mm;
+    margin: 20px auto;
     background: white;
-    padding: 1in; /* Standard margin for printing */
+    padding: 1in;
+    box-sizing: border-box;
+    position: relative;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    page-break-after: always;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 11px;
+    line-height: 1.5;
 }
 
 .document-header {
@@ -28,14 +44,14 @@ body {
     margin-bottom: 30px;
 }
 
-/* Log entry styles with print consideration */
+/* Log entry styles */
 .log-entry {
     margin-bottom: 40px;
     border-bottom: 1px solid #ddd;
     padding-bottom: 20px;
-    break-inside: avoid; /* Prevent log entries from breaking across pages */
-    page-break-inside: avoid; /* For older browsers */
-    page-break-before: auto; /* Allow breaks before entries */
+    page-break-inside: avoid;     /* Prevent splitting across pages */
+    break-inside: avoid;          /* Modern browsers */
+    display: flow-root;           /* Create new block formatting context */
 }
 
 .entry-header {
@@ -46,13 +62,6 @@ body {
     color: #666;
     font-size: 0.9em;
     margin: 10px 0;
-}
-
-.status-badge {
-    display: inline-block;
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 0.8em;
 }
 
 /* Media gallery styles */
@@ -66,7 +75,7 @@ body {
 }
 
 .media-item {
-    height: 150px; /* Fixed height */
+    height: 100px; /* Fixed height */
     overflow: hidden;
     border-radius: 8px;
     border: 1px solid var(--border-color);
@@ -89,7 +98,7 @@ body {
     object-fit: contain; /* Change to contain to preserve aspect ratio */
 }
 
-/* Ensure video thumbnails display properly */
+/* Video thumbnail styles */
 .video-thumbnail {
     position: relative;
     width: auto;
@@ -133,8 +142,6 @@ body {
     padding: 15px;
     margin-top: 15px;
     border-left: 3px solid var(--primary-color);
-    break-inside: avoid;
-    page-break-inside: avoid;
 }
 
 .print-button {
@@ -145,6 +152,41 @@ body {
     color: white;
     border: none;
     box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+/* Font size adjustment buttons */
+.font-adjust-buttons {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.font-button {
+    padding: 8px 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.font-button:hover {
+    opacity: 0.9;
+}
+
+#currentFontSize {
+    font-family: monospace;
+    font-size: 14px;
+    padding: 0 8px;
 }
 
 /* Screen-specific styles */
@@ -159,34 +201,70 @@ body {
     }
 }
 
-/* Print styles */
+/* Print styles - only container related */
 @media print {
-    /* Hide everything by default */
-    body * {
-        visibility: hidden;
-    }
-
-    /* Only show preview container and its contents */
-    .preview-container,
-    .preview-container * {
-        visibility: visible;
-    }
-
-    /* Ensure preview container takes full page with proper margins */
-    .preview-container {
-        position: relative !important;
-        width: auto !important;
-        height: auto !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        box-shadow: none !important;
-    }
-
-    /* Remove background colors and shadows */
-    body {
-        background: none;
-        padding: 0;
+    @page {
+        size: A4;
         margin: 0;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: none;
+    }
+
+    .preview-container {
+        width: 210mm;
+        height: 297mm;
+        margin: 0;
+        padding: 1in;
+        box-shadow: none;
+        page-break-after: always;
+        break-after: page;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 11px;
+    }
+
+    .preview-container:last-child {
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+
+    /* Container wrapper */
+    .preview-section {
+        padding: 0;
+        gap: 0;
+    }
+
+    /* Log entries */
+    .log-entry {
+        width: 100%;
+        margin-bottom: 40px;
+        break-inside: avoid;
+        orphans: 4;
+        widows: 4;
+    }
+
+    /* Document header */
+    .document-header {
+        margin-bottom: 30px;
+        break-after: avoid;
+    }
+
+    /* Media gallery */
+    .media-gallery {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        break-inside: avoid;
+    }
+
+    /* Media items */
+    .media-item {
+        height: 150px;
+        flex-basis: calc(33.33% - 10px);
     }
 
     /* Hide print button */
@@ -194,28 +272,75 @@ body {
         display: none !important;
     }
 
-    /* Ensure proper page breaks for log entries */
-    .log-entry {
-        break-inside: avoid;
-        page-break-inside: avoid;
-        margin-bottom: 2em;
+    .font-adjust-buttons {
+        display: none !important;
     }
 
-    /* Keep media galleries together */
-    .media-gallery {
-        break-inside: avoid;
-        page-break-inside: avoid;
+    /* Reset any visibility properties */
+    body *, 
+    .preview-container, 
+    .preview-container * {
+        visibility: visible;
     }
 
-    /* Keep supervisor feedback together */
-    .supervisor-feedback {
-        break-inside: avoid;
-        page-break-inside: avoid;
+    .preview-section {
+        padding: 0;
+        gap: 0;
+    }
+
+    .preview-container {
+        margin: 0;
+        padding: 1in;
+        box-shadow: none;
+        page-break-after: always;
+    }
+
+    .preview-container:last-child {
+        page-break-after: avoid;
+    }
+
+    h1, h2, h3, h4 {
+        font-family: "Times New Roman", Times, serif;
+        font-size: 14px;
+        font-weight: bold;
     }
 }
 
-/* Set page size and margins */
-@page {
-    size: A4;
-    margin: 1in; /* Standard 1 inch margin on all sides */
+/* Base typography for print content */
+.preview-container {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* Headings typography */
+.document-header h1 {
+    font-size: 14px;
+    font-weight: bold;
+    font-family: "Times New Roman", Times, serif;
+}
+
+.document-header h3,
+.log-entry h3,
+.entry-header h3,
+.supervisor-feedback h4 {
+    font-size: 14px;
+    font-weight: bold;
+    font-family: "Times New Roman", Times, serif;
+    margin: 10px 0;
+}
+
+/* Entry content typography */
+.log-content,
+.entry-description,
+.supervisor-feedback p {
+    font-size: 12px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+/* Meta information typography */
+.entry-meta,
+.supervisor-feedback small {
+    font-size: 11px;
+    font-family: "Times New Roman", Times, serif;
 }

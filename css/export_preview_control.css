@@ -1,0 +1,40 @@
+/* Font size adjustment buttons */
+.font-adjust-buttons {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.font-button {
+    padding: 8px 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.font-button:hover {
+    opacity: 0.9;
+}
+
+#currentFontSize {
+    font-family: monospace;
+    font-size: 14px;
+    padding: 0 8px;
+}
+
+@media print {
+    .font-adjust-buttons {
+        display: none !important;
+    }
+}

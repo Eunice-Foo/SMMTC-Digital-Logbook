@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
+require_once 'components/supervisor_signature.php';
 
 if (!isset($_POST['entries'])) {
     header('Location: export_logbook.php');
@@ -11,14 +12,17 @@ $entries = json_decode($_POST['entries']);
 $includeMedia = $_POST['includeMedia'] === 'true';
 
 try {
-    // Get user info for header
+    // Get student info
     $stmt = $conn->prepare("
-        SELECT s.full_name, s.matric_no, s.institution 
-        FROM student s 
+        SELECT 
+            s.full_name, 
+            s.matric_no, 
+            s.institution
+        FROM student s
         WHERE s.student_id = :user_id
     ");
     $stmt->execute([':user_id' => $_SESSION['user_id']]);
-    $student = $stmt->fetch(PDO::FETCH_ASSOC);
+    $student_info = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // Get log entries with media and feedback
     $stmt = $conn->prepare("
@@ -53,27 +57,22 @@ try {
     <title>Logbook Export Preview</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/preview_export.css">
-    <link rel="stylesheet" href="css/video_thumbnail.css">
-    <script src="js/video_thumbnail.js" defer></script>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize video thumbnails after page loads
-        generateVideoThumbnails();
-    });
-    </script>
+    <link rel="stylesheet" href="css/export_preview_control.css">
+    <script src="js/preview_export.js" defer></script>
+    <script src="js/export_preview_control.js" defer></script>
 </head>
 <body>
     <div class="preview-container">
         <div class="document-header">
             <h1>Internship Logbook</h1>
             <div class="student-info">
-                <h3><?php echo htmlspecialchars($student['full_name']); ?></h3>
-                <p>Matric No: <?php echo htmlspecialchars($student['matric_no']); ?></p>
-                <p><?php echo htmlspecialchars($student['institution']); ?></p>
+                <h3><?php echo htmlspecialchars($student_info['full_name']); ?></h3>
+                <p>Matric No: <?php echo htmlspecialchars($student_info['matric_no']); ?></p>
+                <p><?php echo htmlspecialchars($student_info['institution']); ?></p>
             </div>
         </div>
 
+        <!-- Log entries will be organized into pages by JavaScript -->
         <?php foreach ($log_entries as $entry): ?>
             <div class="log-entry">
                 <div class="entry-header">
@@ -137,8 +136,10 @@ try {
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
+        
+        <?php renderSupervisorSignature($conn, $_SESSION['user_id']); ?>
     </div>
 
-    <button onclick="window.print()" class="print-button no-print">Print Document</button>
+    <?php include 'components/export_preview_control.php'; ?>
 </body>
 </html>
