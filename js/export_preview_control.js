@@ -30,13 +30,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Wait for DOM update then check overflow
-        setTimeout(checkAllPagesOverflow, 0);
+        // Trigger page reorganization after font change
+        window.checkAllPagesOverflow();
     };
 
     function checkAllPagesOverflow() {
         console.log('Checking all pages for overflow and underflow');
         const pages = Array.from(document.querySelectorAll('.preview-container'));
+        const signatureHeight = 120; // Height for signature block
+        const topMargin = 96; // 1 inch top margin
+        const bottomMargin = 96 + signatureHeight; // 1 inch bottom margin + signature space
         
         // First check for underflow (moving entries back to previous pages)
         for (let i = pages.length - 1; i > 0; i--) {
@@ -46,14 +49,14 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Try to move entries back to previous page
             Array.from(entries).forEach(entry => {
-                const safeAreaHeight = previousPage.offsetHeight - (96 * 2);
+                const safeAreaHeight = previousPage.offsetHeight - (topMargin + bottomMargin);
                 const previousPageContent = Array.from(previousPage.children);
                 const currentContentHeight = previousPageContent.reduce((total, child) => 
                     total + child.offsetHeight, 0);
                 
                 // Check if entry can fit in previous page
                 const entryHeight = entry.offsetHeight;
-                console.log(`Checking if entry can move back: Entry height ${entryHeight}, Available space: ${safeAreaHeight - currentContentHeight}`);
+                console.log(`Safe area check - Height: ${safeAreaHeight}, Content: ${currentContentHeight}, Entry: ${entryHeight}`);
                 
                 if (currentContentHeight + entryHeight <= safeAreaHeight) {
                     console.log('Moving entry back to previous page');
@@ -64,15 +67,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Then check for overflow (moving entries to next pages)
         pages.forEach((page, index) => {
-            const safeAreaHeight = page.offsetHeight - (96 * 2);
+            const safeAreaHeight = page.offsetHeight - (topMargin + bottomMargin);
             const entries = page.querySelectorAll('.log-entry');
             
             entries.forEach(entry => {
                 const entryBottom = entry.offsetTop + entry.offsetHeight;
-                console.log(`Page ${index + 1}, Entry bottom: ${entryBottom}, Safe area: ${safeAreaHeight}`);
+                console.log(`Page ${index + 1} - Entry bottom: ${entryBottom}, Safe area: ${safeAreaHeight}`);
                 
                 if (entryBottom > safeAreaHeight) {
-                    console.log(`Entry overflows on page ${index + 1}`);
+                    console.log(`Entry overflows on page ${index + 1}, creating new page`);
                     let nextPage = pages[index + 1];
                     
                     if (!nextPage) {

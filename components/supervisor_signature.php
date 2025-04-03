@@ -46,7 +46,7 @@ function renderSupervisorSignature($conn, $user_id) {
 
 .supervisor-signature {
     text-align: center;
-    width: 200px;
+    width: auto;
     border: 1px solid red; /* Debug: Show signature boundaries */
 }
 
@@ -61,7 +61,6 @@ function renderSupervisorSignature($conn, $user_id) {
 .signature-image {
     width: 150px;
     height: 60px;
-    margin: 5px 0;
     object-fit: contain;
 }
 

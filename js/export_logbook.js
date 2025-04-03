@@ -141,7 +141,7 @@ function downloadExport() {
 
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = 'preview_export.php';
+    form.action = 'export_preview.php';
     form.target = '_blank';
 
     const entriesInput = document.createElement('input');

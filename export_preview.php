@@ -56,9 +56,9 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logbook Export Preview</title>
     <link rel="stylesheet" href="css/theme.css">
-    <link rel="stylesheet" href="css/preview_export.css">
+    <link rel="stylesheet" href="css/export_preview.css">
     <link rel="stylesheet" href="css/export_preview_control.css">
-    <script src="js/preview_export.js" defer></script>
+    <script src="js/export_preview.js" defer></script>
     <script src="js/export_preview_control.js" defer></script>
 </head>
 <body>
