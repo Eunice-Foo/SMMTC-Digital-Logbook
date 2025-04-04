@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Make checkAllPagesOverflow globally available
 window.checkAllPagesOverflow = function() {
-    const pages = Array.from(document.querySelectorAll('.preview-container'));
+    // Skip profile page when checking overflow
+    const pages = Array.from(document.querySelectorAll('.preview-container:not(.profile-page)'));
     const signatureHeight = 120;
     const topMargin = 96;
     const bottomMargin = 96 + signatureHeight;
@@ -75,50 +76,55 @@ function cleanupEmptyPages(pages) {
 }
 
 function initializePages() {
-    const mainContainer = document.querySelector('.preview-container');
-    const logEntries = Array.from(document.querySelectorAll('.log-entry'));
+    // Get all containers except profile page
+    const mainContainer = document.querySelector('.preview-container:not(.profile-page)');
+    const logEntries = Array.from(mainContainer.querySelectorAll('.log-entry'));
     const header = document.querySelector('.document-header');
     const signature = document.querySelector('.signature-section');
     
+    // Create preview section if it doesn't exist
     let previewSection = document.querySelector('.preview-section');
     if (!previewSection) {
         previewSection = document.createElement('div');
         previewSection.className = 'preview-section';
-        mainContainer.parentNode.appendChild(previewSection);
+        mainContainer.parentNode.insertBefore(previewSection, mainContainer);
     }
     
-    previewSection.innerHTML = '';
+    // Move profile page to preview section first
+    const profilePage = document.querySelector('.preview-container.profile-page');
+    if (profilePage) {
+        previewSection.appendChild(profilePage);
+    }
     
-    // Create first page
+    // Clear remaining content
+    previewSection.querySelectorAll('.preview-container:not(.profile-page)').forEach(container => container.remove());
+    
+    // Create first page for log entries
     let currentPage = createNewPage();
     previewSection.appendChild(currentPage);
     
-    // Add header to first page only
+    // Add header to first log entry page
     if (header) {
         currentPage.appendChild(header.cloneNode(true));
     }
 
-    // Calculate available height with increased margin for signature
+    // Calculate available height
     const headerHeight = header ? header.offsetHeight : 0;
     const pageHeight = 297 * 3.78; // A4 height in pixels
-    const signatureHeight = 120; // Increased height for signature block
-    const marginHeight = 96 * 3; // 3 inches (2in top + bottom, 1in extra for signature)
+    const signatureHeight = 120; // Height for signature block
+    const marginHeight = 96 * 2; // 2 inches margins
     const availableHeight = pageHeight - marginHeight - headerHeight - signatureHeight;
 
+    // Process log entries
     logEntries.forEach((entry, index) => {
-        console.log(`Processing entry ${index + 1}`);
-        const entryRect = entry.getBoundingClientRect();
+        const entryHeight = entry.offsetHeight;
         const currentContentHeight = Array.from(currentPage.children)
             .reduce((total, child) => total + child.offsetHeight, 0);
 
-        // Check if entry needs to go to next page
-        if (currentContentHeight + entryRect.height > availableHeight) {
-            // Add signature to current page before creating new one
+        if (currentContentHeight + entryHeight > availableHeight) {
             if (signature) {
                 currentPage.appendChild(signature.cloneNode(true));
             }
-            
-            console.log('Creating new page for entry');
             currentPage = createNewPage();
             previewSection.appendChild(currentPage);
         }
@@ -131,6 +137,7 @@ function initializePages() {
         currentPage.appendChild(signature.cloneNode(true));
     }
 
+    // Remove original container
     mainContainer.remove();
 }
 

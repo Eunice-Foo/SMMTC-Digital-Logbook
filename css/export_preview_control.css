@@ -65,11 +65,44 @@
     font-weight: bold;
 }
 
+/* Profile toggle styles */
+.profile-toggle {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.profile-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.profile-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* Profile page visibility */
+.preview-container.profile-page {
+    display: block; /* Show by default */
+}
+
 @media print {
-    .font-adjust-buttons {
-        display: none !important;
-    }
+    .font-adjust-buttons,
     .floating-controls {
         display: none !important;
+    }
+
+    /* Profile page print visibility */
+    .preview-container.profile-page {
+        display: none; /* Hidden by default in print */
+    }
+
+    .preview-container.profile-page.show {
+        display: block; /* Show when toggled */
     }
 }

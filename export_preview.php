@@ -2,6 +2,7 @@
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
 require_once 'components/supervisor_signature.php';
+require_once 'components/export_logbook_profile.php';
 
 if (!isset($_POST['entries'])) {
     header('Location: export_logbook.php');
@@ -60,18 +61,16 @@ try {
     <link rel="stylesheet" href="css/export_preview_control.css">
     <script src="js/export_preview.js" defer></script>
     <script src="js/export_preview_control.js" defer></script>
+    <script src="js/logbook_profile_page.js" defer></script>
 </head>
 <body>
-    <div class="preview-container">
-        <div class="document-header">
-            <h1>Internship Logbook</h1>
-            <div class="student-info">
-                <h3><?php echo htmlspecialchars($student_info['full_name']); ?></h3>
-                <p>Matric No: <?php echo htmlspecialchars($student_info['matric_no']); ?></p>
-                <p><?php echo htmlspecialchars($student_info['institution']); ?></p>
-            </div>
-        </div>
+    <!-- Profile Page -->
+    <div class="preview-container profile-page">
+        <?php renderLogbookProfile($conn, $_SESSION['user_id']); ?>
+    </div>
 
+    <!-- Log Entries -->
+    <div class="preview-container">
         <!-- Log entries will be organized into pages by JavaScript -->
         <?php foreach ($log_entries as $entry): ?>
             <div class="log-entry">
