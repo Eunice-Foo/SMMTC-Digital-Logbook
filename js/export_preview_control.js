@@ -1,36 +1,52 @@
 document.addEventListener('DOMContentLoaded', function() {
-    let currentFontSize = 11;
-    const minFontSize = 9;
-    const maxFontSize = 16;
+    let currentTextSize = 11;
+    let currentHeadingSize = 14;
+    const minTextSize = 9;
+    const maxTextSize = 16;
+    const minHeadingSize = 12;
+    const maxHeadingSize = 18;
 
     window.adjustFontSize = function(action) {
-        if (action === 'increase' && currentFontSize < maxFontSize) {
-            currentFontSize++;
-        } else if (action === 'decrease' && currentFontSize > minFontSize) {
-            currentFontSize--;
+        if (action === 'increase' && currentTextSize < maxTextSize) {
+            currentTextSize++;
+        } else if (action === 'decrease' && currentTextSize > minTextSize) {
+            currentTextSize--;
         }
 
         // Update display
-        document.getElementById('currentFontSize').textContent = `${currentFontSize}pt`;
+        document.getElementById('currentFontSize').textContent = `${currentTextSize}pt`;
 
-        // Update font sizes
+        // Update paragraph font sizes
         document.querySelectorAll('.preview-container').forEach(container => {
-            const textElements = container.querySelectorAll(`
-                .log-entry p, 
-                .log-description p,
-                .document-header h1,
-                .document-header h3,
-                .log-datetime h3,
-                .supervisor-feedback h4,
-                .supervisor-feedback p
-            `);
-
+            const textElements = container.querySelectorAll('p');
             textElements.forEach(element => {
-                element.style.fontSize = `${currentFontSize}pt`;
+                element.style.fontSize = `${currentTextSize}pt`;
             });
         });
 
-        // Trigger page reorganization after font change
+        // Trigger page reorganization
+        window.checkAllPagesOverflow();
+    };
+
+    window.adjustHeadingSize = function(action) {
+        if (action === 'increase' && currentHeadingSize < maxHeadingSize) {
+            currentHeadingSize++;
+        } else if (action === 'decrease' && currentHeadingSize > minHeadingSize) {
+            currentHeadingSize--;
+        }
+
+        // Update display
+        document.getElementById('currentHeadingSize').textContent = `${currentHeadingSize}pt`;
+
+        // Update heading font sizes
+        document.querySelectorAll('.preview-container').forEach(container => {
+            const headingElements = container.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            headingElements.forEach(element => {
+                element.style.fontSize = `${currentHeadingSize}pt`;
+            });
+        });
+
+        // Trigger page reorganization
         window.checkAllPagesOverflow();
     };
 

@@ -7,9 +7,18 @@
         </label>
     </div>
     <div class="font-controls">
-        <button onclick="adjustFontSize('decrease')" class="font-button">A-</button>
-        <span id="currentFontSize">11px</span>
-        <button onclick="adjustFontSize('increase')" class="font-button">A+</button>
+        <div class="control-group">
+            <span class="font-label">Text:</span>
+            <button onclick="adjustFontSize('decrease')" class="font-button">A-</button>
+            <span id="currentFontSize">11pt</span>
+            <button onclick="adjustFontSize('increase')" class="font-button">A+</button>
+        </div>
+        <div class="control-group">
+            <span class="font-label">Heading:</span>
+            <button onclick="adjustHeadingSize('decrease')" class="font-button">A-</button>
+            <span id="currentHeadingSize">14pt</span>
+            <button onclick="adjustHeadingSize('increase')" class="font-button">A+</button>
+        </div>
     </div>
     <button onclick="window.print()" class="print-button">Print Document</button>
 </div>

@@ -31,11 +31,34 @@
 /* Font controls */
 .font-controls {
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-group {
+    display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.font-button {
+.font-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    min-width: 60px;
+}
+
+#currentFontSize,
+#currentHeadingSize {
+    font-family: monospace;
+    font-size: 14px;
+    padding: 0 8px;
+    min-width: 45px;
+    text-align: center;
+}
+
+/* Common button styles */
+.font-button,
+.print-button {
     padding: 8px 12px;
     background: var(--primary-color);
     color: white;
@@ -45,24 +68,21 @@
     font-weight: bold;
 }
 
-.font-button:hover {
+.font-button:hover,
+.print-button:hover {
     opacity: 0.9;
+}
+
+/* Print button specific styles */
+.print-button {
+    padding: 8px 16px;
+    white-space: nowrap;
 }
 
 #currentFontSize {
     font-family: monospace;
     font-size: 14px;
     padding: 0 8px;
-}
-
-.print-button {
-    padding: 8px 16px;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
 }
 
 /* Profile toggle styles */
