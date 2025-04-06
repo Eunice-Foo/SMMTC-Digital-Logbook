@@ -21,14 +21,57 @@ function handleUnderflow(pages, topMargin, bottomMargin) {
     for (let i = pages.length - 1; i > 0; i--) {
         const currentPage = pages[i];
         const previousPage = pages[i - 1];
-        const entries = currentPage.querySelectorAll('.log-entry');
+        const currentEntries = Array.from(currentPage.querySelectorAll('.log-entry'));
         
-        Array.from(entries).forEach(entry => {
-            if (canFitInPreviousPage(entry, previousPage, topMargin, bottomMargin)) {
-                previousPage.appendChild(entry);
-            }
-        });
+        if (currentEntries.length === 0) continue;
+        
+        // Only try to move the first entry of current page to previous page
+        const firstEntryOfCurrentPage = currentEntries[0];
+        
+        // Check if entry can fit while maintaining chronological order
+        if (canFitInPreviousPage(firstEntryOfCurrentPage, previousPage, topMargin, bottomMargin) && 
+            isChronologicallyValid(firstEntryOfCurrentPage, previousPage)) {
+            console.log('Moving entry to previous page');
+            previousPage.appendChild(firstEntryOfCurrentPage);
+        }
     }
+}
+
+function isChronologicallyValid(entry, previousPage) {
+    const entryDate = new Date(entry.querySelector('.log-datetime h3').textContent);
+    const lastEntryInPrevPage = previousPage.querySelector('.log-entry:last-child');
+    
+    // If no entries in previous page, it's valid
+    if (!lastEntryInPrevPage) return true;
+    
+    const lastEntryDate = new Date(lastEntryInPrevPage.querySelector('.log-datetime h3').textContent);
+    console.log('Date comparison:', {
+        moving: entryDate,
+        existing: lastEntryDate
+    });
+    
+    // Entry date should be after or equal to the last entry in previous page
+    return entryDate >= lastEntryDate;
+}
+
+function canFitInPreviousPage(entry, previousPage, topMargin, bottomMargin) {
+    const safeAreaHeight = previousPage.offsetHeight - (topMargin + bottomMargin);
+    const currentContentHeight = Array.from(previousPage.children)
+        .reduce((total, child) => {
+            // Don't count signature section in content height
+            if (!child.classList.contains('signature-section')) {
+                return total + child.offsetHeight;
+            }
+            return total;
+        }, 0);
+    
+    console.log('Space check:', {
+        available: safeAreaHeight,
+        current: currentContentHeight,
+        needed: entry.offsetHeight
+    });
+    
+    return currentContentHeight + entry.offsetHeight <= safeAreaHeight;
 }
 
 function handleOverflow(pages, topMargin, bottomMargin) {
@@ -41,13 +84,6 @@ function handleOverflow(pages, topMargin, bottomMargin) {
             }
         });
     });
-}
-
-function canFitInPreviousPage(entry, previousPage, topMargin, bottomMargin) {
-    const safeAreaHeight = previousPage.offsetHeight - (topMargin + bottomMargin);
-    const currentContentHeight = Array.from(previousPage.children)
-        .reduce((total, child) => total + child.offsetHeight, 0);
-    return currentContentHeight + entry.offsetHeight <= safeAreaHeight;
 }
 
 function isOverflowing(entry, page, topMargin, bottomMargin) {

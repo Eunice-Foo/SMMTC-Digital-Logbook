@@ -35,25 +35,6 @@ function renderLogbookProfile($conn, $user_id) {
 
     <div class="logbook-profile">
         
-        <!-- Practicum Information -->
-        <div class="info-section">
-            <h2>Practicum Information</h2>
-            <table class="info-table">
-                <tr>
-                    <th>Start Date</th>
-                    <td><?php echo date('d M Y', strtotime($info['practicum_start_date'])); ?></td>
-                </tr>
-                <tr>
-                    <th>End Date</th>
-                    <td><?php echo date('d M Y', strtotime($info['practicum_end_date'])); ?></td>
-                </tr>
-                <tr>
-                    <th>Duration</th>
-                    <td><?php echo $info['practicum_duration'] . ' months'; ?></td>
-                </tr>
-            </table>
-        </div>
-
         <!-- Student Information -->
         <div class="info-section">
             <h2>Student Details</h2>
@@ -83,8 +64,25 @@ function renderLogbookProfile($conn, $user_id) {
                     <td><?php echo htmlspecialchars($info['phone_number']); ?></td>
                 </tr>
                 <tr>
-                    <th>Email</th>
+                    <th>Email Address</th>
                     <td><?php echo htmlspecialchars($info['student_email']); ?></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Practicum Information -->
+        <div class="info-section">
+            <h2>Practicum Information</h2>
+            <table class="info-table practicum-table">
+                <tr>
+                    <th>Start Date</th>
+                    <td><?php echo date('d M Y', strtotime($info['practicum_start_date'])); ?></td>
+                    <th>End Date</th>
+                    <td><?php echo date('d M Y', strtotime($info['practicum_end_date'])); ?></td>
+                </tr>
+                <tr>
+                    <th>Duration</th>
+                    <td colspan="3"><?php echo $info['practicum_duration'] . ' months'; ?></td>
                 </tr>
             </table>
         </div>
@@ -121,7 +119,7 @@ function renderLogbookProfile($conn, $user_id) {
                     <td><?php echo htmlspecialchars($info['contact_number']); ?></td>
                 </tr>
                 <tr>
-                    <th>Email</th>
+                    <th>Email Address</th>
                     <td><?php echo htmlspecialchars($info['supervisor_email']); ?></td>
                 </tr>
             </table>
@@ -131,16 +129,9 @@ function renderLogbookProfile($conn, $user_id) {
     <style>
     .logbook-profile {
         font-family: "Times New Roman", Times, serif;
-        font-size: 12pt;
+        font-size: 11pt;
         line-height: 1.5;
         padding: 0;
-    }
-
-    .logbook-profile h1 {
-        text-align: center;
-        margin-bottom: 40px;
-        font-size: 14pt;
-        font-weight: bold;
     }
 
     .info-section {
@@ -149,8 +140,9 @@ function renderLogbookProfile($conn, $user_id) {
 
     .info-section h2 {
         font-family: "Times New Roman", Times, serif;
-        font-size: 14pt !important;
+        font-size: 12pt !important; 
         font-weight: bold;
+        margin: 0;
         margin-bottom: 15px;
         border-bottom: 1px solid #000;
         padding-bottom: 5px;
@@ -175,8 +167,17 @@ function renderLogbookProfile($conn, $user_id) {
     }
 
     .info-table th {
-        width: 30%;
+        width: auto;
         font-weight: bold;
+    }
+
+    /* Special styling for practicum table */
+    .practicum-table th {
+        width: auto;
+    }
+
+    .practicum-table td {
+        width: auto;
     }
     </style>
     <?php
