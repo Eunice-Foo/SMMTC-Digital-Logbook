@@ -23,7 +23,7 @@ function renderSupervisorSignature($conn, $user_id) {
     <div class="signature-section">
         <div class="signature-spacer"></div>
         <div class="supervisor-signature">
-            <p>Supervisor's Signature</p>
+            <p><strong>Supervisor's Signature</strong><p>
             <?php if ($supervisor_info['signature_image']): ?>
                 <img src="uploads/signatures/<?php echo htmlspecialchars($supervisor_info['signature_image']); ?>" 
                      alt="Supervisor Signature" 
@@ -47,7 +47,6 @@ function renderSupervisorSignature($conn, $user_id) {
 .supervisor-signature {
     text-align: center;
     width: auto;
-    border: 1px solid red; /* Debug: Show signature boundaries */
 }
 
 .supervisor-signature p {
@@ -81,7 +80,6 @@ function renderSupervisorSignature($conn, $user_id) {
         z-index: 9999;
         padding: 0;
         margin: 0;
-        border: 2px solid blue;
         background: rgba(0, 0, 255, 0.1);
     }
 }

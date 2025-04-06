@@ -8,7 +8,6 @@ body {
     text-align: justify;
 }
 
-/* Preview section container */
 .preview-section {
     display: flex;
     flex-direction: column;
@@ -75,8 +74,7 @@ body {
 }
 
 .media-item {
-    height: 150px; /* Default height */
-    transition: height 0.3s ease;
+    height: 150px; /* Fixed height */
     flex-basis: auto; /* Let width be determined by content */
     overflow: hidden;
     border-radius: 8px;
@@ -87,8 +85,7 @@ body {
 /* Image container styles */
 .image-container {
     width: auto;
-    height: 150px; /* Default height */
-    transition: height 0.3s ease;
+    height: 150px; /* Fixed height */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -105,8 +102,7 @@ body {
 /* Video thumbnail styles */
 .video-thumbnail {
     position: relative;
-    height: 150px; /* Default height */
-    transition: height 0.3s ease;
+    height: 150px; /* Fixed height */
     width: auto; /* Fixed width for aspect ratio ~16:9 */
     background-color: #f5f5f5;
     overflow: hidden;
@@ -114,7 +110,6 @@ body {
 
 .thumbnail-container {
     height: 100%;
-    transition: height 0.3s ease;
     width: 100%;
     position: relative;
     display: flex;
@@ -137,9 +132,8 @@ body {
 .video-thumbnail img,
 .video-canvas {
     height: 100%;
-    width: auto;
-    max-width: none;
-    object-fit: contain;
+    width: 100%;
+    object-fit: cover;
 }
 
 /* Play button overlay */
@@ -280,22 +274,7 @@ body {
         margin-bottom: 30px;
         break-after: avoid;
     }
-
-    /* Media gallery */
-    .media-gallery {
-        width: 100%;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        break-inside: avoid;
-    }
-
-    /* Media items */
-    .media-item {
-        height: 150px;
-        flex-basis: calc(33.33% - 10px);
-    }
-
+    
     /* Hide print button */
     .print-button {
         display: none !important;
@@ -326,12 +305,6 @@ body {
 
     .preview-container:last-child {
         page-break-after: avoid;
-    }
-
-    h1, h2, h3, h4 {
-        font-family: "Times New Roman", Times, serif;
-        font-size: 14px;
-        font-weight: bold;
     }
 }
 
