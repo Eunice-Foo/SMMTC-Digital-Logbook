@@ -16,7 +16,7 @@
         <div class="control-group">
             <span class="font-label">Heading:</span>
             <button onclick="adjustHeadingSize('decrease')" class="font-button">A-</button>
-            <span id="currentHeadingSize">14pt</span>
+            <span id="currentHeadingSize">12pt</span>
             <button onclick="adjustHeadingSize('increase')" class="font-button">A+</button>
         </div>
         <div class="control-group">

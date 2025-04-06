@@ -3,8 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentHeadingSize = 12;
     const minTextSize = 9;
     const maxTextSize = 16;
-    const minHeadingSize = 11;
-    const maxHeadingSize = 18;
+    const minHeadingSize = 9;
+    const maxHeadingSize = 16;
 
     let currentMediaSize = 150;
     const minMediaSize = 50;

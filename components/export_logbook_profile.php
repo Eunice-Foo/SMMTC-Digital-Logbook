@@ -149,7 +149,7 @@ function renderLogbookProfile($conn, $user_id) {
 
     .info-section h2 {
         font-family: "Times New Roman", Times, serif;
-        font-size: 14pt;
+        font-size: 14pt !important;
         font-weight: bold;
         margin-bottom: 15px;
         border-bottom: 1px solid #000;
