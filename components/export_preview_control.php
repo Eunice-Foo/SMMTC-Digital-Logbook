@@ -19,6 +19,12 @@
             <span id="currentHeadingSize">14pt</span>
             <button onclick="adjustHeadingSize('increase')" class="font-button">A+</button>
         </div>
+        <div class="control-group">
+            <span class="font-label">Media:</span>
+            <button onclick="adjustMediaSize('decrease')" class="font-button">-</button>
+            <span id="currentMediaSize">150px</span>
+            <button onclick="adjustMediaSize('increase')" class="font-button">+</button>
+        </div>
     </div>
     <button onclick="window.print()" class="print-button">Print Document</button>
 </div>

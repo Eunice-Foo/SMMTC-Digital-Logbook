@@ -75,7 +75,8 @@ body {
 }
 
 .media-item {
-    height: 150px; /* Fixed height */
+    height: 150px; /* Default height */
+    transition: height 0.3s ease;
     flex-basis: auto; /* Let width be determined by content */
     overflow: hidden;
     border-radius: 8px;
@@ -86,7 +87,8 @@ body {
 /* Image container styles */
 .image-container {
     width: auto;
-    height: 150px; /* Fixed height */
+    height: 150px; /* Default height */
+    transition: height 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -103,7 +105,8 @@ body {
 /* Video thumbnail styles */
 .video-thumbnail {
     position: relative;
-    height: 150px; /* Fixed height */
+    height: 150px; /* Default height */
+    transition: height 0.3s ease;
     width: auto; /* Fixed width for aspect ratio ~16:9 */
     background-color: #f5f5f5;
     overflow: hidden;
@@ -111,6 +114,7 @@ body {
 
 .thumbnail-container {
     height: 100%;
+    transition: height 0.3s ease;
     width: 100%;
     position: relative;
     display: flex;
@@ -133,8 +137,9 @@ body {
 .video-thumbnail img,
 .video-canvas {
     height: 100%;
-    width: 100%;
-    object-fit: cover;
+    width: auto;
+    max-width: none;
+    object-fit: contain;
 }
 
 /* Play button overlay */

@@ -6,6 +6,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const minHeadingSize = 12;
     const maxHeadingSize = 18;
 
+    let currentMediaSize = 150;
+    const minMediaSize = 100;
+    const maxMediaSize = 300;
+    const stepSize = 25;
+
     window.adjustFontSize = function(action) {
         if (action === 'increase' && currentTextSize < maxTextSize) {
             currentTextSize++;
@@ -43,6 +48,34 @@ document.addEventListener('DOMContentLoaded', function() {
             const headingElements = container.querySelectorAll('h1, h2, h3, h4, h5, h6');
             headingElements.forEach(element => {
                 element.style.fontSize = `${currentHeadingSize}pt`;
+            });
+        });
+
+        // Trigger page reorganization
+        window.checkAllPagesOverflow();
+    };
+
+    window.adjustMediaSize = function(action) {
+        if (action === 'increase' && currentMediaSize < maxMediaSize) {
+            currentMediaSize += stepSize;
+        } else if (action === 'decrease' && currentMediaSize > minMediaSize) {
+            currentMediaSize -= stepSize;
+        }
+
+        // Update display
+        document.getElementById('currentMediaSize').textContent = `${currentMediaSize}px`;
+
+        // Update media heights
+        document.querySelectorAll('.preview-container').forEach(container => {
+            const mediaElements = container.querySelectorAll(`
+                .media-item,
+                .image-container,
+                .video-thumbnail,
+                .thumbnail-container
+            `);
+
+            mediaElements.forEach(element => {
+                element.style.height = `${currentMediaSize}px`;
             });
         });
 
