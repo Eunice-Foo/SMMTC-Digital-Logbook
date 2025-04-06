@@ -1,14 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     let currentTextSize = 11;
-    let currentHeadingSize = 14;
+    let currentHeadingSize = 12;
     const minTextSize = 9;
     const maxTextSize = 16;
-    const minHeadingSize = 12;
+    const minHeadingSize = 11;
     const maxHeadingSize = 18;
 
     let currentMediaSize = 150;
-    const minMediaSize = 100;
-    const maxMediaSize = 300;
+    const minMediaSize = 50;
+    const maxMediaSize = 200;
     const stepSize = 25;
 
     window.adjustFontSize = function(action) {

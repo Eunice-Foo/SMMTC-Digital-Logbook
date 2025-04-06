@@ -14,6 +14,7 @@ window.checkAllPagesOverflow = function() {
     handleUnderflow(pages, topMargin, bottomMargin);
     handleOverflow(pages, topMargin, bottomMargin);
     cleanupEmptyPages(pages);
+    ensureSignaturesOnAllPages();
 };
 
 function handleUnderflow(pages, topMargin, bottomMargin) {
@@ -55,6 +56,7 @@ function isOverflowing(entry, page, topMargin, bottomMargin) {
     return entryBottom > safeAreaHeight;
 }
 
+// Modify moveToNextPage function to handle signatures
 function moveToNextPage(entry, currentPage, pages, currentIndex) {
     let nextPage = pages[currentIndex + 1];
     
@@ -64,7 +66,11 @@ function moveToNextPage(entry, currentPage, pages, currentIndex) {
         pages.push(nextPage);
     }
     
+    // Move entry to next page
     nextPage.insertBefore(entry, nextPage.firstChild);
+    
+    // Ensure both pages have signatures
+    ensureSignaturesOnAllPages();
 }
 
 function cleanupEmptyPages(pages) {
@@ -72,6 +78,26 @@ function cleanupEmptyPages(pages) {
         if (!page.querySelector('.log-entry')) {
             page.remove();
         }
+    });
+}
+
+// Add new function to ensure signatures
+function ensureSignaturesOnAllPages() {
+    const pages = Array.from(document.querySelectorAll('.preview-container:not(.profile-page)'));
+    const originalSignature = document.querySelector('.signature-section');
+    
+    if (!originalSignature) return;
+    
+    pages.forEach(page => {
+        // Remove existing signature if present (to prevent duplicates)
+        const existingSignature = page.querySelector('.signature-section');
+        if (existingSignature) {
+            existingSignature.remove();
+        }
+        
+        // Add new signature to page
+        const signatureCopy = originalSignature.cloneNode(true);
+        page.appendChild(signatureCopy);
     });
 }
 
@@ -148,17 +174,20 @@ function createNewPage() {
     return page;
 }
 
+// Update checkContentOverflow function
 function checkContentOverflow() {
-    const containers = document.querySelectorAll('.preview-container');
-    const signatureHeight = 120; // Increased height for signature block
+    const containers = document.querySelectorAll('.preview-container:not(.profile-page)');
+    const signatureHeight = 120;
     
     containers.forEach(container => {
         const contentHeight = Array.from(container.children)
-            .reduce((total, child) => total + child.offsetHeight, 0);
-        const availableHeight = container.offsetHeight - (96 * 3) - signatureHeight; // Adjusted margin
-        
-        console.log('Content height:', contentHeight);
-        console.log('Available height:', availableHeight);
+            .reduce((total, child) => {
+                if (!child.classList.contains('signature-section')) {
+                    return total + child.offsetHeight;
+                }
+                return total;
+            }, 0);
+        const availableHeight = container.offsetHeight - (96 * 2) - signatureHeight;
         
         if (contentHeight > availableHeight) {
             const lastEntry = container.querySelector('.log-entry:last-child');
@@ -166,14 +195,10 @@ function checkContentOverflow() {
                 const newContainer = createNewPage();
                 container.parentNode.insertBefore(newContainer, container.nextSibling);
                 newContainer.appendChild(lastEntry);
-                
-                // Move signature to new page
-                const signature = container.querySelector('.signature-section');
-                if (signature) {
-                    newContainer.appendChild(signature.cloneNode(true));
-                    signature.remove();
-                }
             }
         }
     });
+    
+    // Ensure all pages have signatures after reorganization
+    ensureSignaturesOnAllPages();
 }
