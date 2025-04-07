@@ -396,8 +396,30 @@ body {
     z-index: 2;
 }
 
+.log-datetime {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.datetime-group {
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+}
+
 .log-datetime h3 {
     font-size: 1.2em;
+    margin: 0;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.upload-time {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    font-weight: normal;
+    white-space: nowrap;
 }
 
 .log-header {
@@ -445,4 +467,22 @@ body {
     .log-actions .btn {
         width: auto;
     }
+}
+
+.log-datetime {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.log-datetime h3 {
+    font-size: 1.2em;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.upload-time {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    font-weight: normal;
 }

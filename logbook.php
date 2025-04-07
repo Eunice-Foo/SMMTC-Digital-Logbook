@@ -160,10 +160,15 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
                             <div class="log-content">
                                 <div class="log-header">
                                     <div class="log-datetime">
-                                        <h3><?php 
-                                            $timestamp = strtotime($entry['entry_date'] . ' ' . $entry['entry_time']);
-                                            echo date('M d, Y (l), g:i A', $timestamp);
-                                        ?></h3>
+                                        <div class="datetime-group">
+                                            <h3><?php 
+                                                $timestamp = strtotime($entry['entry_date'] . ' ' . $entry['entry_time']);
+                                                echo date('M d, Y (l)', $timestamp);
+                                            ?></h3>
+                                            <span class="upload-time">
+                                                <?php echo "Uploaded by: " . date('g:i A', $timestamp); ?>
+                                            </span>
+                                        </div>
                                     </div>
                                     <span class="log-status <?php echo $entry['entry_status']; ?>">
                                         <?php echo htmlspecialchars($entry['entry_status']); ?>
