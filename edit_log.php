@@ -197,8 +197,11 @@ try {
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/log_form.css">
     <link rel="stylesheet" href="css/file_preview.css">
+    <link rel="stylesheet" href="css/video_thumbnail.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js/file_upload.js"></script>
+    <script src="js/video_thumbnail.js" defer></script>
+    <script src="js/file_upload.js" defer></script>
+    <script src="js/edit_log.js" defer></script>
 </head>
 <body>
     <?php include 'components/side_menu.php'; ?>
@@ -235,15 +238,16 @@ try {
                 <div id="previewArea" class="preview-area">
                     <?php foreach ($mediaFiles as $media): ?>
                         <div class="preview-container" data-media-id="<?php echo $media['media_id']; ?>">
-                            <div class="preview-item">
-                                <?php if (strpos($media['file_type'], 'video/') === 0): ?>
-                                    <div class="video-thumbnail">
-                                        <div class="video-placeholder">🎥</div>
-                                    </div>
-                                <?php else: ?>
+                            <?php if (strpos($media['file_type'], 'video/') === 0): ?>
+                                <?php 
+                                require_once 'components/video_thumbnail.php';
+                                renderVideoThumbnail($media['file_name']);
+                                ?>
+                            <?php else: ?>
+                                <div class="preview-item">
                                     <img src="uploads/<?php echo htmlspecialchars($media['file_name']); ?>" alt="Media Preview">
-                                <?php endif; ?>
-                            </div>
+                                </div>
+                            <?php endif; ?>
                             <div class="file-info">
                                 <span><?php echo htmlspecialchars($media['file_name']); ?></span>
                                 <button type="button" class="remove-file-btn" onclick="removeExistingFile(this, <?php echo $media['media_id']; ?>)">×</button>
@@ -260,190 +264,7 @@ try {
         </div>
     </div>
     <script>
-    let selectedFiles = []; // Global array to store new files
-    let deletedMediaIds = []; // Global array to store IDs of files to delete
-    let existingFiles = new Set(); // Store names of existing files
-
-    // Initialize existingFiles when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        <?php foreach ($mediaFiles as $media): ?>
-            existingFiles.add('<?php echo $media['file_name']; ?>');
-        <?php endforeach; ?>
-    });
-
-    function showSelectedFiles(input) {
-        const previewArea = document.getElementById('previewArea');
-        const files = Array.from(input.files);
-        
-        files.forEach(file => {
-            // Check if file already exists
-            if (!existingFiles.has(file.name)) {
-                selectedFiles.push(file);
-                const previewContainer = createPreviewContainer(file);
-                previewArea.appendChild(previewContainer);
-            } else {
-                alert(`File "${file.name}" already exists in this log entry.`);
-            }
-        });
-
-        // Clear the file input to allow selecting the same file again
-        input.value = '';
-    }
-
-    function removeExistingFile(button, mediaId) {
-        if (confirm('Are you sure you want to remove this file?')) {
-            deletedMediaIds.push(mediaId);
-            button.closest('.preview-container').remove();
-        }
-    }
-
-    function uploadFiles(event) {
-        event.preventDefault();
-        
-        const form = document.getElementById('editLogForm');
-        const formData = new FormData(form);
-        
-        // Add deleted media IDs
-        formData.append('deleted_media_ids', JSON.stringify(deletedMediaIds));
-        
-        // Clear any existing media[] entries
-        formData.delete('media[]');
-        
-        // Add only new files that don't exist in the database
-        selectedFiles.forEach(file => {
-            if (!existingFiles.has(file.name)) {
-                formData.append('media[]', file);
-            }
-        });
-        
-        const progressBar = $('.progress-bar');
-        progressBar.width('0%').text('0%');
-        
-        $.ajax({
-            url: form.action,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            xhr: function() {
-                const xhr = new window.XMLHttpRequest();
-                xhr.upload.addEventListener("progress", function(evt) {
-                    if (evt.lengthComputable) {
-                        const percentComplete = (evt.loaded / evt.total) * 100;
-                        progressBar.width(percentComplete + '%');
-                        progressBar.text(Math.round(percentComplete) + '%');
-                    }
-                }, false);
-                return xhr;
-            },
-            success: function(response) {
-                try {
-                    const result = typeof response === 'string' ? JSON.parse(response) : response;
-                    if (result.success) {
-                        alert(result.message);
-                        window.location.href = 'logbook.php';
-                    } else {
-                        alert('Error: ' + (result.message || 'Unknown error occurred'));
-                    }
-                } catch (e) {
-                    console.error('Parse error:', e);
-                    console.error('Response:', response);
-                    alert('Error processing response. Check console for details.');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX error:', {xhr, status, error});
-                alert('Upload failed: ' + error);
-            }
-        });
-    }
-
-    // Add this function in edit_log.php script section
-    function createPreviewContainer(file) {
-        const container = document.createElement('div');
-        container.className = 'preview-container';
-        container.dataset.fileName = file.name;
-        
-        const fileInfo = createFileInfo(file);
-        container.appendChild(fileInfo);
-        
-        if (file.type.startsWith('image/')) {
-            createImagePreview(file, container);
-        } else if (file.type.startsWith('video/')) {
-            createVideoPreview(file, container);
-        }
-        
-        return container;
-    }
-
-    function createImagePreview(file, container) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const preview = document.createElement('div');
-            preview.className = 'preview-item';
-            preview.innerHTML = `<img src="${e.target.result}" alt="${file.name}">`;
-            container.appendChild(preview);
-        }
-        reader.readAsDataURL(file);
-    }
-
-    function createVideoPreview(file, container) {
-        const preview = document.createElement('div');
-        preview.className = 'preview-item video-preview';
-        
-        // Create a video element to generate thumbnail
-        const video = document.createElement('video');
-        video.preload = 'metadata';
-        video.src = URL.createObjectURL(file);
-        
-        video.onloadedmetadata = function() {
-            video.currentTime = 1; // Get frame at 1 second
-            
-            video.onseeked = function() {
-                // Create canvas to capture video frame
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                
-                // Draw video frame to canvas
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                // Create thumbnail image (removed play button and filename)
-                preview.innerHTML = `
-                    <div class="video-thumbnail">
-                        <img src="${canvas.toDataURL()}" alt="Video Thumbnail">
-                    </div>
-                `;
-                
-                // Clean up
-                URL.revokeObjectURL(video.src);
-            };
-        };
-        
-        container.appendChild(preview);
-    }
-
-    function createFileInfo(file) {
-        const fileInfo = document.createElement('div');
-        fileInfo.className = 'file-info';
-        fileInfo.innerHTML = `
-            <span>${file.name}</span>
-            <span>(${(file.size / (1024 * 1024)).toFixed(2)} MB)</span>
-            <button type="button" class="remove-file-btn" onclick="removeFile(this)">×</button>
-        `;
-        return fileInfo;
-    }
-
-    function removeFile(button) {
-        const container = button.closest('.preview-container');
-        const fileName = container.dataset.fileName;
-        
-        // Remove file from selectedFiles array
-        selectedFiles = selectedFiles.filter(file => file.name !== fileName);
-        
-        container.remove();
-    }
+        document.currentMediaFiles = <?php echo json_encode($mediaFiles); ?>;
     </script>
 </body>
 </html>

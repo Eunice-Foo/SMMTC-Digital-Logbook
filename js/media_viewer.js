@@ -41,20 +41,62 @@ function generateThumbnails() {
         const video = thumb.querySelector('video');
         const canvas = thumb.querySelector('.video-canvas');
         
-        if (video && canvas) {
-            video.addEventListener('loadeddata', function() {
-                video.currentTime = 1; // Get frame at 1 second
-            });
+        if (!video || !canvas) return;
 
-            video.addEventListener('seeked', function() {
+        // Hide video but allow metadata loading
+        video.style.display = 'none';
+        
+        // Load metadata and seek to 1s
+        video.addEventListener('loadeddata', function() {
+            video.currentTime = 1;
+        });
+
+        // Generate thumbnail once seeked
+        video.addEventListener('seeked', function() {
+            try {
+                // Set canvas dimensions maintaining aspect ratio
+                const aspectRatio = video.videoWidth / video.videoHeight;
+                const thumbnailHeight = 80; // Gallery thumbnail height
+                canvas.width = thumbnailHeight * aspectRatio;
+                canvas.height = thumbnailHeight;
+                
+                // Draw the video frame
                 const ctx = canvas.getContext('2d');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                video.remove(); // Remove video element after generating thumbnail
-            });
-        }
+
+                // Cleanup
+                URL.revokeObjectURL(video.src);
+                video.remove();
+
+            } catch (error) {
+                console.error('Error generating thumbnail:', error);
+                handleThumbnailError(thumb);
+            }
+        });
+
+        // Handle loading errors
+        video.addEventListener('error', function() {
+            console.error('Error loading video:', video.src);
+            handleThumbnailError(thumb);
+        });
+
+        // Set timeout for video loading
+        setTimeout(() => {
+            if (!video.videoWidth) {
+                console.warn('Video load timeout');
+                handleThumbnailError(thumb);
+            }
+        }, 3000); // 3 second timeout for gallery view
     });
+}
+
+function handleThumbnailError(container) {
+    container.innerHTML = `
+        <div class="video-placeholder">
+            <span>🎥</span>
+        </div>
+        <div class="play-indicator">▶</div>
+    `;
 }
 
 function showMedia(index) {

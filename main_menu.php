@@ -178,9 +178,11 @@ if (isset($_POST['ajax'])) {
                                 <div class="media-preview">
                                     ${result.file_type.startsWith('video/') ? `
                                         <div class="video-thumbnail">
-                                            <img src="uploads/thumbnails/${result.media.split('.')[0]}.jpg" 
-                                                 alt="Video Thumbnail" 
-                                                 onerror="this.parentElement.innerHTML='<div class=\'video-placeholder\'><span>🎥</span></div>'">
+                                            <video preload="metadata">
+                                                <source src="uploads/${result.media}" type="video/mp4">
+                                            </video>
+                                            <canvas class="video-canvas"></canvas>
+                                            <div class="play-button">▶</div>
                                         </div>
                                     ` : `<img src="uploads/${result.media}" alt="Portfolio Media">`}
                                 </div>
@@ -192,6 +194,8 @@ if (isset($_POST['ajax'])) {
                             </div>
                         `);
                     });
+                    // Initialize video thumbnails for new content
+                    generateVideoThumbnails();
                 } else {
                     hasMore = false;
                 }
