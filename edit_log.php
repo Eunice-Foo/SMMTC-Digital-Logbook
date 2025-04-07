@@ -238,8 +238,7 @@ try {
                             <div class="preview-item">
                                 <?php if (strpos($media['file_type'], 'video/') === 0): ?>
                                     <div class="video-thumbnail">
-                                        <img src="uploads/thumbnails/<?php echo pathinfo($media['file_name'], PATHINFO_FILENAME); ?>.jpg" alt="Video Thumbnail">
-                                        <span class="video-icon">🎥</span>
+                                        <div class="video-placeholder">🎥</div>
                                     </div>
                                 <?php else: ?>
                                     <img src="uploads/<?php echo htmlspecialchars($media['file_name']); ?>" alt="Media Preview">

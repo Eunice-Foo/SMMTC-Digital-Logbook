@@ -31,12 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['entry_id'])) {
             if (file_exists($file_path)) {
                 unlink($file_path);
             }
-
-            // Delete thumbnail if it exists (for videos)
-            $thumbnail_path = "uploads/thumbnails/" . pathinfo($media['file_name'], PATHINFO_FILENAME) . '.jpg';
-            if (file_exists($thumbnail_path)) {
-                unlink($thumbnail_path);
-            }
         }
 
         // Delete related media records

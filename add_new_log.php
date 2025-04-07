@@ -51,22 +51,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // Generate unique filename
                         $unique_filename = generateUniqueFilename($original_filename, $_SESSION['username']);
                         
-                        if (strpos($file_type, 'video/') === 0) {
-                            // Move video file first
+                        // Remove thumbnail directory references:
+                        if (!empty($file_type) && strpos($file_type, 'video/') === 0) {
                             if (!move_uploaded_file($tmp_name, $upload_dir . $unique_filename)) {
-                                throw new Exception("Failed to move uploaded video file");
-                            }
-                            
-                            // Generate thumbnail
-                            $thumbnail_path = $thumbnail_dir . pathinfo($unique_filename, PATHINFO_FILENAME) . '.jpg';
-                            if (!generateVideoThumbnail($upload_dir . $unique_filename, $thumbnail_path)) {
-                                // If thumbnail generation fails, use a default thumbnail or placeholder
-                                if (file_exists('assets/default-video-thumb.jpg')) {
-                                    copy('assets/default-video-thumb.jpg', $thumbnail_path);
-                                }
+                                throw new Exception("Failed to move uploaded file");
                             }
                         } else {
-                            // Handle non-video files
                             if (!move_uploaded_file($tmp_name, $upload_dir . $unique_filename)) {
                                 throw new Exception("Failed to move uploaded file");
                             }

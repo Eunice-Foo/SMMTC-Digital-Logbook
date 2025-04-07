@@ -3,27 +3,6 @@ require_once 'includes/session_check.php';
 require_once 'includes/db.php';
 require_once 'components/month_bar.php'; // Add this line
 
-// Add this at the top of logbook.php or in a relevant setup file
-$thumbnail_dir = 'uploads/thumbnails/';
-if (!file_exists($thumbnail_dir)) {
-    mkdir($thumbnail_dir, 0755, true);
-}
-
-// Debug section - remove after fixing
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Test thumbnail path
-$test_path = $_SERVER['DOCUMENT_ROOT'] . '/log/uploads/thumbnails/';
-if (!is_dir($test_path)) {
-    mkdir($test_path, 0755, true);
-}
-
-// Check permissions
-if (!is_readable($test_path)) {
-    error_log("Thumbnail directory not readable: " . $test_path);
-}
-
 // Use the function from session_check.php
 checkUserLogin();
 
