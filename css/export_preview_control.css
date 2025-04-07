@@ -17,91 +17,114 @@
 .floating-controls {
     position: fixed;
     bottom: 30px;
-    right: 30px;
+    left: 50%;
+    transform: translateX(-50%);
     background: white;
-    padding: 10px 20px;
+    padding: 15px 25px;
     border-radius: 8px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 30px;
     z-index: 1000;
+    align-items: center;
 }
 
-/* Font controls */
-.font-controls {
+/* Controls container */
+.controls-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+/* Control section */
+.control-section {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 4px;
+}
+
+/* Font controls in one row */
+.font-controls {
+    display: flex;
+    align-items: center;
+    gap: 30px;
 }
 
 .control-group {
-    display: flex;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    gap: 8px;
+    background: #f5f5f5;
+    border-radius: 6px;
     align-items: center;
-    gap: 10px;
 }
 
 .control-group:last-child {
     margin-bottom: 0;
 }
 
+/* Control buttons container */
+.control-buttons {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Control labels */
 .font-label {
+    font-size: 14px;
+    color: #666;
+    margin-right: 10px;
+}
+
+.control-label {
     font-size: 12px;
-    color: var(--text-secondary);
-    min-width: 60px;
-}
-
-#currentFontSize,
-#currentHeadingSize {
-    font-family: monospace;
-    font-size: 14px;
-    padding: 0 8px;
-    min-width: 45px;
+    color: #666;
     text-align: center;
 }
 
-#currentMediaSize {
-    font-family: monospace;
-    font-size: 14px;
-    padding: 0 8px;
-    min-width: 60px;
-    text-align: center;
-}
-
-/* Common button styles */
-.font-button,
-.print-button {
-    padding: 8px 12px;
-    background: var(--primary-color);
-    color: white;
-    border: none;
+/* Arrow buttons */
+.font-button {
+    width: 100%;
+    height: 100%;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid #ddd;
     border-radius: 4px;
     cursor: pointer;
-    font-weight: bold;
+    font-size: 16px;
+    color: #666;
+    padding: 0;
 }
 
-.font-button:hover,
+.font-button:hover {
+    background: #f0f0f0;
+}
+
+/* Measurement displays */
+#currentFontSize,
+#currentHeadingSize,
+#currentMediaSize {
+    text-align: center;
+    color: #333;
+    font-size: 0.8em;
+}
+
 .print-button:hover {
     opacity: 0.9;
 }
 
-/* Print button specific styles */
-.print-button {
-    padding: 8px 16px;
-    white-space: nowrap;
-}
-
-#currentFontSize {
-    font-family: monospace;
-    font-size: 14px;
-    padding: 0 8px;
-}
-
-/* Profile toggle styles */
+/* Profile toggle */
 .profile-toggle {
     display: flex;
     align-items: center;
-    margin-right: 20px;
+    white-space: nowrap;
 }
 
 .profile-checkbox {

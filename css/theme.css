@@ -57,7 +57,7 @@ a:hover {
 }
 
 /* Buttons */
-.btn {
+button, .btn {
     padding: 12px 24px;
     border: none;
     border-radius: 8px;
@@ -86,7 +86,7 @@ a:hover {
 }
 
 /* Form elements */
-input, select, textarea, button {
+input, select, textarea {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 8px;
