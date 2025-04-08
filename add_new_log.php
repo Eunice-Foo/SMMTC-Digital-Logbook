@@ -4,6 +4,7 @@ require_once 'includes/db.php';
 require_once 'includes/upload_validation.php';
 require_once 'includes/file_naming.php';
 require_once 'includes/media_functions.php';
+require_once 'components/log_entry_form.php';
 
 // Add this line to define upload directory
 $upload_dir = 'uploads/';
@@ -136,8 +137,11 @@ $stmt = $conn->prepare("
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/log_form.css">
     <link rel="stylesheet" href="css/file_preview.css">
+    <link rel="stylesheet" href="css/video_thumbnail.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js/file_upload.js"></script>
+    <script src="js/file_upload.js" defer></script>
+    <script src="js/video_thumbnail.js" defer></script>
 </head>
 <body>
     <?php include 'components/side_menu.php'; ?>
@@ -145,200 +149,12 @@ $stmt = $conn->prepare("
     <div class="main-content">
         <h2>Add New Log Entry</h2>
         <form id="addLogForm" action="add_new_log.php" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles(event)">
-            <div class="form-group">
-                <label for="title">Title: (Optional)</label>
-                <input type="text" id="title" name="title">
-            </div>
-
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <textarea id="description" name="description" rows="4" required></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="date">Date:</label>
-                <input type="date" id="date" name="date" value="<?php echo date('Y-m-d'); ?>" required>
-            </div>
-
-            <div class="form-group">
-                <label for="time">Time:</label>
-                <input type="time" id="time" name="time" value="<?php echo date('H:i'); ?>" required>
-            </div>
-
-            <input type="hidden" name="status" value="pending_review">
-            <div class="form-group">
-                <label for="media">Upload Media Files:</label>
-                <input type="file" id="media" name="media[]" multiple accept="image/*,video/*" onchange="showSelectedFiles(this)">
-                <div id="selectedFiles" class="selected-files"></div>
-                <div id="previewArea" class="preview-area"></div>
-            </div>
-
+            <?php renderLogEntryForm(); ?>
             <button type="submit" class="submit-button">Add</button>
         </form>
         <div class="progress">
             <div class="progress-bar" style="width: 0%"></div>
         </div>
     </div>
-
-    <script>
-    let selectedFiles = []; // Global array to store selected files
-
-    function showSelectedFiles(input) {
-        const previewArea = document.getElementById('previewArea');
-        const files = Array.from(input.files);
-        
-        // Add new files to our selectedFiles array
-        files.forEach(file => {
-            selectedFiles.push(file);
-            const previewContainer = createPreviewContainer(file);
-            previewArea.appendChild(previewContainer);
-        });
-
-        // Clear the file input to allow selecting the same file again
-        input.value = '';
-    }
-
-    function createPreviewContainer(file) {
-        const container = document.createElement('div');
-        container.className = 'preview-container';
-        container.dataset.fileName = file.name;
-        
-        const fileInfo = createFileInfo(file);
-        container.appendChild(fileInfo);
-        
-        if (file.type.startsWith('image/')) {
-            createImagePreview(file, container);
-        } else if (file.type.startsWith('video/')) {
-            createVideoPreview(file, container);
-        }
-        
-        return container;
-    }
-
-    function createFileInfo(file) {
-        const fileInfo = document.createElement('div');
-        fileInfo.className = 'file-info';
-        fileInfo.innerHTML = `
-            <span>${file.name}</span>
-            <span>(${(file.size / (1024 * 1024)).toFixed(2)} MB)</span>
-            <button type="button" class="remove-file-btn" onclick="removeFile(this)">×</button>
-        `;
-        return fileInfo;
-    }
-
-    function createImagePreview(file, container) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const preview = document.createElement('div');
-            preview.className = 'preview-item';
-            preview.innerHTML = `<img src="${e.target.result}" alt="${file.name}">`;
-            container.appendChild(preview);
-        }
-        reader.readAsDataURL(file);
-    }
-
-    function createVideoPreview(file, container) {
-        const preview = document.createElement('div');
-        preview.className = 'preview-item video-preview';
-        
-        // Create a video element to generate thumbnail
-        const video = document.createElement('video');
-        video.preload = 'metadata';
-        video.src = URL.createObjectURL(file);
-        
-        video.onloadedmetadata = function() {
-            video.currentTime = 1; // Get frame at 1 second
-            
-            video.onseeked = function() {
-                // Create canvas to capture video frame
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                
-                // Draw video frame to canvas
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                // Create thumbnail image (removed play button and filename)
-                preview.innerHTML = `
-                    <div class="video-thumbnail">
-                        <img src="${canvas.toDataURL()}" alt="Video Thumbnail">
-                    </div>
-                `;
-                
-                // Clean up
-                URL.revokeObjectURL(video.src);
-            };
-        };
-        
-        container.appendChild(preview);
-    }
-
-    function removeFile(button) {
-        const container = button.closest('.preview-container');
-        const fileName = container.dataset.fileName;
-        
-        // Remove file from selectedFiles array
-        selectedFiles = selectedFiles.filter(file => file.name !== fileName);
-        
-        container.remove();
-    }
-
-    function uploadFiles(event) {
-        event.preventDefault();
-        
-        const form = document.getElementById('addLogForm');
-        const formData = new FormData(form);
-        
-        // Clear any existing media[] entries
-        formData.delete('media[]');
-        
-        // Add all files from our selectedFiles array
-        selectedFiles.forEach(file => {
-            formData.append('media[]', file);
-        });
-        
-        const progressBar = $('.progress-bar');
-        
-        $.ajax({
-            url: 'add_new_log.php',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            xhr: function() {
-                const xhr = new window.XMLHttpRequest();
-                xhr.upload.addEventListener("progress", function(evt) {
-                    if (evt.lengthComputable) {
-                        const percentComplete = (evt.loaded / evt.total) * 100;
-                        progressBar.width(percentComplete + '%');
-                        progressBar.text(Math.round(percentComplete) + '%');
-                    }
-                }, false);
-                return xhr;
-            },
-            success: function(response) {
-                try {
-                    const result = typeof response === 'string' ? JSON.parse(response) : response;
-                    if (result.success) {
-                        alert(result.message);
-                        window.location.href = 'logbook.php';
-                    } else {
-                        alert('Error: ' + (result.message || 'Unknown error occurred'));
-                        console.error('Server response:', response);
-                    }
-                } catch (e) {
-                    console.error('Parse error:', e);
-                    console.error('Raw response:', response);
-                    alert('Error processing response. Check console for details.');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Upload error:', {xhr, status, error});
-                alert('Upload failed: ' + error);
-            }
-        });
-    }
-    </script>
 </body>
 </html>

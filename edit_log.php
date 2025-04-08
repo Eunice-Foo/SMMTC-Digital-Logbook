@@ -1,9 +1,11 @@
 <?php
 session_start();
+require_once 'includes/session_check.php';
 require_once 'includes/db.php';
 require_once 'includes/upload_validation.php';  // Update path
 require_once 'includes/file_naming.php';  // Update path
 require_once 'includes/media_functions.php';  // Add this if needed
+require_once 'components/log_entry_form.php';
 
 if (!isset($_SESSION['user_id']) || !isset($_GET['id'])) {
     header("Location: login.php");
@@ -31,28 +33,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (!empty($_POST['deleted_media_ids'])) {
             $deletedIds = json_decode($_POST['deleted_media_ids']);
             foreach ($deletedIds as $mediaId) {
-                // Get file name before deletion
-                $stmt = $conn->prepare("SELECT file_name FROM media WHERE media_id = :media_id");
-                $stmt->bindParam(':media_id', $mediaId);
-                $stmt->execute();
-                $fileName = $stmt->fetchColumn();
+                try {
+                    // Get file name before deletion
+                    $stmt = $conn->prepare("SELECT file_name FROM media WHERE media_id = :media_id");
+                    $stmt->bindParam(':media_id', $mediaId);
+                    $stmt->execute();
+                    $fileName = $stmt->fetchColumn();
 
-                // Delete from log_media
-                $stmt = $conn->prepare("DELETE FROM log_media WHERE media_id = :media_id");
-                $stmt->bindParam(':media_id', $mediaId);
-                $stmt->execute();
+                    // First delete from portfolio_media if exists
+                    $stmt = $conn->prepare("DELETE FROM portfolio_media WHERE media_id = :media_id");
+                    $stmt->bindParam(':media_id', $mediaId);
+                    $stmt->execute();
 
-                // Delete from media table
-                $stmt = $conn->prepare("DELETE FROM media WHERE media_id = :media_id");
-                $stmt->bindParam(':media_id', $mediaId);
-                $stmt->execute();
+                    // Then delete from log_media
+                    $stmt = $conn->prepare("DELETE FROM log_media WHERE media_id = :media_id");
+                    $stmt->bindParam(':media_id', $mediaId);
+                    $stmt->execute();
 
-                // Delete physical file
-                if ($fileName) {
-                    $filePath = "uploads/" . $fileName;
-                    if (file_exists($filePath)) {
-                        unlink($filePath);
+                    // Finally delete from media table
+                    $stmt = $conn->prepare("DELETE FROM media WHERE media_id = :media_id");
+                    $stmt->bindParam(':media_id', $mediaId);
+                    $stmt->execute();
+
+                    // Delete physical file
+                    if ($fileName) {
+                        $filePath = "uploads/" . $fileName;
+                        if (file_exists($filePath)) {
+                            unlink($filePath);
+                        }
                     }
+                } catch (PDOException $e) {
+                    // Log the error but continue with other deletions
+                    error_log("Error deleting media ID {$mediaId}: " . $e->getMessage());
+                    continue;
                 }
             }
         }
@@ -175,8 +188,14 @@ try {
     $stmt->execute();
     $entry = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Parse media files JSON
-    $mediaFiles = $entry['media_files'] ? json_decode('[' . $entry['media_files'] . ']', true) : [];
+    // Update the media files parsing
+    $mediaFiles = [];
+    if ($entry['media_files']) {
+        $mediaFiles = json_decode('[' . $entry['media_files'] . ']', true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $mediaFiles = []; // Reset to empty array if JSON is invalid
+        }
+    }
 
     if (!$entry) {
         header("Location: logbook.php");
@@ -198,6 +217,7 @@ try {
     <link rel="stylesheet" href="css/log_form.css">
     <link rel="stylesheet" href="css/file_preview.css">
     <link rel="stylesheet" href="css/video_thumbnail.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
     <script src="js/file_upload.js" defer></script>
@@ -209,54 +229,57 @@ try {
     <div class="main-content">
         <h2>Edit Log Entry</h2>
         <form id="editLogForm" action="edit_log.php?id=<?php echo $_GET['id']; ?>" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles(event)">
-            <div class="form-group">
-                <label for="title">Title:</label>
-                <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($entry['entry_title']); ?>">
+            <div class="form-header">
+                <div class="form-group">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" name="date" value="<?php echo htmlspecialchars($entry['entry_date']); ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="title">Title: (Optional)</label>
+                    <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($entry['entry_title']); ?>" placeholder="Enter log title">
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="description">Description:</label>
-                <textarea id="description" name="description" rows="4" required><?php echo htmlspecialchars($entry['entry_description']); ?></textarea>
+                <textarea id="description" name="description" rows="4" required placeholder="Enter log description"><?php echo htmlspecialchars($entry['entry_description']); ?></textarea>
             </div>
 
-            <div class="form-group">
-                <label for="date">Date:</label>
-                <input type="date" id="date" name="date" value="<?php echo htmlspecialchars($entry['entry_date']); ?>" required>
-            </div>
-
-            <div class="form-group">
-                <label for="time">Time:</label>
-                <input type="time" id="time" name="time" value="<?php echo htmlspecialchars($entry['entry_time']); ?>" required>
-            </div>
-
-            <input type="hidden" name="status" value="<?php echo htmlspecialchars($entry['entry_status']); ?>">
-            
             <div class="form-group">
                 <label for="media">Upload Media Files:</label>
                 <input type="file" id="media" name="media[]" multiple accept="image/*,video/*" onchange="showSelectedFiles(this)">
                 <div id="selectedFiles" class="selected-files"></div>
                 <div id="previewArea" class="preview-area">
-                    <?php foreach ($mediaFiles as $media): ?>
-                        <div class="preview-container" data-media-id="<?php echo $media['media_id']; ?>">
-                            <?php if (strpos($media['file_type'], 'video/') === 0): ?>
-                                <?php 
-                                require_once 'components/video_thumbnail.php';
-                                renderVideoThumbnail($media['file_name']);
-                                ?>
-                            <?php else: ?>
-                                <div class="preview-item">
-                                    <img src="uploads/<?php echo htmlspecialchars($media['file_name']); ?>" alt="Media Preview">
+                    <?php if (!empty($mediaFiles)): ?>
+                        <?php foreach ($mediaFiles as $media): ?>
+                            <div class="preview-container" data-media-id="<?php echo $media['media_id']; ?>">
+                                <div class="file-info">
+                                    <span><?php echo htmlspecialchars($media['file_name']); ?></span>
+                                    <button type="button" class="remove-file-btn" onclick="removeExistingFile(this, <?php echo $media['media_id']; ?>)">×</button>
                                 </div>
-                            <?php endif; ?>
-                            <div class="file-info">
-                                <span><?php echo htmlspecialchars($media['file_name']); ?></span>
-                                <button type="button" class="remove-file-btn" onclick="removeExistingFile(this, <?php echo $media['media_id']; ?>)">×</button>
+                                <div class="preview-item">
+                                    <?php if (strpos($media['file_type'], 'video/') === 0): ?>
+                                        <div class="video-preview">
+                                            <div class="video-thumbnail">
+                                                <video preload="metadata" style="display:none">
+                                                    <source src="uploads/<?php echo htmlspecialchars($media['file_name']); ?>" type="video/mp4">
+                                                </video>
+                                                <canvas class="video-canvas"></canvas>
+                                                <div class="play-button">▶</div>
+                                            </div>
+                                        </div>
+                                    <?php else: ?>
+                                        <img src="uploads/<?php echo htmlspecialchars($media['file_name']); ?>" alt="Media Preview">
+                                    <?php endif; ?>
+                                </div>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
             </div>
-
+            <input type="hidden" name="time" value="<?php echo htmlspecialchars($entry['entry_time']); ?>">
+            <input type="hidden" name="status" value="<?php echo htmlspecialchars($entry['entry_status']); ?>">
             <button type="submit" class="submit-button">Save Changes</button>
         </form>
         <div class="progress">
