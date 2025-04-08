@@ -223,6 +223,11 @@ try {
     <script src="js/video_thumbnail.js" defer></script>
     <script src="js/file_upload.js" defer></script>
     <script src="js/edit_log.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            generateVideoThumbnails();
+        });
+    </script>
 </head>
 <body>
     <?php include 'components/side_menu.php'; ?>
@@ -262,21 +267,16 @@ try {
                                     <span><?php echo htmlspecialchars($media['file_name']); ?></span>
                                     <button type="button" class="remove-file-btn" onclick="removeExistingFile(this, <?php echo $media['media_id']; ?>)">×</button>
                                 </div>
-                                <div class="preview-item">
-                                    <?php if (strpos($media['file_type'], 'video/') === 0): ?>
-                                        <div class="video-preview">
-                                            <div class="video-thumbnail">
-                                                <video preload="metadata" style="display:none">
-                                                    <source src="uploads/<?php echo htmlspecialchars($media['file_name']); ?>" type="video/mp4">
-                                                </video>
-                                                <canvas class="video-canvas"></canvas>
-                                                <div class="play-button">▶</div>
-                                            </div>
-                                        </div>
-                                    <?php else: ?>
+                                <?php if (strpos($media['file_type'], 'video/') === 0): ?>
+                                    <?php 
+                                    require_once 'components/video_thumbnail.php';
+                                    renderVideoThumbnail($media['file_name']);
+                                    ?>
+                                <?php else: ?>
+                                    <div class="preview-item">
                                         <img src="uploads/<?php echo htmlspecialchars($media['file_name']); ?>" alt="Media Preview">
-                                    <?php endif; ?>
-                                </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>

@@ -143,7 +143,7 @@ $stmt = $conn->prepare("
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/file_upload.js" defer></script>
     <script src="js/video_thumbnail.js" defer></script>
-    <link rel="stylesheet" href="css/media_upload.css">
+    <script src="js/media_preview.js" defer></script>
 </head>
 <body>
     <?php include 'components/side_menu.php'; ?>
@@ -151,12 +151,45 @@ $stmt = $conn->prepare("
     <div class="main-content">
         <h2>Add New Log Entry</h2>
         <form id="addLogForm" action="add_new_log.php" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles(event)">
-            <?php renderLogEntryForm(); ?>
+            <div class="form-header">
+                <div class="form-group">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" name="date" value="<?php echo date('Y-m-d'); ?>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="title">Title: (Optional)</label>
+                    <input type="text" id="title" name="title" placeholder="Enter log title">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" rows="4" required placeholder="Enter log description"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="media">Upload Media Files:</label>
+                <?php 
+                require_once 'components/media_upload_button.php';
+                renderMediaUploadButton();
+                ?>
+                <div id="selectedFiles" class="selected-files"></div>
+                <div id="previewArea" class="preview-area"></div>
+            </div>
+
+            <input type="hidden" name="time" value="<?php echo date('H:i'); ?>">
             <button type="submit" class="submit-button">Add</button>
         </form>
         <div class="progress">
             <div class="progress-bar" style="width: 0%"></div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            generateVideoThumbnails();
+        });
+    </script>
 </body>
 </html>
