@@ -166,7 +166,7 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
                                                 echo date('M d, Y (l)', $timestamp);
                                             ?></h3>
                                             <span class="upload-time">
-                                                <?php echo "Uploaded by: " . date('g:i A', $timestamp); ?>
+                                                <?php echo "Added on: " . date('g:i A', $timestamp); ?>
                                             </span>
                                         </div>
                                     </div>

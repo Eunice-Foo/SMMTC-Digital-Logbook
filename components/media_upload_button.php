@@ -9,9 +9,9 @@ function renderMediaUploadButton($inputId = 'media', $inputName = 'media[]') {
                accept="image/*,video/*" 
                onchange="showSelectedFiles(this)"
                class="media-upload-input">
-        <div class="media-upload-button">
+        <label for="<?php echo $inputId; ?>" class="media-upload-button">
             <span class="plus-icon">+</span>
-        </div>
+        </label>
     </div>
     <?php
 }

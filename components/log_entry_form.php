@@ -46,12 +46,10 @@ function renderLogEntryForm($formData = null, $isEdit = false) {
 
     <div class="form-group">
         <label for="media">Upload Media Files:</label>
-        <input type="file" 
-               id="media" 
-               name="media[]" 
-               multiple 
-               accept="image/*,video/*" 
-               onchange="showSelectedFiles(this)">
+        <?php 
+        require_once 'components/media_upload_button.php';
+        renderMediaUploadButton();
+        ?>
         <div id="selectedFiles" class="selected-files"></div>
         <div id="previewArea" class="preview-area">
             <?php 

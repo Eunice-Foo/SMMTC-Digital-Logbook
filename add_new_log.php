@@ -138,10 +138,12 @@ $stmt = $conn->prepare("
     <link rel="stylesheet" href="css/log_form.css">
     <link rel="stylesheet" href="css/file_preview.css">
     <link rel="stylesheet" href="css/video_thumbnail.css">
+    <link rel="stylesheet" href="css/media_upload_button.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/file_upload.js" defer></script>
     <script src="js/video_thumbnail.js" defer></script>
+    <link rel="stylesheet" href="css/media_upload.css">
 </head>
 <body>
     <?php include 'components/side_menu.php'; ?>

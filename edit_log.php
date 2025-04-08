@@ -217,6 +217,7 @@ try {
     <link rel="stylesheet" href="css/log_form.css">
     <link rel="stylesheet" href="css/file_preview.css">
     <link rel="stylesheet" href="css/video_thumbnail.css">
+    <link rel="stylesheet" href="css/media_upload_button.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
@@ -248,7 +249,10 @@ try {
 
             <div class="form-group">
                 <label for="media">Upload Media Files:</label>
-                <input type="file" id="media" name="media[]" multiple accept="image/*,video/*" onchange="showSelectedFiles(this)">
+                <?php 
+                require_once 'components/media_upload_button.php';
+                renderMediaUploadButton();
+                ?>
                 <div id="selectedFiles" class="selected-files"></div>
                 <div id="previewArea" class="preview-area">
                     <?php if (!empty($mediaFiles)): ?>
