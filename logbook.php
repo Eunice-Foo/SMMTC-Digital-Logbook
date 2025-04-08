@@ -187,14 +187,14 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
                                 <button class="btn btn-view" onclick="window.location.href='view_log.php?id=<?php echo $entry['entry_id']; ?>'">
                                     View
                                 </button>
-                                <?php if ($entry['entry_status'] !== 'reviewed'): ?>
+                                <?php if ($entry['entry_status'] !== 'Signed'): ?>
                                     <button class="btn btn-edit" onclick="window.location.href='edit_log.php?id=<?php echo $entry['entry_id']; ?>'">
                                         Edit
                                     </button>
+                                    <button class="btn btn-delete" onclick="confirmDelete(<?php echo $entry['entry_id']; ?>)">
+                                        Delete
+                                    </button>
                                 <?php endif; ?>
-                                <button class="btn btn-delete" onclick="confirmDelete(<?php echo $entry['entry_id']; ?>)">
-                                    Delete
-                                </button>
                             </div>
                         </div>
                     </div>
