@@ -206,7 +206,7 @@ try {
 <body>
     <?php include 'components/side_menu.php'; ?>
     
-    <div class="container">
+    <div class="main-content">
         <h2>Edit Log Entry</h2>
         <form id="editLogForm" action="edit_log.php?id=<?php echo $_GET['id']; ?>" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles(event)">
             <div class="form-group">
