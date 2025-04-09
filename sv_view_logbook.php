@@ -87,6 +87,7 @@ try {
     <link rel="stylesheet" href="css/logbook.css">
     <link rel="stylesheet" href="css/media_viewer.css">
     <link rel="stylesheet" href="css/video_thumbnail.css">
+    <link rel="stylesheet" href="css/remark_modal.css">
     <style>
         .student-table {
             width: 100%;
@@ -221,84 +222,11 @@ try {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js"></script>
     <script src="js/media_viewer.js"></script>
+    <script src="js/sv_sign_log.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize video thumbnails
-        generateVideoThumbnails();
-    });
-
-    function directSign(entryId) {
-        fetch('sv_sign_log.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `entry_id=${entryId}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.reload();
-            } else {
-                alert('Error signing log: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error signing log');
+        document.addEventListener('DOMContentLoaded', function() {
+            generateVideoThumbnails();
         });
-    }
-
-    function signLog(entryId) {
-        // Create modal overlay for remarks
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <h3>Add Remarks</h3>
-                <div class="form-group">
-                    <label for="remarks">Remarks:</label>
-                    <textarea id="remarks" rows="4"></textarea>
-                </div>
-                <div class="modal-buttons">
-                    <button onclick="submitSignature(${entryId})" class="btn">Sign with Remarks</button>
-                    <button onclick="closeModal()" class="btn">Cancel</button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
-
-    function closeModal() {
-        const modal = document.querySelector('.modal');
-        if (modal) {
-            modal.remove();
-        }
-    }
-
-    function submitSignature(entryId) {
-        const remarks = document.getElementById('remarks').value;
-        
-        fetch('sv_sign_log.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `entry_id=${entryId}&remarks=${encodeURIComponent(remarks)}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.reload();
-            } else {
-                alert('Error signing log: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error signing log');
-        });
-    }
     </script>
 </body>
 </html>
