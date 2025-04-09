@@ -3,7 +3,7 @@ require_once 'includes/session_check.php';
 require_once 'includes/db.php';
 
 try {
-    // Query to get all media from user's portfolios
+    // Modified query to get all media grouped by portfolio
     $stmt = $conn->prepare("
         SELECT 
             p.portfolio_id,
@@ -11,17 +11,19 @@ try {
             p.portfolio_date,
             p.portfolio_time,
             m.file_name,
-            m.file_type
+            m.file_type,
+            (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
         FROM portfolio p
         INNER JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
         INNER JOIN media m ON pm.media_id = m.media_id
         WHERE p.user_id = :user_id
+        GROUP BY p.portfolio_id
         ORDER BY p.portfolio_date DESC, p.portfolio_time DESC
     ");
 
     $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
     $stmt->execute();
-    $portfolio_media = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $portfolio_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -32,7 +34,19 @@ try {
     <title>My Portfolio</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/portfolio.css">
-        
+    <style>
+        .media-count {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 3;
+        }
+    </style>
 </head>
 <body data-user-id="<?php echo $_SESSION['user_id']; ?>">
     <?php include 'components/side_menu.php'; ?>
@@ -48,15 +62,15 @@ try {
             </div>
         </div>
         
-        <?php if (empty($portfolio_media)): ?>
+        <?php if (empty($portfolio_items)): ?>
             <div class="empty-state">
                 <h3>No portfolio items yet</h3>
                 <p>Start adding items to your portfolio!</p>
             </div>
         <?php else: ?>
             <div class="portfolio-grid">
-                <?php foreach ($portfolio_media as $item): ?>
-                    <div class="portfolio-item">
+                <?php foreach ($portfolio_items as $item): ?>
+                    <div class="portfolio-item" onclick="window.location.href='view_portfolio.php?id=<?php echo $item['portfolio_id']; ?>'">
                         <div class="media-container">
                             <?php if (strpos($item['file_type'], 'video/') === 0): ?>
                                 <?php 
@@ -67,6 +81,10 @@ try {
                             <?php else: ?>
                                 <img src="uploads/<?php echo htmlspecialchars($item['file_name']); ?>" 
                                      alt="<?php echo htmlspecialchars($item['portfolio_title']); ?>">
+                            <?php endif; ?>
+                            
+                            <?php if ($item['media_count'] > 1): ?>
+                                <div class="media-count">+<?php echo $item['media_count'] - 1; ?> more</div>
                             <?php endif; ?>
                         </div>
                         <div class="portfolio-info">
@@ -79,43 +97,11 @@ try {
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
-
-
     </div>
 
     <script>
-    function playVideo(filename) {
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <video controls autoplay>
-                    <source src="uploads/${filename}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-                <button class="close-modal">×</button>
-            </div>
-        `;
-        
-        modal.onclick = function(e) {
-            if (e.target === modal || e.target.className === 'close-modal') {
-                const video = modal.querySelector('video');
-                video.pause();
-                modal.remove();
-            }
-        };
-           
-        document.body.appendChild(modal);
-        modal.style.display = 'block';
-    }
-
     function toggleDropdown() {
         document.getElementById("addOptions").classList.toggle("show");
-    }
-
-    function showUploadForm() {
-        document.getElementById("addPortfolioForm").style.display = "block";
-        document.getElementById("addOptions").classList.remove("show");
     }
 
     // Close dropdown when clicking outside
@@ -131,43 +117,6 @@ try {
         }
     }
     </script>
-
-    <style>
-    .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-
-    .modal-content {
-        max-width: 90%;
-        max-height: 90%;
-        position: relative;
-    }
-
-    .modal video {
-        max-width: 100%;
-        max-height: 90vh;
-    }
-
-    .close-modal {
-        position: absolute;
-        top: -40px;
-        right: 0;
-        background: none;
-        border: none;
-        color: white;
-        font-size: 30px;
-        cursor: pointer;
-    }
-    </style>
 </body>
 </html>
 <?php
