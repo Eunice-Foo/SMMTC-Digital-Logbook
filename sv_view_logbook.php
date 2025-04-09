@@ -227,19 +227,41 @@ try {
         generateVideoThumbnails();
     });
 
+    function directSign(entryId) {
+        fetch('sv_sign_log.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `entry_id=${entryId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Error signing log: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error signing log');
+        });
+    }
+
     function signLog(entryId) {
-        // Create modal overlay
+        // Create modal overlay for remarks
         const modal = document.createElement('div');
         modal.className = 'modal';
         modal.innerHTML = `
             <div class="modal-content">
-                <h3>Sign Log Entry</h3>
+                <h3>Add Remarks</h3>
                 <div class="form-group">
-                    <label for="remarks">Remarks (Optional):</label>
+                    <label for="remarks">Remarks:</label>
                     <textarea id="remarks" rows="4"></textarea>
                 </div>
                 <div class="modal-buttons">
-                    <button onclick="submitSignature(${entryId})" class="btn">Sign</button>
+                    <button onclick="submitSignature(${entryId})" class="btn">Sign with Remarks</button>
                     <button onclick="closeModal()" class="btn">Cancel</button>
                 </div>
             </div>

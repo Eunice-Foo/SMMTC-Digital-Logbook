@@ -4,8 +4,11 @@ function renderLogActions($entryId, $entryStatus, $userRole) {
     <div class="log-actions" data-entry-id="<?php echo $entryId; ?>">
         <?php if ($userRole == ROLE_SUPERVISOR): ?>
             <?php if ($entryStatus !== 'Signed'): ?>
-                <button class="btn btn-view" onclick="signLog(<?php echo $entryId; ?>)">
+                <button class="btn btn-sign" onclick="directSign(<?php echo $entryId; ?>)">
                     Sign
+                </button>
+                <button class="btn btn-remark" onclick="signLog(<?php echo $entryId; ?>)">
+                    Remark
                 </button>
             <?php endif; ?>
         <?php else: // ROLE_STUDENT ?>
@@ -49,6 +52,16 @@ function renderLogActions($entryId, $entryStatus, $userRole) {
 
 .btn-delete {
     background-color: #dc3545;
+    color: white;
+}
+
+.btn-sign {
+        background-color: #28a745;
+        color: white;
+    }
+
+.btn-remark {
+    background-color: #17a2b8;
     color: white;
 }
 
