@@ -84,36 +84,45 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Intern Logbook</title>
     <link rel="stylesheet" href="css/theme.css">
-    <link rel="stylesheet" href="css/log_form.css">
+    <link rel="stylesheet" href="css/logbook.css">
+    <link rel="stylesheet" href="css/media_viewer.css">
+    <link rel="stylesheet" href="css/video_thumbnail.css">
     <style>
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+        }
+
+        .student-table th,
+        .student-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .student-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+
+        .student-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
         .student-info {
-            margin-bottom: 30px;
+            background: white;
+ 
         }
         .section-header {
-            background-color: #f5f5f5;
-            padding: 10px;
-            margin: 20px 0;
+            background-color: var(--bg-secondary);
+            padding: 15px;
+            margin-top: 50px;
             border-radius: 8px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-        .log-entry {
-            border: 1px solid #ddd;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 8px;
-        }
-        .media-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .media-item img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
+            gap: 20px;
         }
         .modal {
             position: fixed;
@@ -134,32 +143,26 @@ try {
             width: 90%;
             max-width: 500px;
         }
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            justify-content: flex-end;
-        }
-        textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            margin-top: 5px;
-        }
-        .no-entries {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            margin: 10px 0;
-        }
     </style>
 </head>
 <body>
     <?php include 'components/side_menu.php'; ?>
-    
+
+    <!-- Add Media Viewer Component -->
+    <div id="mediaViewer" class="media-viewer">
+        <div class="media-viewer-content">
+            <button class="nav-button prev-button" onclick="navigateMedia(-1)">❮</button>
+            <div class="main-media-container">
+                <div class="media-display"></div>
+            </div>
+            <button class="nav-button next-button" onclick="navigateMedia(1)">❯</button>
+            <button class="close-button" onclick="closeMediaViewer()">×</button>
+        </div>
+        <div class="media-thumbnails">
+            <!-- Thumbnails will be generated dynamically -->
+        </div>
+    </div>
+
     <div class="main-content">
         <!-- Student Information -->
         <div class="student-info">
@@ -172,7 +175,7 @@ try {
                     <td><?php echo htmlspecialchars($student['matric_no']); ?></td>
                 </tr>
                 <tr>
-                    <th>Email</th>
+                    <th>Email Address</th>
                     <td><?php echo htmlspecialchars($student['email']); ?></td>
                     <th>Phone</th>
                     <td><?php echo htmlspecialchars($student['phone_number']); ?></td>
@@ -187,75 +190,43 @@ try {
         <!-- Pending Logs Section -->
         <div class="section-header">
             <h3>Pending Review</h3>
-            <span>Count: <?php echo $pending_count; ?></span>
+            <span><?php echo $pending_count; ?> log entries</span>
         </div>
         
         <?php if ($pending_count > 0): ?>
-            <?php foreach ($pending_logs as $log): ?>
-                <div class="log-entry">
-                    <div class="log-header">
-                        <h4><?php echo htmlspecialchars($log['entry_title']); ?></h4>
-                        <p><strong>Date:</strong> <?php echo htmlspecialchars($log['entry_date'] . ' ' . $log['entry_time']); ?></p>
-                    </div>
-                    <p><?php echo nl2br(htmlspecialchars($log['entry_description'])); ?></p>
-                    
-                    <?php if (!empty($log['media_files'])): ?>
-                        <div class="media-gallery">
-                            <?php foreach (explode(',', $log['media_files']) as $media): ?>
-                                <div class="media-item">
-                                    <?php if (strpos($media, '.mp4') !== false || strpos($media, '.mov') !== false): ?>
-                                        <video width="100%" height="150" controls>
-                                            <source src="uploads/<?php echo htmlspecialchars($media); ?>" type="video/mp4">
-                                        </video>
-                                    <?php else: ?>
-                                        <img src="uploads/<?php echo htmlspecialchars($media); ?>" alt="Log Entry Media">
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                    
-                    <button class="btn" onclick="signLog(<?php echo $log['entry_id']; ?>)">Sign</button>
-                </div>
-            <?php endforeach; ?>
+            <?php 
+            require_once 'components/log_entry.php';
+            foreach ($pending_logs as $log) {
+                renderLogEntry($log);
+            }
+            ?>
         <?php else: ?>
             <p class="no-entries">No pending entries</p>
         <?php endif; ?>
 
         <!-- Reviewed Logs Section -->
         <div class="section-header">
-            <h3>Reviewed</h3>
-            <span>Count: <?php echo $reviewed_count; ?></span>
+            <h3>Reviewed and Signed</h3>
+            <span><?php echo $reviewed_count; ?> log entries</span>
         </div>
         
-        <?php foreach ($reviewed_logs as $log): ?>
-            <div class="log-entry">
-                <div class="log-header">
-                    <h4><?php echo htmlspecialchars($log['entry_title']); ?></h4>
-                    <p><strong>Date:</strong> <?php echo htmlspecialchars($log['entry_date'] . ' ' . $log['entry_time']); ?></p>
-                </div>
-                <p><?php echo nl2br(htmlspecialchars($log['entry_description'])); ?></p>
-                
-                <?php if (!empty($log['media_files'])): ?>
-                    <div class="media-gallery">
-                        <?php foreach (explode(',', $log['media_files']) as $media): ?>
-                            <div class="media-item">
-                                <?php if (strpos($media, '.mp4') !== false || strpos($media, '.mov') !== false): ?>
-                                    <video width="100%" height="150" controls>
-                                        <source src="uploads/<?php echo htmlspecialchars($media); ?>" type="video/mp4">
-                                    </video>
-                                <?php else: ?>
-                                    <img src="uploads/<?php echo htmlspecialchars($media); ?>" alt="Log Entry Media">
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php endforeach; ?>
+        <?php 
+        foreach ($reviewed_logs as $log) {
+            renderLogEntry($log, false);
+        }
+        ?>
     </div>
 
+    <!-- Include required scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/video_thumbnail.js"></script>
+    <script src="js/media_viewer.js"></script>
     <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize video thumbnails
+        generateVideoThumbnails();
+    });
+
     function signLog(entryId) {
         // Create modal overlay
         const modal = document.createElement('div');

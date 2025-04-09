@@ -1,17 +1,25 @@
 <?php
-function renderLogActions($entryId, $entryStatus) {
+function renderLogActions($entryId, $entryStatus, $userRole) {
     ?>
     <div class="log-actions" data-entry-id="<?php echo $entryId; ?>">
-        <button class="btn btn-view" onclick="window.location.href='view_log.php?id=<?php echo $entryId; ?>'">
-            View
-        </button>
-        <?php if ($entryStatus !== 'Signed'): ?>
-            <button class="btn btn-edit" onclick="window.location.href='edit_log.php?id=<?php echo $entryId; ?>'">
-                Edit
+        <?php if ($userRole == ROLE_SUPERVISOR): ?>
+            <?php if ($entryStatus !== 'Signed'): ?>
+                <button class="btn btn-view" onclick="signLog(<?php echo $entryId; ?>)">
+                    Sign
+                </button>
+            <?php endif; ?>
+        <?php else: // ROLE_STUDENT ?>
+            <button class="btn btn-view" onclick="window.location.href='view_log.php?id=<?php echo $entryId; ?>'">
+                View
             </button>
-            <button class="btn btn-delete" onclick="confirmDelete(<?php echo $entryId; ?>)">
-                Delete
-            </button>
+            <?php if ($entryStatus !== 'Signed'): ?>
+                <button class="btn btn-edit" onclick="window.location.href='edit_log.php?id=<?php echo $entryId; ?>'">
+                    Edit
+                </button>
+                <button class="btn btn-delete" onclick="confirmDelete(<?php echo $entryId; ?>)">
+                    Delete
+                </button>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
     <?php
