@@ -58,16 +58,6 @@ body {
     padding: 20px;
 }
 
-/* Actions section */
-.log-actions {
-    display: flex;
-    flex-direction: column;
-    align-self: center;
-    gap: 10px;
-    width: 100px;
-    position: static; /* Remove absolute positioning */
-}
-
 .log-status {
     padding: 8px 16px;
     border-radius: 24px;
@@ -137,32 +127,12 @@ body {
     color: white;
 }
 
-.btn-view {
-    background-color: #007bff;
-    color: white;
-}
-
-.btn-edit {
-    background-color: #6c757d;
-    color: white;
-}
-
-.btn-delete {
-    background-color: #dc3545;
-    color: white;
-}
-
 .btn:hover {
     opacity: 0.9;
 }
 
 /* Responsive adjustments */
-@media screen and (max-width: 768px) {
-    .log-actions {
-        flex-direction: row;
-        justify-content: flex-end;
-    }
-    
+@media screen and (max-width: 768px) {    
     .btn {
         width: auto;
     }
@@ -455,17 +425,6 @@ body {
     .log-entry-grid {
         grid-template-columns: 1fr;
         padding-right: 15px;
-    }
-    
-    .log-actions {
-        flex-direction: row;
-        justify-content: flex-end;
-        margin-top: 15px;
-        width: 100%;
-    }
-    
-    .log-actions .btn {
-        width: auto;
     }
 }
 

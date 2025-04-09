@@ -55,6 +55,7 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="css/month_bar.css">
     <link rel="stylesheet" href="css/video_thumbnail.css">
     <link rel="stylesheet" href="css/export_logbook.css">
+    <link rel="stylesheet" href="css/log_actions.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/logbook.js"></script>
     <script src="js/media_viewer.js"></script>
@@ -183,19 +184,10 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
                             </div>
 
                             <!-- Right - Actions -->
-                            <div class="log-actions" data-entry-id="<?php echo $entry['entry_id']; ?>">
-                                <button class="btn btn-view" onclick="window.location.href='view_log.php?id=<?php echo $entry['entry_id']; ?>'">
-                                    View
-                                </button>
-                                <?php if ($entry['entry_status'] !== 'Signed'): ?>
-                                    <button class="btn btn-edit" onclick="window.location.href='edit_log.php?id=<?php echo $entry['entry_id']; ?>'">
-                                        Edit
-                                    </button>
-                                    <button class="btn btn-delete" onclick="confirmDelete(<?php echo $entry['entry_id']; ?>)">
-                                        Delete
-                                    </button>
-                                <?php endif; ?>
-                            </div>
+                            <?php 
+                            require_once 'components/log_actions.php';
+                            renderLogActions($entry['entry_id'], $entry['entry_status']); 
+                            ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
