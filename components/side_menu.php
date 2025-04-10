@@ -4,6 +4,9 @@ require_once 'includes/session_check.php';
 <div class="sidenav">
     <div class="user-info">
         <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+        <?php if (isset($_SESSION['needs_profile_completion'])): ?>
+            <div class="profile-alert">Please complete your profile</div>
+        <?php endif; ?>
         <a href="logout.php" class="logout-btn">Logout</a>
     </div>
     <nav>
@@ -108,6 +111,17 @@ require_once 'includes/session_check.php';
         margin-left: 0;
         width: 100%;
     }
+}
+
+/* Add this to the existing styles */
+.profile-alert {
+    background-color: #ffeeba;
+    color: #856404;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 12px;
+    text-align: center;
 }
 </style>
 

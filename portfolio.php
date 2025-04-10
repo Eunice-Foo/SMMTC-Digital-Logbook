@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
+require_once 'components/media_count_label.php'; // Add this line
 
 try {
     // Modified query to get all media grouped by portfolio
@@ -83,9 +84,7 @@ try {
                                      alt="<?php echo htmlspecialchars($item['portfolio_title']); ?>">
                             <?php endif; ?>
                             
-                            <?php if ($item['media_count'] > 1): ?>
-                                <div class="media-count">+<?php echo $item['media_count'] - 1; ?> more</div>
-                            <?php endif; ?>
+                            <?php renderMediaCountLabel($item['media_count']); ?>
                         </div>
                         <div class="portfolio-info">
                             <div class="portfolio-title"><?php echo htmlspecialchars($item['portfolio_title']); ?></div>

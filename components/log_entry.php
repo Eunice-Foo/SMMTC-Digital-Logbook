@@ -1,5 +1,6 @@
 <?php
 function renderLogEntry($entry, $showActions = true) {
+    require_once 'components/media_count_label.php';
     ?>
     <div class="log-entry" data-date="<?php echo $entry['entry_date']; ?>">
         <div class="log-entry-grid">
@@ -24,9 +25,7 @@ function renderLogEntry($entry, $showActions = true) {
                             </div>
                         <?php endforeach; ?>
                         
-                        <?php if (count($media_array) > 4): ?>
-                            <div class="media-count">+<?php echo count($media_array) - 4; ?> more</div>
-                        <?php endif; ?>
+                        <?php renderMediaCountLabel(count($media_array)); ?>
                     </div>
                 </div>
             <?php endif; ?>

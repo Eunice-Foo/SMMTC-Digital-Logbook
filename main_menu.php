@@ -1,6 +1,7 @@
 <?php
-require_once 'includes/session_check.php';  // Add this line
+require_once 'includes/session_check.php';
 require_once 'includes/db.php';
+require_once 'components/media_count_label.php'; // Add this line
 
 $search_results = [];
 $total_results = 0;
@@ -12,13 +13,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
     $search = $_POST['search'];
     if (empty($search)) {
         $stmt = $conn->prepare("
-            SELECT p.portfolio_title, p.portfolio_description, 
-                   p.portfolio_date, p.portfolio_time, 
-                   u.user_name as username, m.file_name as media, m.file_type
+            SELECT 
+                p.portfolio_id,
+                p.portfolio_title, 
+                p.portfolio_description, 
+                p.portfolio_date, 
+                p.portfolio_time, 
+                u.user_name as username, 
+                m.file_name as media, 
+                m.file_type,
+                (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
             FROM portfolio p
             INNER JOIN user u ON p.user_id = u.user_id
             LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
             LEFT JOIN media m ON pm.media_id = m.media_id
+            GROUP BY p.portfolio_id
             ORDER BY p.portfolio_date DESC, p.portfolio_time DESC
             LIMIT :limit OFFSET :offset
         ");
@@ -26,15 +35,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
         $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
     } else {
         $stmt = $conn->prepare("
-            SELECT p.portfolio_title, p.portfolio_description, 
-                   p.portfolio_date, p.portfolio_time, 
-                   u.user_name as username, m.file_name as media, m.file_type
+            SELECT 
+                p.portfolio_id,
+                p.portfolio_title, 
+                p.portfolio_description, 
+                p.portfolio_date, 
+                p.portfolio_time, 
+                u.user_name as username, 
+                m.file_name as media, 
+                m.file_type,
+                (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
             FROM portfolio p
             INNER JOIN user u ON p.user_id = u.user_id
             LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
             LEFT JOIN media m ON pm.media_id = m.media_id
             WHERE p.portfolio_title LIKE :search 
             OR p.portfolio_description LIKE :search
+            GROUP BY p.portfolio_id
             ORDER BY p.portfolio_date DESC, p.portfolio_time DESC
             LIMIT :limit OFFSET :offset
         ");
@@ -52,15 +69,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
         $count_stmt = $conn->prepare("
             SELECT COUNT(DISTINCT p.portfolio_id) as count
             FROM portfolio p
-            LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
-            LEFT JOIN media m ON pm.media_id = m.media_id
         ");
     } else {
         $count_stmt = $conn->prepare("
             SELECT COUNT(DISTINCT p.portfolio_id) as count
             FROM portfolio p
-            LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
-            LEFT JOIN media m ON pm.media_id = m.media_id
             WHERE p.portfolio_title LIKE :search 
             OR p.portfolio_description LIKE :search
         ");
@@ -71,13 +84,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
 } else {
     // Initial page load
     $stmt = $conn->prepare("
-        SELECT p.portfolio_title, p.portfolio_description, 
-               p.portfolio_date, p.portfolio_time, 
-               u.user_name as username, m.file_name as media, m.file_type
+        SELECT 
+            p.portfolio_id,
+            p.portfolio_title, 
+            p.portfolio_description, 
+            p.portfolio_date, 
+            p.portfolio_time, 
+            u.user_name as username, 
+            m.file_name as media, 
+            m.file_type,
+            (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
         FROM portfolio p
         INNER JOIN user u ON p.user_id = u.user_id
         LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
         LEFT JOIN media m ON pm.media_id = m.media_id
+        GROUP BY p.portfolio_id
         ORDER BY p.portfolio_date DESC, p.portfolio_time DESC
         LIMIT :limit OFFSET :offset
     ");
@@ -89,8 +110,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
     $count_stmt = $conn->prepare("
         SELECT COUNT(DISTINCT p.portfolio_id) as count
         FROM portfolio p
-        LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
-        LEFT JOIN media m ON pm.media_id = m.media_id
     ");
     $count_stmt->execute();
     $total_results = $count_stmt->fetch(PDO::FETCH_ASSOC)['count'];
@@ -127,7 +146,7 @@ if (isset($_POST['ajax'])) {
         <h3>Total Results: <?php echo $total_results; ?></h3>
         <div class="gallery" id="gallery">
             <?php foreach ($search_results as $result): ?>
-                <div class="media-card">
+                <div class="media-card" onclick="window.location.href='view_portfolio.php?id=<?php echo $result['portfolio_id']; ?>'">
                     <div class="media-preview">
                         <?php if (strpos($result['file_type'], 'video/') === 0): ?>
                             <?php 
@@ -137,6 +156,8 @@ if (isset($_POST['ajax'])) {
                         <?php else: ?>
                             <img src="uploads/<?php echo htmlspecialchars($result['media']); ?>" alt="Portfolio Media">
                         <?php endif; ?>
+                        
+                        <?php renderMediaCountLabel($result['media_count']); ?>
                     </div>
                     <div class="card-info">
                         <h4><?php echo htmlspecialchars($result['portfolio_title']); ?></h4>
@@ -174,7 +195,7 @@ if (isset($_POST['ajax'])) {
                 if (response.results.length > 0) {
                     response.results.forEach(result => {
                         $('#gallery').append(`
-                            <div class="media-card">
+                            <div class="media-card" onclick="window.location.href='view_portfolio.php?id=${result.portfolio_id}'">
                                 <div class="media-preview">
                                     ${result.file_type.startsWith('video/') ? `
                                         <div class="video-thumbnail">
@@ -185,6 +206,7 @@ if (isset($_POST['ajax'])) {
                                             <div class="play-button">▶</div>
                                         </div>
                                     ` : `<img src="uploads/${result.media}" alt="Portfolio Media">`}
+                                    ${result.media_count > 1 ? `<div class="media-count">+${result.media_count - 1} more</div>` : ''}
                                 </div>
                                 <div class="card-info">
                                     <h4>${result.portfolio_title}</h4>
@@ -203,5 +225,6 @@ if (isset($_POST['ajax'])) {
             });
         }
     </script>
+    <script src="js/video_thumbnail.js"></script>
 </body>
 </html>

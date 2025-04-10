@@ -18,20 +18,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         $user_id = $conn->lastInsertId();
         
-        // If role is student, redirect to student info page
+        // Start the session and log the user in
+        session_start();
+        $_SESSION['user_id'] = $user_id;
+        $_SESSION['username'] = $_POST['username'];
+        $_SESSION['role'] = $_POST['role'];
+        $_SESSION['needs_profile_completion'] = true;
+        
+        // Redirect based on role
         if ($_POST['role'] == ROLE_STUDENT) {
-            session_start();
-            $_SESSION['new_user_id'] = $user_id;
-            $_SESSION['role'] = ROLE_STUDENT;
             header("Location: student_info.php");
-            exit();
         } else {
-            session_start();
-            $_SESSION['new_user_id'] = $user_id;
-            $_SESSION['role'] = ROLE_SUPERVISOR;
             header("Location: supervisor_info.php");
-            exit();
         }
+        exit();
         
     } catch(PDOException $e) {
         echo "Error: " . $e->getMessage();

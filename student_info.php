@@ -1,9 +1,19 @@
 <?php
-session_start();
+require_once 'includes/session_check.php';
 require_once 'includes/db.php';
 
-if (!isset($_SESSION['new_user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] != ROLE_STUDENT) {
-    header("Location: signup.php");
+// Only allow access if user is a student
+if ($_SESSION['role'] != ROLE_STUDENT) {
+    header("Location: main_menu.php");
+    exit();
+}
+
+// Check if the student info already exists
+$stmt = $conn->prepare("SELECT * FROM student WHERE student_id = :user_id");
+$stmt->execute([':user_id' => $_SESSION['user_id']]);
+if ($stmt->rowCount() > 0 && !isset($_SESSION['needs_profile_completion'])) {
+    // Profile already complete, redirect to main menu
+    header("Location: main_menu.php");
     exit();
 }
 
@@ -25,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $duration_months = ($interval->y * 12) + $interval->m;
 
         $stmt->execute([
-            ':student_id' => $_SESSION['new_user_id'],
+            ':student_id' => $_SESSION['user_id'],
             ':matric_no' => $_POST['matric_no'],
             ':full_name' => $_POST['full_name'],
             ':phone_number' => $_POST['phone_number'],
@@ -38,12 +48,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ':practicum_duration' => $duration_months
         ]);
         
-        // Clear session variables
-        unset($_SESSION['new_user_id']);
-        unset($_SESSION['role']);
+        // Mark profile as completed
+        unset($_SESSION['needs_profile_completion']);
         
-        // Redirect to login
-        header("Location: login.php");
+        // Redirect to main menu
+        header("Location: main_menu.php");
         exit();
         
     } catch(PDOException $e) {
@@ -57,43 +66,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Information</title>
+    <title>Complete Your Profile</title>
     <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/auth_form.css">
     <style>
         .container {
             max-width: 500px;
             margin: 0 auto;
             padding: 20px;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
     </style>
 </head>
 <body>
+    <?php include 'components/side_menu.php'; ?>
+    
     <div class="container">
-        <h2>Student Information</h2>
+        <h2>Complete Your Profile</h2>
+        <p>Please provide the following information to complete your registration.</p>
+        
         <form action="student_info.php" method="post">
             <div class="form-group">
                 <label for="matric_no">Matric Number:</label>
