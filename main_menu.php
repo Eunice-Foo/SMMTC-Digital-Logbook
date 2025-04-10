@@ -20,12 +20,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
                 p.portfolio_description, 
                 p.portfolio_date, 
                 p.portfolio_time, 
-                u.user_name as username, 
+                u.user_name as username,
+                COALESCE(s.full_name, sv.supervisor_name) as full_name,
                 m.file_name as media, 
                 m.file_type,
                 (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
             FROM portfolio p
             INNER JOIN user u ON p.user_id = u.user_id
+            LEFT JOIN student s ON u.user_id = s.student_id
+            LEFT JOIN supervisor sv ON u.user_id = sv.supervisor_id
             LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
             LEFT JOIN media m ON pm.media_id = m.media_id
             GROUP BY p.portfolio_id
@@ -42,12 +45,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
                 p.portfolio_description, 
                 p.portfolio_date, 
                 p.portfolio_time, 
-                u.user_name as username, 
+                u.user_name as username,
+                COALESCE(s.full_name, sv.supervisor_name) as full_name,
                 m.file_name as media, 
                 m.file_type,
                 (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
             FROM portfolio p
             INNER JOIN user u ON p.user_id = u.user_id
+            LEFT JOIN student s ON u.user_id = s.student_id
+            LEFT JOIN supervisor sv ON u.user_id = sv.supervisor_id
             LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
             LEFT JOIN media m ON pm.media_id = m.media_id
             WHERE p.portfolio_title LIKE :search 
@@ -91,12 +97,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
             p.portfolio_description, 
             p.portfolio_date, 
             p.portfolio_time, 
-            u.user_name as username, 
+            u.user_name as username,
+            COALESCE(s.full_name, sv.supervisor_name) as full_name,
             m.file_name as media, 
             m.file_type,
             (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
         FROM portfolio p
         INNER JOIN user u ON p.user_id = u.user_id
+        LEFT JOIN student s ON u.user_id = s.student_id
+        LEFT JOIN supervisor sv ON u.user_id = sv.supervisor_id
         LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
         LEFT JOIN media m ON pm.media_id = m.media_id
         GROUP BY p.portfolio_id
@@ -236,7 +245,7 @@ if (isset($_POST['ajax'])) {
                                         <h3>${result.portfolio_title}</h3>
                                     </div>
                                     <div class="card-meta">
-                                        <div class="author">${result.username}</div>
+                                        <div class="author">${result.full_name || result.username}</div>
                                         <div class="timestamp">${new Date(result.portfolio_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}</div>
                                     </div>
                                 </div>

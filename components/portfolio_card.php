@@ -28,7 +28,7 @@ function renderPortfolioCard($item) {
                 <h3><?php echo htmlspecialchars($item['portfolio_title']); ?></h3>
             </div>
             <div class="card-meta">
-                <div class="author"><?php echo htmlspecialchars($item['username']); ?></div>
+                <div class="author"><?php echo htmlspecialchars(!empty($item['full_name']) ? $item['full_name'] : $item['username']); ?></div>
                 <div class="timestamp"><?php echo date('M j, Y', strtotime($item['portfolio_date'])); ?></div>
             </div>
         </div>

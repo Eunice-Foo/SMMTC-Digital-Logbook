@@ -21,9 +21,12 @@ try {
             p.portfolio_date,
             p.portfolio_time,
             u.user_name,
-            u.user_id
+            u.user_id,
+            COALESCE(s.full_name, sv.supervisor_name) as full_name
         FROM portfolio p
         INNER JOIN user u ON p.user_id = u.user_id
+        LEFT JOIN student s ON u.user_id = s.student_id
+        LEFT JOIN supervisor sv ON u.user_id = sv.supervisor_id
         WHERE p.portfolio_id = :portfolio_id
     ");
     
@@ -186,7 +189,7 @@ try {
                 <h1 class="portfolio-title"><?php echo htmlspecialchars($portfolio['portfolio_title']); ?></h1>
                 <div class="portfolio-meta">
                     <div class="portfolio-user">
-                        By: <?php echo htmlspecialchars($portfolio['user_name']); ?>
+                        By: <?php echo htmlspecialchars(!empty($portfolio['full_name']) ? $portfolio['full_name'] : $portfolio['user_name']); ?>
                     </div>
                     <div class="portfolio-datetime">
                         Uploaded on <?php 
