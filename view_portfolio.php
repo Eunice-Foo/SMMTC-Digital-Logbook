@@ -168,6 +168,18 @@ try {
         .back-button:hover {
             text-decoration: underline;
         }
+
+        .user-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .user-link:hover {
+            text-decoration: underline;
+            color: var(--primary-hover);
+        }
     </style>
 </head>
 <body>
@@ -189,7 +201,7 @@ try {
                 <h1 class="portfolio-title"><?php echo htmlspecialchars($portfolio['portfolio_title']); ?></h1>
                 <div class="portfolio-meta">
                     <div class="portfolio-user">
-                        By: <?php echo htmlspecialchars(!empty($portfolio['full_name']) ? $portfolio['full_name'] : $portfolio['user_name']); ?>
+                        By: <a href="user_profile.php?id=<?php echo $portfolio['user_id']; ?>" class="user-link"><?php echo htmlspecialchars(!empty($portfolio['full_name']) ? $portfolio['full_name'] : $portfolio['user_name']); ?></a>
                     </div>
                     <div class="portfolio-datetime">
                         Uploaded on <?php 

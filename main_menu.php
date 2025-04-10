@@ -20,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
                 p.portfolio_description, 
                 p.portfolio_date, 
                 p.portfolio_time, 
+                u.user_id, /* Add this line */
                 u.user_name as username,
                 COALESCE(s.full_name, sv.supervisor_name) as full_name,
                 m.file_name as media, 
@@ -45,6 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
                 p.portfolio_description, 
                 p.portfolio_date, 
                 p.portfolio_time, 
+                u.user_id, /* Add this line */
                 u.user_name as username,
                 COALESCE(s.full_name, sv.supervisor_name) as full_name,
                 m.file_name as media, 
@@ -97,6 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
             p.portfolio_description, 
             p.portfolio_date, 
             p.portfolio_time, 
+            u.user_id, /* Add this line */
             u.user_name as username,
             COALESCE(s.full_name, sv.supervisor_name) as full_name,
             m.file_name as media, 
@@ -245,7 +248,9 @@ if (isset($_POST['ajax'])) {
                                         <h3>${result.portfolio_title}</h3>
                                     </div>
                                     <div class="card-meta">
-                                        <div class="author">${result.full_name || result.username}</div>
+                                        <a href="user_profile.php?id=${result.user_id}" class="author" onclick="event.stopPropagation();">
+                                            ${result.full_name || result.username}
+                                        </a>
                                         <div class="timestamp">${new Date(result.portfolio_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}</div>
                                     </div>
                                 </div>
