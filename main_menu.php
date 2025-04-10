@@ -1,11 +1,12 @@
 <?php
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
-require_once 'components/media_count_label.php'; // Add this line
+require_once 'components/media_count_label.php';
+require_once 'components/portfolio_card.php';
 
 $search_results = [];
 $total_results = 0;
-$items_per_page = 8; // Show 8 items at a time (2 rows of 4)
+$items_per_page = 12; // Increased to 12 items per page
 $page = isset($_POST['page']) ? (int)$_POST['page'] : 1;
 $offset = ($page - 1) * $items_per_page;
 
@@ -127,7 +128,7 @@ if (isset($_POST['ajax'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Menu</title>
+    <title>Explore Portfolio Works</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/main_menu.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -137,45 +138,48 @@ if (isset($_POST['ajax'])) {
     <?php include 'components/side_menu.php'; ?>
 
     <div class="main-content">
-        <h2>Search Portfolio</h2>
-        <form action="main_menu.php" method="post">
-            <input type="text" name="search" placeholder="Search by title or description">
-            <input type="submit" value="Search">
-        </form>
+        <div class="search-section">
+            <form action="main_menu.php" method="post" class="search-form">
+                <input 
+                    type="text" 
+                    name="search" 
+                    placeholder="Search creative works..." 
+                    class="search-input"
+                    value="<?php echo isset($_POST['search']) ? htmlspecialchars($_POST['search']) : ''; ?>"
+                >
+                <button type="submit" class="search-button">Search</button>
+            </form>
+        </div>
 
-        <h3>Total Results: <?php echo $total_results; ?></h3>
+        <div class="results-count">
+            <span><?php echo $total_results; ?> results</span>
+        </div>
+        
         <div class="gallery" id="gallery">
-            <?php foreach ($search_results as $result): ?>
-                <div class="media-card" onclick="window.location.href='view_portfolio.php?id=<?php echo $result['portfolio_id']; ?>'">
-                    <div class="media-preview">
-                        <?php if (strpos($result['file_type'], 'video/') === 0): ?>
-                            <?php 
-                            require_once 'components/video_thumbnail.php';
-                            renderVideoThumbnail($result['media']);
-                            ?>
-                        <?php else: ?>
-                            <img src="uploads/<?php echo htmlspecialchars($result['media']); ?>" alt="Portfolio Media">
-                        <?php endif; ?>
-                        
-                        <?php renderMediaCountLabel($result['media_count']); ?>
-                    </div>
-                    <div class="card-info">
-                        <h4><?php echo htmlspecialchars($result['portfolio_title']); ?></h4>
-                        <p class="username">By: <?php echo htmlspecialchars($result['username']); ?></p>
-                        <p class="date"><?php echo date('F j, Y g:i A', strtotime($result['portfolio_date'] . ' ' . $result['portfolio_time'])); ?></p>
-                    </div>
+            <?php if (empty($search_results)): ?>
+                <div class="empty-state">
+                    <h3>No portfolio items found</h3>
+                    <p>Try adjusting your search or explore more creative works</p>
                 </div>
-            <?php endforeach; ?>
+            <?php else: ?>
+                <?php foreach ($search_results as $result): ?>
+                    <?php renderPortfolioCard($result); ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            
+            <div class="loading-indicator" id="loadingIndicator">
+                Loading more items...
+            </div>
         </div>
     </div>
 
     <script>
         let currentPage = 1;
         let loading = false;
-        let hasMore = true;
+        let hasMore = <?php echo $total_results > ($page * $items_per_page) ? 'true' : 'false'; ?>;
 
         $(window).scroll(function() {
-            if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+            if($(window).scrollTop() + $(window).height() > $(document).height() - 300) {
                 if (!loading && hasMore) {
                     loadMore();
                 }
@@ -184,6 +188,7 @@ if (isset($_POST['ajax'])) {
 
         function loadMore() {
             loading = true;
+            $('#loadingIndicator').show();
             currentPage++;
             
             $.post('main_menu.php', {
@@ -192,34 +197,61 @@ if (isset($_POST['ajax'])) {
                 ajax: true
             }, function(data) {
                 const response = JSON.parse(data);
+                $('#loadingIndicator').hide();
+                
                 if (response.results.length > 0) {
                     response.results.forEach(result => {
-                        $('#gallery').append(`
-                            <div class="media-card" onclick="window.location.href='view_portfolio.php?id=${result.portfolio_id}'">
-                                <div class="media-preview">
-                                    ${result.file_type.startsWith('video/') ? `
-                                        <div class="video-thumbnail">
-                                            <video preload="metadata">
-                                                <source src="uploads/${result.media}" type="video/mp4">
-                                            </video>
-                                            <canvas class="video-canvas"></canvas>
-                                            <div class="play-button">▶</div>
-                                        </div>
-                                    ` : `<img src="uploads/${result.media}" alt="Portfolio Media">`}
-                                    ${result.media_count > 1 ? `<div class="media-count">+${result.media_count - 1} more</div>` : ''}
+                        let videoHtml = '';
+                        if (result.file_type && result.file_type.startsWith('video/')) {
+                            videoHtml = `
+                                <div class="video-thumbnail">
+                                    <video preload="metadata">
+                                        <source src="uploads/${result.media}" type="video/mp4">
+                                    </video>
+                                    <canvas class="video-canvas"></canvas>
                                 </div>
-                                <div class="card-info">
-                                    <h4>${result.portfolio_title}</h4>
-                                    <p class="username">By: ${result.username}</p>
-                                    <p class="date">${new Date(result.portfolio_date + ' ' + result.portfolio_time).toLocaleString()}</p>
+                                <div class="video-badge">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8 0C3.6 0 0 3.6 0 8C0 12.4 3.6 16 8 16C12.4 16 16 12.4 16 8C16 3.6 12.4 0 8 0ZM6 11.5V4.5L12 8L6 11.5Z" fill="white"/>
+                                    </svg>
+                                </div>
+                            `;
+                        } else {
+                            videoHtml = `<img src="uploads/${result.media}" alt="Portfolio Media">`;
+                        }
+
+                        let mediaCountHtml = '';
+                        if (result.media_count > 1) {
+                            mediaCountHtml = `<div class="media-count" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0, 0, 0, 0.7); color: white; padding: 4px 8px; border-radius: 8px; font-size: 12px; z-index: 3;">+${result.media_count - 1} more</div>`;
+                        }
+                        
+                        $('#gallery').append(`
+                            <div class="portfolio-card" onclick="window.location.href='view_portfolio.php?id=${result.portfolio_id}'">
+                                <div class="card-media">
+                                    ${videoHtml}
+                                    ${mediaCountHtml}
+                                </div>
+                                <div class="card-content">
+                                    <div class="card-header">
+                                        <h3>${result.portfolio_title}</h3>
+                                    </div>
+                                    <div class="card-meta">
+                                        <div class="author">${result.username}</div>
+                                        <div class="timestamp">${new Date(result.portfolio_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}</div>
+                                    </div>
                                 </div>
                             </div>
                         `);
                     });
+                    
                     // Initialize video thumbnails for new content
                     generateVideoThumbnails();
+                    
+                    // Check if there are more items to load
+                    hasMore = response.total > (currentPage * <?php echo $items_per_page; ?>);
                 } else {
                     hasMore = false;
+                    $('#loadingIndicator').text('No more items to display');
                 }
                 loading = false;
             });
