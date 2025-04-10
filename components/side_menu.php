@@ -15,10 +15,12 @@ require_once 'includes/session_check.php';
                 <li><a href="main_menu.php">Explore</a></li>
                 <li><a href="logbook.php">My Logbook</a></li>
                 <li><a href="portfolio.php">My Portfolio</a></li>
+                <li><a href="messages.php">Messages</a></li>
                 <li><a href="view_practicum_info.php">Practicum Info</a></li>
             <?php elseif ($_SESSION['role'] == ROLE_SUPERVISOR): ?>
                 <li><a href="sv_main.php">Interns</a></li>
                 <li><a href="sv_add_student.php">Add Interns</a></li>
+                <li><a href="messages.php">Messages</a></li>
                 <li><a href="view_practicum_info.php">Company Info</a></li>
             <?php endif; ?>
         </ul>

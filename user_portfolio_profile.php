@@ -98,7 +98,7 @@ try {
     <title><?php echo htmlspecialchars($user['full_name']); ?> - Profile</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/main_menu.css">
-    <link rel="stylesheet" href="css/user_profile.css">
+    <link rel="stylesheet" href="css/user_portfolio_profile.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
@@ -225,29 +225,72 @@ try {
                 return;
             }
             
-            // This will be implemented in a future update
-            alert('Messaging functionality will be available soon!');
-            closeMessageDialog();
+            // Disable the button and show loading state
+            const sendBtn = document.querySelector('.send-btn');
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = 'Sending...';
             
-            // Uncomment when implementing the full messaging system
-            /*
             $.post('send_message.php', {
                 recipient_id: recipientId,
-                content: content
+                message: content
             }, function(response) {
+                // Debug output
+                console.log('Raw server response:', response);
+                
                 try {
-                    const result = JSON.parse(response);
+                    // Handle different response formats
+                    let result;
+                    if (typeof response === 'object') {
+                        // Response was already parsed as JSON
+                        result = response;
+                        console.log('Response was already a JSON object');
+                    } else {
+                        // Look for JSON in the response (handles case where PHP warnings precede JSON)
+                        const jsonStart = response.indexOf('{');
+                        if (jsonStart >= 0) {
+                            const jsonStr = response.substring(jsonStart);
+                            console.log('Extracted JSON string:', jsonStr);
+                            result = JSON.parse(jsonStr);
+                        } else {
+                            // Regular parsing
+                            result = JSON.parse(response);
+                        }
+                    }
+                    
+                    console.log('Parsed result:', result);
+                    
                     if (result.success) {
                         alert('Message sent successfully');
                         closeMessageDialog();
+                        
+                        // Redirect to the conversation if needed
+                        if (result.conversation_id) {
+                            if (confirm('Would you like to view this conversation?')) {
+                                window.location.href = 'messages.php?conversation=' + result.conversation_id;
+                            }
+                        }
                     } else {
-                        alert('Error: ' + result.message);
+                        alert('Error: ' + (result.message || 'Unknown server error'));
                     }
                 } catch (e) {
-                    alert('Error sending message');
+                    console.error('JSON parsing error:', e);
+                    console.error('Response that caused the error:', response);
+                    
+                    // If data is being saved but we're getting parse errors,
+                    // show a more helpful message
+                    alert('Message might have been sent, but there was a problem with the server response. Check your messages to confirm.');
                 }
+            }, 'json') // Specify 'json' as expected dataType
+            .fail(function(xhr, status, error) {
+                console.error('AJAX request failed:', status, error);
+                console.error('Server response:', xhr.responseText);
+                alert('Failed to send message. Error: ' + error);
+            })
+            .always(function() {
+                // Re-enable the button
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = 'Send Message';
             });
-            */
         }
     </script>
 </body>

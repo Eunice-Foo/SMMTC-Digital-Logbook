@@ -248,7 +248,7 @@ if (isset($_POST['ajax'])) {
                                         <h3>${result.portfolio_title}</h3>
                                     </div>
                                     <div class="card-meta">
-                                        <a href="user_profile.php?id=${result.user_id}" class="author" onclick="event.stopPropagation();">
+                                        <a href="user_portfolio_profile.php?id=${result.user_id}" class="author" onclick="event.stopPropagation();">
                                             ${result.full_name || result.username}
                                         </a>
                                         <div class="timestamp">${new Date(result.portfolio_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}</div>
