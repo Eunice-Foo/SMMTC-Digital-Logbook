@@ -25,7 +25,7 @@ function renderLogEntry($entry, $showActions = true) {
                             </div>
                         <?php endforeach; ?>
                         
-                        <?php renderMediaCountLabel(count($media_array)); ?>
+                        <?php renderMediaCountLabel(count($media_array), 4); // Pass 4 as maxDisplay value ?>
                     </div>
                 </div>
             <?php endif; ?>

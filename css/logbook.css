@@ -354,18 +354,6 @@ body {
     gap: 6px;
 }
 
-.media-count {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 8px;
-    font-size: 12px;
-    z-index: 2;
-}
-
 .log-datetime {
     display: flex;
     flex-direction: column;
