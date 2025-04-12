@@ -56,6 +56,7 @@ try {
             p.portfolio_title,
             p.portfolio_date, 
             p.portfolio_time, 
+            p.category,
             u.user_name as username,
             COALESCE(s.full_name, sv.supervisor_name) as full_name,
             m.file_name as media, 

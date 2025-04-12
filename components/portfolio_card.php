@@ -2,7 +2,7 @@
 // filepath: c:\xampp\htdocs\log\components\portfolio_card.php
 function renderPortfolioCard($item) {
     ?>
-    <div class="portfolio-card" onclick="window.location.href='view_portfolio.php?id=<?php echo $item['portfolio_id']; ?>'">
+    <div class="portfolio-card" data-category="<?php echo htmlspecialchars($item['category']); ?>" onclick="window.location.href='view_portfolio.php?id=<?php echo $item['portfolio_id']; ?>'">
         <div class="card-media">
             <?php if (strpos($item['file_type'], 'video/') === 0): ?>
                 <?php 
@@ -11,7 +11,7 @@ function renderPortfolioCard($item) {
                 ?>
                 <div class="video-badge">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 0C3.6 0 0 3.6 0 8C0 12.4 3.6 16 8 16C12.4 16 16 8C16 3.6 12.4 0 8 0ZM6 11.5V4.5L12 8L6 11.5Z" fill="white"/>
+                        <path d="M8 0C3.6 0 0 3.6 0 8C0 12.4 3.6 16 8 16C12.4 16 16 12.4 16 8C16 3.6 12.4 0 8 0ZM6 11.5V4.5L12 8L6 11.5Z" fill="white"/>
                     </svg>
                 </div>
             <?php else: ?>

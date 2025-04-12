@@ -26,15 +26,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Insert new portfolio entry with current date/time
         $stmt = $conn->prepare("
             INSERT INTO portfolio 
-            (user_id, portfolio_title, portfolio_description, portfolio_date, portfolio_time)
+            (user_id, portfolio_title, portfolio_description, portfolio_date, portfolio_time, category)
             VALUES 
-            (:user_id, :title, :description, CURDATE(), CURTIME())
+            (:user_id, :title, :description, CURDATE(), CURTIME(), :category)
         ");
 
         $stmt->execute([
             ':user_id' => $_SESSION['user_id'],
             ':title' => $_POST['title'],
-            ':description' => $_POST['description']
+            ':description' => $_POST['description'],
+            ':category' => $_POST['category']
         ]);
 
         $portfolio_id = $conn->lastInsertId();
@@ -146,6 +147,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="form-group">
                 <label for="description">Description:</label>
                 <textarea id="description" name="description" rows="4" placeholder="Enter portfolio description" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                    <option value="Image">Image</option>
+                    <option value="Video">Video</option>
+                    <option value="Animation">Animation</option>
+                    <option value="3D Model">3D Model</option>
+                    <option value="UI/UX">UI/UX</option>
+                    <option value="Graphic Design">Graphic Design</option>
+                    <option value="Other">Other</option>
+                </select>
             </div>
 
             <div class="form-group">

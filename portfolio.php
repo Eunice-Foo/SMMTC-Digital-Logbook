@@ -1,7 +1,10 @@
 <?php
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
-require_once 'components/media_count_label.php'; // Add this line
+require_once 'components/media_count_label.php';
+require_once 'components/category_tabs.php';
+
+$user_id = $_SESSION['user_id'];
 
 try {
     // Modified query to get all media grouped by portfolio
@@ -11,6 +14,7 @@ try {
             p.portfolio_title,
             p.portfolio_date,
             p.portfolio_time,
+            p.category,
             m.file_name,
             m.file_type,
             (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
@@ -21,9 +25,10 @@ try {
         GROUP BY p.portfolio_id
         ORDER BY p.portfolio_date DESC, p.portfolio_time DESC
     ");
-
-    $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+    
+    $stmt->bindParam(':user_id', $user_id);
     $stmt->execute();
+    
     $portfolio_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -35,6 +40,7 @@ try {
     <title>My Portfolio</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/portfolio.css">
+    <link rel="stylesheet" href="css/category_tabs.css">
     <style>
         .media-count {
             position: absolute;
@@ -54,6 +60,9 @@ try {
     
     <div class="main-content">
         <h2>My Portfolio</h2>
+        
+        <!-- Using the category tabs component -->
+        <?php renderCategoryTabs('all'); ?>
 
         <div class="add-options">
             <button class="btn-dropdown" onclick="toggleDropdown()">Add to Portfolio ▼</button>
@@ -71,7 +80,7 @@ try {
         <?php else: ?>
             <div class="portfolio-grid">
                 <?php foreach ($portfolio_items as $item): ?>
-                    <div class="portfolio-item" onclick="window.location.href='view_portfolio.php?id=<?php echo $item['portfolio_id']; ?>'">
+                    <div class="portfolio-item" data-category="<?php echo htmlspecialchars($item['category']); ?>" onclick="window.location.href='view_portfolio.php?id=<?php echo $item['portfolio_id']; ?>'">
                         <div class="media-container">
                             <?php if (strpos($item['file_type'], 'video/') === 0): ?>
                                 <?php 
@@ -98,6 +107,7 @@ try {
         <?php endif; ?>
     </div>
 
+    <script src="js/category_filter.js"></script>
     <script>
     function toggleDropdown() {
         document.getElementById("addOptions").classList.toggle("show");
@@ -115,6 +125,9 @@ try {
             }
         }
     }
+    
+    // Initialize category filtering
+    initCategoryFilter();
     </script>
 </body>
 </html>
