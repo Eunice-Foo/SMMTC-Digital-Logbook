@@ -1,30 +1,84 @@
 <?php
 require_once 'includes/session_check.php';
 ?>
+<!-- Add the Flaticon CSS link -->
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-straight/css/uicons-regular-straight.css'>
+
 <div class="sidenav">
     <div class="user-info">
         <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
         <?php if (isset($_SESSION['needs_profile_completion'])): ?>
             <div class="profile-alert">Please complete your profile</div>
         <?php endif; ?>
-        <a href="logout.php" class="logout-btn">Logout</a>
     </div>
     <nav>
         <ul>
             <?php if ($_SESSION['role'] == ROLE_STUDENT): ?>
-                <li><a href="main_menu.php">Explore</a></li>
-                <li><a href="logbook.php">My Logbook</a></li>
-                <li><a href="portfolio.php">My Portfolio</a></li>
-                <li><a href="messages.php">Messages</a></li>
-                <li><a href="view_practicum_info.php">Practicum Info</a></li>
+                <li>
+                    <a href="main_menu.php">
+                        <i class="fi fi-rr-layers"></i>
+                        Explore
+                    </a>
+                </li>
+                <li>
+                    <a href="logbook.php">
+                        <i class="fi fi-rr-audit-alt"></i>
+                        My Logbook
+                    </a>
+                </li>
+                <li>
+                    <a href="portfolio.php">
+                        <i class="fi fi-rr-objects-column"></i>
+                        My Portfolio
+                    </a>
+                </li>
+                <li>
+                    <a href="messages.php">
+                        <i class="fi fi-rr-messages"></i>
+                        Messages
+                    </a>
+                </li>
+                <li>
+                    <a href="view_practicum_info.php">
+                        <i class="fi fi-rr-circle-user"></i>
+                        Practicum Info
+                    </a>
+                </li>
             <?php elseif ($_SESSION['role'] == ROLE_SUPERVISOR): ?>
-                <li><a href="sv_main.php">Interns</a></li>
-                <li><a href="sv_add_student.php">Add Interns</a></li>
-                <li><a href="messages.php">Messages</a></li>
-                <li><a href="view_practicum_info.php">Company Info</a></li>
+                <li>
+                    <a href="sv_main.php">
+                        <i class="fi fi-rr-users"></i>
+                        Interns
+                    </a>
+                </li>
+                <li>
+                    <a href="sv_add_student.php">
+                        <i class="fi fi-rr-user-add"></i>
+                        Add Interns
+                    </a>
+                </li>
+                <li>
+                    <a href="messages.php">
+                        <i class="fi fi-rr-messages"></i>
+                        Messages
+                    </a>
+                </li>
+                <li>
+                    <a href="view_practicum_info.php">
+                        <i class="fi fi-rr-building"></i>
+                        Company Info
+                    </a>
+                </li>
             <?php endif; ?>
         </ul>
     </nav>
+    <div class="logout-container">
+        <a href="logout.php" class="logout-btn">
+            <i class="fi fi-rr-sign-out-alt"></i>
+            Logout
+        </a>
+    </div>
 </div>
 
 <style>
@@ -39,6 +93,8 @@ require_once 'includes/session_check.php';
     overflow-x: hidden;
     padding-top: 20px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
 }
 
 .sidenav .user-info {
@@ -47,17 +103,37 @@ require_once 'includes/session_check.php';
     margin-bottom: 20px;
 }
 
-.sidenav .user-info span {
-    display: block;
-    margin-bottom: 10px;
-    color: #333;
-    font-weight: 500;
+.sidenav nav {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.logout-container {
+    padding: 20px;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
 }
 
 .sidenav .logout-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     color: #dc3545;
     text-decoration: none;
     font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.sidenav .logout-btn:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+.sidenav .logout-btn i {
+    font-size: 16px;
 }
 
 .sidenav nav ul {
@@ -75,8 +151,18 @@ require_once 'includes/session_check.php';
     text-decoration: none;
     font-size: 16px;
     color: #333;
-    display: block;
+    display: flex;
+    align-items: center;
     transition: all 0.3s ease;
+}
+
+.sidenav nav ul li a i {
+    margin-right: 12px;
+    font-size: 20px;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sidenav nav ul li a:hover {
@@ -109,13 +195,17 @@ require_once 'includes/session_check.php';
         position: relative;
     }
     
+    .logout-container {
+        position: relative;
+        padding: 15px;
+    }
+    
     .main-content {
         margin-left: 0;
         width: 100%;
     }
 }
 
-/* Add this to the existing styles */
 .profile-alert {
     background-color: #ffeeba;
     color: #856404;
