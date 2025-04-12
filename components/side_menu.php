@@ -7,6 +7,11 @@ require_once 'includes/session_check.php';
 
 <div class="sidenav">
     <div class="user-info">
+        <a href="view_profile.php" class="profile-link">
+            <div class="profile-picture">
+                <i class="fi fi-rr-user"></i>
+            </div>
+        </a>
         <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
         <?php if (isset($_SESSION['needs_profile_completion'])): ?>
             <div class="profile-alert">Please complete your profile</div>
@@ -101,6 +106,38 @@ require_once 'includes/session_check.php';
     padding: 15px;
     border-bottom: 1px solid #dee2e6;
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.profile-link {
+    display: inline-block;
+    text-decoration: none;
+    margin-bottom: 10px;
+}
+
+.profile-picture {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+}
+
+.profile-picture:hover {
+    background-color: #dee2e6;
+    border-color: var(--primary-color);
+}
+
+.profile-picture i {
+    font-size: 32px;
+    color: #6c757d;
 }
 
 .sidenav nav {
