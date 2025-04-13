@@ -26,16 +26,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Insert new portfolio entry with current date/time
         $stmt = $conn->prepare("
             INSERT INTO portfolio 
-            (user_id, portfolio_title, portfolio_description, portfolio_date, portfolio_time, category)
+            (user_id, portfolio_title, portfolio_description, portfolio_date, portfolio_time, category, tools)
             VALUES 
-            (:user_id, :title, :description, CURDATE(), CURTIME(), :category)
+            (:user_id, :title, :description, CURDATE(), CURTIME(), :category, :tools)
         ");
 
         $stmt->execute([
             ':user_id' => $_SESSION['user_id'],
             ':title' => $_POST['title'],
             ':description' => $_POST['description'],
-            ':category' => $_POST['category']
+            ':category' => $_POST['category'],
+            ':tools' => $_POST['tools']
         ]);
 
         $portfolio_id = $conn->lastInsertId();
@@ -126,9 +127,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/file_preview.css">
     <link rel="stylesheet" href="css/video_thumbnail.css">
     <link rel="stylesheet" href="css/media_upload_button.css">
+    <link rel="stylesheet" href="css/tools_input.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
     <script src="js/portfolio_upload.js" defer></script>
+    <script src="js/tools_input.js" defer></script>
 </head>
 <body>
     <?php include 'components/side_menu.php'; ?>
@@ -160,6 +163,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <option value="Graphic Design">Graphic Design</option>
                     <option value="Other">Other</option>
                 </select>
+            </div>
+
+            <div class="form-group">
+                <label for="tools">Tools Used:</label>
+                <div class="tools-input-container">
+                    <input type="text" id="toolInput" placeholder="Type a tool name and press Enter">
+                    <div id="toolSuggestions" class="tool-suggestions"></div>
+                    <div id="selectedTools" class="selected-tools"></div>
+                    <input type="hidden" name="tools" id="toolsHidden">
+                </div>
+                <small class="hint">Type tool names (e.g., Photoshop, Blender) and press Enter to add them</small>
             </div>
 
             <div class="form-group">
