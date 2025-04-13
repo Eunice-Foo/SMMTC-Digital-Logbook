@@ -10,6 +10,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 }
 
 $portfolio_id = $_GET['id'];
+$is_owner = false; // Initialize ownership flag
 
 try {
     // Get portfolio details
@@ -20,6 +21,9 @@ try {
             p.portfolio_description,
             p.portfolio_date,
             p.portfolio_time,
+            p.category,
+            p.tools,
+            p.user_id,
             u.user_name,
             u.user_id,
             COALESCE(s.full_name, sv.supervisor_name) as full_name
@@ -38,6 +42,9 @@ try {
         header("Location: portfolio.php");
         exit();
     }
+    
+    // Check if current user is the owner of this portfolio
+    $is_owner = ($_SESSION['user_id'] == $portfolio['user_id']);
 
     // Get all media for this portfolio
     $stmt = $conn->prepare("
@@ -113,6 +120,54 @@ try {
             margin-top: 5px;
         }
 
+        .portfolio-actions {
+            margin-top: 10px;
+        }
+
+        .edit-portfolio-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .edit-portfolio-btn:hover {
+            background-color: var(--primary-hover);
+            text-decoration: none;
+            color: white;
+        }
+
+        .edit-portfolio-btn i {
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .portfolio-meta {
+                align-items: flex-start;
+            }
+            
+            .portfolio-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .portfolio-actions {
+                margin-top: 15px;
+            }
+            
+            .edit-portfolio-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
         .portfolio-description {
             background-color: white;
             padding: 20px;
@@ -120,6 +175,52 @@ try {
             margin-bottom: 30px;
             box-shadow: var(--box-shadow);
             line-height: 1.6;
+        }
+
+        .portfolio-metadata {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .metadata-item {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .metadata-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .tools-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .metadata-tag {
+            background-color: #f0f0f0;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 14px;
+            display: inline-block;
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 768px) {
+            .portfolio-metadata {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
 
         .media-grid {
@@ -209,6 +310,13 @@ try {
                             echo date('d M, Y h:i A', $timestamp); 
                         ?>
                     </div>
+                    <?php if ($is_owner): ?>
+                    <div class="portfolio-actions">
+                        <a href="edit_portfolio.php?id=<?php echo $portfolio_id; ?>" class="edit-portfolio-btn">
+                            <i class="fi fi-rr-edit"></i> Edit Portfolio
+                        </a>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -217,6 +325,32 @@ try {
                     <?php echo nl2br(htmlspecialchars($portfolio['portfolio_description'])); ?>
                 </div>
             <?php endif; ?>
+
+            <!-- Add this new section for category and tools -->
+            <div class="portfolio-metadata">
+                <div class="metadata-item">
+                    <span class="metadata-label">Category:</span>
+                    <span class="metadata-tag"><?php echo htmlspecialchars($portfolio['category']); ?></span>
+                </div>
+                
+                <?php if (!empty($portfolio['tools'])): ?>
+                <div class="metadata-item">
+                    <span class="metadata-label">Tools Used:</span>
+                    <div class="tools-list">
+                        <?php 
+                        $tools = explode(',', $portfolio['tools']);
+                        foreach ($tools as $tool): 
+                            if (!empty(trim($tool))): 
+                        ?>
+                            <span class="metadata-tag"><?php echo htmlspecialchars(trim($tool)); ?></span>
+                        <?php 
+                            endif; 
+                        endforeach; 
+                        ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+            </div>
 
             <?php if (!empty($media)): ?>
                 <div class="media-grid">
