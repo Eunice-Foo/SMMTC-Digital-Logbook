@@ -10,21 +10,8 @@ function initializeToast() {
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css'>
     
     <!-- Toast notification container -->
-    <div id="toastContainer" style="display:none;">
-        <div id="toast" class="toast">
-            <div class="toast-left">
-                <div class="toast-icon">
-                    <i id="successIcon" class="fi fi-sr-badge-check icon-success"></i>
-                    <i id="errorIcon" class="fi fi-sr-times-hexagon icon-error"></i>
-                    <i id="warningIcon" class="fi fi-sr-triangle-warning icon-warning"></i>
-                </div>
-                <div class="toast-content">
-                    <div id="toastTitle" class="toast-title">Success!</div>
-                    <div id="toastMessage" class="toast-message">Your changes have been saved successfully!</div>
-                </div>
-            </div>
-            <button id="toastButton" class="toast-button">Close</button>
-        </div>
+    <div id="toastContainer" style="display:block;">
+        <!-- Toast notifications will be added here dynamically -->
     </div>
 
     <style>
@@ -48,6 +35,9 @@ function initializeToast() {
         z-index: 9999;
         width: 30%; /* Fixed width of 30% of the screen */
         min-width: 300px; /* Minimum width for small screens */
+        display: flex;
+        flex-direction: column;
+        pointer-events: none; /* Allow clicks to pass through container */
     }
 
     .toast {
@@ -62,6 +52,7 @@ function initializeToast() {
         animation: slideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Changed duration and added easing */
         width: 100%;
         box-sizing: border-box;
+        pointer-events: auto; /* Re-enable clicks on toast */
     }
     
     .toast-left {
@@ -246,67 +237,94 @@ function initializeToast() {
 
     <script>
     // Toast notification JavaScript functions
+    let toastIdCounter = 0; // Counter to create unique IDs for each toast
+
     function showToast(type, title, message, buttonText = 'Close', autoHide = true) {
         const toastContainer = document.getElementById('toastContainer');
-        const toast = document.getElementById('toast');
-        const toastTitle = document.getElementById('toastTitle');
-        const toastMessage = document.getElementById('toastMessage');
-        const toastButton = document.getElementById('toastButton');
         
-        // Set content
-        toastTitle.innerText = title;
-        toastMessage.innerText = message;
-        toastButton.innerText = buttonText;
+        // Create unique ID for this toast
+        const toastId = 'toast-' + toastIdCounter++;
         
-        // Set type styling
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.id = toastId;
         toast.className = 'toast ' + type;
         
-        // Button action based on type
-        if (type === 'error') {
-            toastButton.onclick = function() {
-                hideToast();
-                if (buttonText === 'Retry') {
-                    // Optional: add retry logic here
-                }
-            };
-        } else {
-            toastButton.onclick = hideToast;
-        }
+        // Create toast content
+        toast.innerHTML = `
+            <div class="toast-left">
+                <div class="toast-icon">
+                    <i class="fi fi-sr-badge-check icon-success"></i>
+                    <i class="fi fi-sr-times-hexagon icon-error"></i>
+                    <i class="fi fi-sr-triangle-warning icon-warning"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            </div>
+            <button class="toast-button">${buttonText}</button>
+        `;
         
-        // Show toast
-        toastContainer.style.display = 'block';
+        // Add to container
+        toastContainer.appendChild(toast);
         
-        // Auto hide after 5 seconds for success toasts
+        // Setup close button
+        const closeButton = toast.querySelector('.toast-button');
+        closeButton.onclick = function() {
+            hideToast(toastId);
+            if (type === 'error' && buttonText === 'Retry') {
+                // Optional: add retry logic here
+            }
+        };
+        
+        // Auto hide after delay for success toasts
         if (autoHide && type === 'success') {
-            setTimeout(hideToast, 5000);
+            setTimeout(() => hideToast(toastId), 5000);
         }
+        
+        // Return toast ID in case it's needed
+        return toastId;
     }
 
-    function hideToast() {
-        const toastContainer = document.getElementById('toastContainer');
-        const toast = document.getElementById('toast');
+    function hideToast(toastId) {
+        const toast = document.getElementById(toastId);
+        if (!toast) return;
         
         toast.classList.add('toast-hide');
         
         setTimeout(() => {
-            toast.classList.remove('toast-hide');
-            toastContainer.style.display = 'none';
-        }, 300);
+            if (toast && toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300); // Match the animation duration
+    }
+
+    // Clear all toasts
+    function clearAllToasts() {
+        const toastContainer = document.getElementById('toastContainer');
+        const toasts = toastContainer.querySelectorAll('.toast');
+        
+        toasts.forEach(toast => {
+            if (toast && toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        });
     }
 
     // Global function to show success toast
     function showSuccessToast(message, title = 'Success!') {
-        showToast('success', title, message, 'Close', true);
+        return showToast('success', title, message, 'Close', true);
     }
 
     // Global function to show error toast
     function showErrorToast(message, title = 'Error!', buttonText = 'Retry') {
-        showToast('error', title, message, buttonText, false);
+        return showToast('error', title, message, buttonText, false);
     }
 
     // Global function to show warning toast
     function showWarningToast(message, title = 'Warning!', buttonText = 'Dismiss') {
-        showToast('warning', title, message, buttonText, false);
+        return showToast('warning', title, message, buttonText, false);
     }
     </script>
     <?php
