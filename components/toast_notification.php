@@ -65,6 +65,7 @@ function initializeToast() {
     .toast.success {
         background-color: var(--toast-success-bg);
         border-left-color: var(--toast-success-color);
+        padding-right: 20px; /* Add padding when there's no button */
     }
 
     .toast.error {
@@ -171,14 +172,9 @@ function initializeToast() {
         transition: background-color 0.2s;
     }
 
+    /* Hide button for success toasts */
     .toast.success .toast-button {
-        background-color: var(--toast-success-bg);
-        color: var(--toast-success-color);
-        border: 1px solid var(--toast-success-color);
-    }
-
-    .toast.success .toast-button:hover {
-        background-color: var(--toast-success-hover);
+        display: none;
     }
 
     .toast.error .toast-button {
@@ -233,6 +229,21 @@ function initializeToast() {
     .toast-hide {
         animation: slideOut 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; /* Added easing */
     }
+
+    /* Progress bar for auto-hide success toast */
+    .toast.success .toast-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background-color: var(--toast-success-color);
+        animation: toast-progress 3s linear forwards;
+    }
+
+    @keyframes toast-progress {
+        from { width: 0; }
+        to { width: 100%; }
+    }
     </style>
 
     <script>
@@ -250,37 +261,60 @@ function initializeToast() {
         toast.id = toastId;
         toast.className = 'toast ' + type;
         
-        // Create toast content
-        toast.innerHTML = `
-            <div class="toast-left">
-                <div class="toast-icon">
-                    <i class="fi fi-sr-badge-check icon-success"></i>
-                    <i class="fi fi-sr-times-hexagon icon-error"></i>
-                    <i class="fi fi-sr-triangle-warning icon-warning"></i>
+        // For success toasts, don't include the button
+        if (type === 'success') {
+            // Add progress bar for success toasts
+            toast.style.position = 'relative'; // Required for absolute positioning of progress bar
+            
+            toast.innerHTML = `
+                <div class="toast-left">
+                    <div class="toast-icon">
+                        <i class="fi fi-sr-badge-check icon-success"></i>
+                        <i class="fi fi-sr-times-hexagon icon-error"></i>
+                        <i class="fi fi-sr-triangle-warning icon-warning"></i>
+                    </div>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-message">${message}</div>
+                    </div>
                 </div>
-                <div class="toast-content">
-                    <div class="toast-title">${title}</div>
-                    <div class="toast-message">${message}</div>
+                <div class="toast-progress"></div>
+            `;
+        } else {
+            // For error and warning toasts, include the button
+            toast.innerHTML = `
+                <div class="toast-left">
+                    <div class="toast-icon">
+                        <i class="fi fi-sr-badge-check icon-success"></i>
+                        <i class="fi fi-sr-times-hexagon icon-error"></i>
+                        <i class="fi fi-sr-triangle-warning icon-warning"></i>
+                    </div>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-message">${message}</div>
+                    </div>
                 </div>
-            </div>
-            <button class="toast-button">${buttonText}</button>
-        `;
+                <button class="toast-button">${buttonText}</button>
+            `;
+        }
         
         // Add to container
         toastContainer.appendChild(toast);
         
-        // Setup close button
-        const closeButton = toast.querySelector('.toast-button');
-        closeButton.onclick = function() {
-            hideToast(toastId);
-            if (type === 'error' && buttonText === 'Retry') {
-                // Optional: add retry logic here
-            }
-        };
+        // Setup close button for non-success toasts
+        if (type !== 'success') {
+            const closeButton = toast.querySelector('.toast-button');
+            closeButton.onclick = function() {
+                hideToast(toastId);
+                if (type === 'error' && buttonText === 'Retry') {
+                    // Optional: add retry logic here
+                }
+            };
+        }
         
-        // Auto hide after delay for success toasts
-        if (autoHide && type === 'success') {
-            setTimeout(() => hideToast(toastId), 5000);
+        // Auto hide after 3 seconds for success toasts
+        if (type === 'success') {
+            setTimeout(() => hideToast(toastId), 3000);
         }
         
         // Return toast ID in case it's needed
@@ -314,7 +348,7 @@ function initializeToast() {
 
     // Global function to show success toast
     function showSuccessToast(message, title = 'Success!') {
-        return showToast('success', title, message, 'Close', true);
+        return showToast('success', title, message, null, true);
     }
 
     // Global function to show error toast
