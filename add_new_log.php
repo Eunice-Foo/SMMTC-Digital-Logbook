@@ -146,7 +146,13 @@ $stmt = $conn->prepare("
     <script src="js/media_preview.js" defer></script>
 </head>
 <body>
-    <?php include 'components/side_menu.php'; ?>
+    <?php 
+    include 'components/side_menu.php'; 
+    
+    // Include and initialize toast notification component
+    require_once 'components/toast_notification.php';
+    initializeToast();
+    ?>
     
     <div class="main-content">
         <h2>Add New Log Entry</h2>
