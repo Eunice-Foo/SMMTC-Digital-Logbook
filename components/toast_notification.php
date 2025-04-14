@@ -6,108 +6,165 @@
 
 function initializeToast() {
     ?>
+    <!-- Flaticon CSS for icons -->
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+    
     <!-- Toast notification container -->
     <div id="toastContainer" style="display:none;">
         <div id="toast" class="toast">
-            <div class="toast-icon">
-                <svg id="successIcon" class="icon-success" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" fill="currentColor"/>
-                </svg>
-                <svg id="errorIcon" class="icon-error" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" fill="currentColor"/>
-                </svg>
-            </div>
-            <div class="toast-content">
-                <div id="toastTitle" class="toast-title">Success!</div>
-                <div id="toastMessage" class="toast-message">Your changes have been saved successfully!</div>
+            <div class="toast-left">
+                <div class="toast-icon">
+                    <i id="successIcon" class="fi fi-sr-badge-check icon-success"></i>
+                    <i id="errorIcon" class="fi fi-sr-times-hexagon icon-error"></i>
+                    <i id="warningIcon" class="fi fi-sr-triangle-warning icon-warning"></i>
+                </div>
+                <div class="toast-content">
+                    <div id="toastTitle" class="toast-title">Success!</div>
+                    <div id="toastMessage" class="toast-message">Your changes have been saved successfully!</div>
+                </div>
             </div>
             <button id="toastButton" class="toast-button">Close</button>
         </div>
     </div>
 
     <style>
+    :root {
+        /* Color variables as requested */
+        --toast-success-color: rgb(1, 153, 6);
+        --toast-success-bg: rgb(234, 251, 234);
+        --toast-success-hover: rgb(200, 230, 200);
+        --toast-error-color: #f44336;
+        --toast-error-bg: #ffebee;
+        --toast-error-hover: #ffcdd2;
+        --toast-warning-color: #ff9800;
+        --toast-warning-bg: #fff3e0;
+        --toast-warning-hover: #ffe0b2;
+    }
+
     #toastContainer {
         position: fixed;
         top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
+        right: 20px;
         z-index: 9999;
-        width: 100%;
-        max-width: 500px;
-        padding: 0 15px;
+        width: 30%; /* Fixed width of 30% of the screen */
+        min-width: 300px; /* Minimum width for small screens */
     }
 
     .toast {
         display: flex;
-        align-items: flex-start;
-        padding: 16px;
-        border-radius: 8px;
+        align-items: center;
+        justify-content: space-between; /* Space content from button */
+        padding: 20px;
+        border-radius: 0 8px 8px 0;
         border-left: 4px solid;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         margin-bottom: 16px;
-        animation: slideIn 0.3s ease-out forwards;
+        animation: slideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Changed duration and added easing */
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .toast-left {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        min-width: 0; /* Prevent overflow */
     }
 
     .toast.success {
-        background-color: #e8f5e9;
-        border-left-color: #4caf50;
+        background-color: var(--toast-success-bg);
+        border-left-color: var(--toast-success-color);
     }
 
     .toast.error {
-        background-color: #ffebee;
-        border-left-color: #f44336;
+        background-color: var(--toast-error-bg);
+        border-left-color: var(--toast-error-color);
+    }
+
+    .toast.warning {
+        background-color: var(--toast-warning-bg);
+        border-left-color: var(--toast-warning-color);
     }
 
     .toast-icon {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 24px;
-        height: 24px;
-        margin-right: 12px;
+        margin-right: 16px; 
         flex-shrink: 0;
     }
 
-    .toast.success .toast-icon {
-        color: #4caf50;
+    .toast-icon i {
+        font-size: 24px;
     }
 
-    .toast.error .toast-icon {
-        color: #f44336;
+    .toast.success .toast-icon {color: var(--toast-success-color);}
+
+    .toast.error .toast-icon {color: var(--toast-error-color);}
+
+    .toast.warning .toast-icon {color: var(--toast-warning-color);}
+
+    /* Control icon visibility */
+    .toast-icon i {
+        display: none; /* Hide all icons by default */
     }
 
-    .icon-success, .icon-error {
-        width: 24px;
-        height: 24px;
+    .toast.success .icon-success {
+        display: inline-block;
     }
 
-    .toast.success .icon-error,
-    .toast.error .icon-success {
-        display: none;
+    .toast.error .icon-error {
+        display: inline-block;
+    }
+
+    .toast.warning .icon-warning {
+        display: inline-block;
     }
 
     .toast-content {
         flex-grow: 1;
         padding-right: 12px;
+        min-width: 0; /* Prevent text overflow */
+        overflow: hidden; /* Hide overflow text */
     }
 
     .toast-title {
         font-weight: 600;
-        font-size: 18px;
+        font-size: 16px; /* Changed to 16px as requested */
         margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .toast.success .toast-title {
-        color: #2e7d32;
+        color: var(--toast-success-color);
     }
 
     .toast.error .toast-title {
-        color: #c62828;
+        color: var(--toast-error-color);
+    }
+
+    .toast.warning .toast-title {
+        color: var(--toast-warning-color);
     }
 
     .toast-message {
-        color: #555;
-        font-size: 14px;
+        font-size: 16px; /* Changed to 16px as requested */
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .toast.success .toast-message {
+        color: var(--toast-success-color); /* Same color as icon */
+    }
+
+    .toast.error .toast-message {
+        color: var(--toast-error-color); /* Same color as icon */
+    }
+
+    .toast.warning .toast-message {
+        color: var(--toast-warning-color); /* Same color as icon */
     }
 
     .toast-button {
@@ -118,53 +175,72 @@ function initializeToast() {
         border: none;
         cursor: pointer;
         flex-shrink: 0;
+        margin-left: 16px; /* Space from content */
+        align-self: center;
         transition: background-color 0.2s;
     }
 
     .toast.success .toast-button {
-        background-color: #e8f5e9;
-        color: #2e7d32;
-        border: 1px solid #4caf50;
+        background-color: var(--toast-success-bg);
+        color: var(--toast-success-color);
+        border: 1px solid var(--toast-success-color);
     }
 
     .toast.success .toast-button:hover {
-        background-color: #c8e6c9;
+        background-color: var(--toast-success-hover);
     }
 
     .toast.error .toast-button {
-        background-color: #ffebee;
-        color: #c62828;
-        border: 1px solid #f44336;
+        background-color: var(--toast-error-bg);
+        color: var(--toast-error-color);
+        border: 1px solid var(--toast-error-color);
     }
 
     .toast.error .toast-button:hover {
-        background-color: #ffcdd2;
+        background-color: var(--toast-error-hover);
+    }
+
+    .toast.warning .toast-button {
+        background-color: var(--toast-warning-bg);
+        color: var(--toast-warning-color);
+        border: 1px solid var(--toast-warning-color);
+    }
+
+    .toast.warning .toast-button:hover {
+        background-color: var(--toast-warning-hover);
     }
 
     @keyframes slideIn {
-        from {
-            transform: translateY(-30px);
+        0% {
+            transform: translateX(120%);
             opacity: 0;
         }
-        to {
-            transform: translateY(0);
+        70% {
+            transform: translateX(-10px); /* slight overshoot */
+            opacity: 1;
+        }
+        85% {
+            transform: translateX(5px); /* bounce back */
+        }
+        100% {
+            transform: translateX(0);
             opacity: 1;
         }
     }
 
     @keyframes slideOut {
-        from {
-            transform: translateY(0);
+        0% {
+            transform: translateX(0);
             opacity: 1;
         }
-        to {
-            transform: translateY(-30px);
+        100% {
+            transform: translateX(120%);
             opacity: 0;
         }
     }
 
     .toast-hide {
-        animation: slideOut 0.3s ease-in forwards;
+        animation: slideOut 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; /* Added easing */
     }
     </style>
 
@@ -226,6 +302,11 @@ function initializeToast() {
     // Global function to show error toast
     function showErrorToast(message, title = 'Error!', buttonText = 'Retry') {
         showToast('error', title, message, buttonText, false);
+    }
+
+    // Global function to show warning toast
+    function showWarningToast(message, title = 'Warning!', buttonText = 'Dismiss') {
+        showToast('warning', title, message, buttonText, false);
     }
     </script>
     <?php
