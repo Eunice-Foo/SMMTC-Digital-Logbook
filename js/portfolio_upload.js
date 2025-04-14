@@ -1,8 +1,14 @@
-// Portfolio file upload and media handling
-let selectedFiles = []; // Store new files
+// Global variables
+let selectedFiles = [];
 
 document.addEventListener('DOMContentLoaded', function() {
-    generateVideoThumbnails();
+    // Initialize video thumbnails for uploaded videos
+    if (typeof generateVideoThumbnails === 'function') {
+        generateVideoThumbnails();
+    }
+    
+    // Initialize tools input
+    initializeToolsInput();
 });
 
 function showSelectedFiles(input) {
@@ -113,16 +119,16 @@ function uploadFiles(event) {
     const form = document.getElementById('addPortfolioForm');
     const formData = new FormData(form);
     
-    // Clear any existing media[] entries
-    formData.delete('media[]');
+    // Show progress bar
+    const progressBar = $('.progress-bar');
+    const progressContainer = $('.progress');
+    progressBar.width('0%').text('0%');
+    progressContainer.show();
     
-    // Add selected files
+    // Add files to formData
     selectedFiles.forEach(file => {
         formData.append('media[]', file);
     });
-    
-    const progressBar = $('.progress-bar');
-    progressBar.width('0%').text('0%');
     
     $.ajax({
         url: form.action,
@@ -132,30 +138,62 @@ function uploadFiles(event) {
         contentType: false,
         xhr: function() {
             const xhr = new window.XMLHttpRequest();
-            xhr.upload.addEventListener('progress', function(e) {
-                if (e.lengthComputable) {
-                    const percent = Math.round((e.loaded / e.total) * 100);
-                    progressBar.width(percent + '%').text(percent + '%');
+            xhr.upload.addEventListener("progress", function(evt) {
+                if (evt.lengthComputable) {
+                    const percentComplete = (evt.loaded / evt.total) * 100;
+                    progressBar.width(percentComplete + '%');
+                    progressBar.text(Math.round(percentComplete) + '%');
                 }
             }, false);
             return xhr;
         },
         success: function(response) {
             try {
-                const result = JSON.parse(response);
-                if (result.success) {
-                    alert(result.message);
-                    window.location.href = 'portfolio.php';
+                // Try to parse the response as JSON
+                let result;
+                if (typeof response === 'object') {
+                    result = response;
                 } else {
-                    alert('Error: ' + result.message);
+                    result = JSON.parse(response);
+                }
+                
+                if (result.success) {
+                    // Use success toast notification instead of alert
+                    showSuccessToast(result.message, 'Success!');
+                    
+                    // Reset form
+                    setTimeout(function() {
+                        form.reset();
+                        selectedFiles = [];
+                        document.getElementById('previewArea').innerHTML = '';
+                        document.getElementById('selectedTools').innerHTML = '';
+                        
+                        // Redirect to portfolio page
+                        window.location.href = 'portfolio.php';
+                    }, 2000);
+                } else {
+                    // Use error toast notification instead of alert
+                    showErrorToast(result.message || 'Unknown error occurred', 'Upload Failed', 'OK');
                 }
             } catch (e) {
                 console.error('Parse error:', e);
-                alert('Error processing response');
+                console.error('Response:', response);
+                
+                // Show error toast for parsing errors
+                showErrorToast('There was a problem processing your request!', 'Error', 'OK');
             }
+            
+            // Hide progress bar
+            progressContainer.hide();
         },
-        error: function() {
-            alert('Error uploading files');
+        error: function(xhr, status, error) {
+            console.error('AJAX error:', {xhr, status, error});
+            
+            // Show error toast for AJAX errors
+            showErrorToast('Upload failed: ' + error, 'Connection Error', 'Try Again');
+            
+            // Hide progress bar
+            progressContainer.hide();
         }
     });
 }

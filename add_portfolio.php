@@ -134,7 +134,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="js/tools_input.js" defer></script>
 </head>
 <body>
-    <?php include 'components/side_menu.php'; ?>
+    <?php 
+    include 'components/side_menu.php'; 
+    
+    // Include and initialize toast notification component
+    require_once 'components/toast_notification.php';
+    initializeToast();
+    ?>
     
     <div class="main-content">
         <h2>Add Portfolio Item</h2>
@@ -152,29 +158,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <textarea id="description" name="description" rows="4" placeholder="Enter portfolio description" required></textarea>
             </div>
 
-            <div class="form-group">
-                <label for="category">Category:</label>
-                <select id="category" name="category" required>
-                    <option value="Image">Image</option>
-                    <option value="Video">Video</option>
-                    <option value="Animation">Animation</option>
-                    <option value="3D Model">3D Model</option>
-                    <option value="UI/UX">UI/UX</option>
-                    <option value="Graphic Design">Graphic Design</option>
-                    <option value="Other">Other</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="tools">Tools Used:</label>
-                <div class="tools-input-container">
-                    <input type="text" id="toolInput" placeholder="Type a tool name and press Enter">
-                    <div id="toolSuggestions" class="tool-suggestions"></div>
-                    <div id="selectedTools" class="selected-tools"></div>
-                    <input type="hidden" name="tools" id="toolsHidden">
+            <div class="form-row">
+                <div class="form-group category-field">
+                    <label for="category">Category:</label>
+                    <select id="category" name="category" required>
+                        <option value="Image">Image</option>
+                        <option value="Video">Video</option>
+                        <option value="Animation">Animation</option>
+                        <option value="3D Model">3D Model</option>
+                        <option value="UI/UX">UI/UX</option>
+                        <option value="Graphic Design">Graphic Design</option>
+                        <option value="Other">Other</option>
+                    </select>
                 </div>
-                <small class="hint">Type tool names (e.g., Photoshop, Blender) and press Enter to add them</small>
+
+                <div class="form-group tools-field">
+                    <label for="tools">Tools Used:</label>
+                    <div class="tools-input-container">
+                        <input type="text" id="toolInput" placeholder="Type a tool name and press Enter">
+                        <div id="toolSuggestions" class="tool-suggestions"></div>
+                        <div id="selectedTools" class="selected-tools"></div>
+                        <input type="hidden" name="tools" id="toolsHidden">
+                    </div>
+                </div>
             </div>
+            <small class="hint">Type tool names (e.g., Photoshop, Blender) and press Enter to add them</small>
 
             <div class="form-group">
                 <label for="media">Upload Media Files:</label>

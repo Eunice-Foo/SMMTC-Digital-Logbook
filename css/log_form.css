@@ -207,3 +207,12 @@ select {
     line-height: 20px;
     transition: width 0.3s ease;
 }
+
+/* Make spacing consistent */
+.hint {
+    color: #666;
+    font-size: 12px;
+    margin-top: -10px;
+    margin-bottom: 20px;
+    display: block;
+}
