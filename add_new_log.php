@@ -104,6 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     } catch(Exception $e) {
         $conn->rollBack();
+        error_log("Log entry error: " . $e->getMessage());
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         exit();
     }

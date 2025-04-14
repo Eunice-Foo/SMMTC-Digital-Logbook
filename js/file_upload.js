@@ -155,26 +155,28 @@ function uploadFiles(event) {
                 }
                 
                 if (result.success) {
-                    // Use toast notification instead of alert
+                    // Use success toast notification
                     showSuccessToast(result.message);
                     
-                    // Reset form
-                    form.reset();
-                    selectedFiles = [];
-                    document.getElementById('previewArea').innerHTML = '';
-                    
-                    // Redirect to logbook after a delay
+                    // Reset form after a short delay
                     setTimeout(function() {
+                        form.reset();
+                        selectedFiles = [];
+                        document.getElementById('previewArea').innerHTML = '';
+                        
+                        // Redirect to logbook
                         window.location.href = 'logbook.php';
                     }, 2000);
                 } else {
-                    // Show error toast instead of alert
-                    showErrorToast(result.message || 'Unknown error occurred');
+                    // Use error toast notification
+                    showErrorToast(result.message || 'Unknown error occurred', 'Upload Failed', 'OK');
                 }
             } catch (e) {
                 console.error('Parse error:', e);
                 console.error('Response:', response);
-                showErrorToast('There was a problem processing your request!');
+                
+                // Show error toast for parsing errors
+                showErrorToast('There was a problem processing your request!', 'Error', 'OK');
             }
             
             // Hide progress bar
@@ -182,7 +184,11 @@ function uploadFiles(event) {
         },
         error: function(xhr, status, error) {
             console.error('AJAX error:', {xhr, status, error});
-            showErrorToast('Upload failed: ' + error);
+            
+            // Show error toast for AJAX errors
+            showErrorToast('Upload failed: ' + error, 'Connection Error', 'Try Again');
+            
+            // Hide progress bar
             progressContainer.hide();
         }
     });
