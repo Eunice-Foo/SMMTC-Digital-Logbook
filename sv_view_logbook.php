@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
+require_once 'components/log_entry.php'; // Move this line here
 
 // Check if user is supervisor and student_id is provided
 if ($_SESSION['role'] != ROLE_SUPERVISOR || !isset($_GET['student_id'])) {
@@ -147,8 +148,14 @@ try {
     </style>
 </head>
 <body>
-    <?php include 'components/side_menu.php'; ?>
-
+    <?php 
+    include 'components/side_menu.php'; 
+    
+    // Include and initialize toast notification component
+    require_once 'components/toast_notification.php';
+    initializeToast();
+    ?>
+    
     <!-- Add Media Viewer Component -->
     <div id="mediaViewer" class="media-viewer">
         <div class="media-viewer-content">
@@ -191,12 +198,11 @@ try {
         <!-- Pending Logs Section -->
         <div class="section-header">
             <h3>Pending Review</h3>
-            <span><?php echo $pending_count; ?> log entries</span>
+            <span>(<?php echo $pending_count; ?> log entries)</span>
         </div>
         
         <?php if ($pending_count > 0): ?>
             <?php 
-            require_once 'components/log_entry.php';
             foreach ($pending_logs as $log) {
                 renderLogEntry($log);
             }
@@ -208,7 +214,7 @@ try {
         <!-- Reviewed Logs Section -->
         <div class="section-header">
             <h3>Reviewed and Signed</h3>
-            <span><?php echo $reviewed_count; ?> log entries</span>
+            <span>(<?php echo $reviewed_count; ?> log entries)</span>
         </div>
         
         <?php 

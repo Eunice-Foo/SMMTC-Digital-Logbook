@@ -29,6 +29,10 @@ require_once 'components/toast_notification.php';
             background-color: #f44336;
             color: white;
         }
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -40,6 +44,9 @@ require_once 'components/toast_notification.php';
         </button>
         <button class="btn btn-error" onclick="showToast('error', 'Error Test', 'This is an error message!', 'Close', false)">
             Test Error Toast
+        </button>
+        <button class="btn btn-warning" onclick="showToast('warning', 'Warning Test', 'This is a warning message!', 'Dismiss', false)">
+            Test Warning Toast
         </button>
     </div>
 </body>

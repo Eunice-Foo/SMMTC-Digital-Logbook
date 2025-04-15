@@ -9,14 +9,35 @@ function directSign(entryId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            window.location.reload();
+            // Show success toast notification
+            if (typeof showSuccessToast === 'function') {
+                showSuccessToast('Log entry has been successfully signed', 'Signed!');
+                // Reload after a short delay to allow the user to see the notification
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                // Fallback if toast function is not available
+                alert('Log entry signed successfully!');
+                window.location.reload();
+            }
         } else {
-            alert('Error signing log: ' + data.message);
+            // Show error toast notification
+            if (typeof showErrorToast === 'function') {
+                showErrorToast(data.message || 'Unknown error occurred', 'Signing Failed');
+            } else {
+                alert('Error signing log: ' + data.message);
+            }
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Error signing log');
+        // Show error toast notification
+        if (typeof showErrorToast === 'function') {
+            showErrorToast('Failed to communicate with server', 'Connection Error');
+        } else {
+            alert('Error signing log');
+        }
     });
 }
 
@@ -63,14 +84,39 @@ function submitSignature(entryId) {
     })
     .then(response => response.json())
     .then(data => {
+        closeModal(); // Close the remarks modal
+        
         if (data.success) {
-            window.location.reload();
+            // Show success toast notification
+            if (typeof showSuccessToast === 'function') {
+                showSuccessToast('Log entry signed with remarks', 'Signed!');
+                // Reload after a short delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                // Fallback if toast function is not available
+                alert('Log entry signed successfully!');
+                window.location.reload();
+            }
         } else {
-            alert('Error signing log: ' + data.message);
+            // Show error toast notification
+            if (typeof showErrorToast === 'function') {
+                showErrorToast(data.message || 'Unknown error occurred', 'Signing Failed');
+            } else {
+                alert('Error signing log: ' + data.message);
+            }
         }
     })
     .catch(error => {
+        closeModal(); // Make sure to close the modal even on error
         console.error('Error:', error);
-        alert('Error signing log');
+        
+        // Show error toast notification
+        if (typeof showErrorToast === 'function') {
+            showErrorToast('Failed to communicate with server', 'Connection Error');
+        } else {
+            alert('Error signing log');
+        }
     });
 }

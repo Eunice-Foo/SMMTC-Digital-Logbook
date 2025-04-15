@@ -23,8 +23,8 @@ function initializeToast() {
         --toast-error-color: #f44336;
         --toast-error-bg: #ffebee;
         --toast-error-hover: #ffcdd2;
-        --toast-warning-color: #ff9800;
-        --toast-warning-bg: #fff3e0;
+        --toast-warning-color:rgb(255, 123, 0);
+        --toast-warning-bg:rgb(255, 248, 236);
         --toast-warning-hover: #ffe0b2;
     }
 
@@ -45,8 +45,9 @@ function initializeToast() {
         align-items: center;
         justify-content: space-between; /* Space content from button */
         padding: 20px;
-        border-radius: 0 8px 8px 0;
-        border-left: 4px solid;
+        border-radius: 0 0 8px 8px; /* Changed to only round bottom corners */
+        border-top: 4px solid; /* Keep top border */
+        border-left: none; /* Remove left border */
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         margin-bottom: 16px;
         animation: slideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Changed duration and added easing */
@@ -64,18 +65,31 @@ function initializeToast() {
 
     .toast.success {
         background-color: var(--toast-success-bg);
-        border-left-color: var(--toast-success-color);
-        padding-right: 20px; /* Add padding when there's no button */
+        border-top: none; /* Remove top border for success toast */
+        padding-right: 20px;
+        position: relative; /* Required for progress bar positioning */
+    }
+
+    /* Progress bar for success toast */
+    .toast.success .toast-progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background-color: var(--toast-success-color);
+        animation: toast-progress 3s linear forwards;
+        border-radius: 0;
     }
 
     .toast.error {
         background-color: var(--toast-error-bg);
-        border-left-color: var(--toast-error-color);
+        border-top-color: var(--toast-error-color);
     }
 
     .toast.warning {
         background-color: var(--toast-warning-bg);
-        border-left-color: var(--toast-warning-color);
+        border-top-color: var(--toast-warning-color);
     }
 
     .toast-icon {
@@ -123,7 +137,7 @@ function initializeToast() {
     .toast-title {
         font-weight: 600;
         font-size: 16px; /* Changed to 16px as requested */
-        margin-bottom: 4px;
+        margin-bottom: none;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -230,19 +244,15 @@ function initializeToast() {
         animation: slideOut 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards; /* Added easing */
     }
 
-    /* Progress bar for auto-hide success toast */
-    .toast.success .toast-progress {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 3px;
-        background-color: var(--toast-success-color);
-        animation: toast-progress 3s linear forwards;
-    }
-
     @keyframes toast-progress {
-        from { width: 0; }
-        to { width: 100%; }
+        from { 
+            width: 0; 
+            left: 0;
+        }
+        to { 
+            width: 100%; 
+            left: 0;
+        }
     }
     </style>
 

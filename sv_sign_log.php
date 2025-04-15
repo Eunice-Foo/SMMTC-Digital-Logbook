@@ -19,10 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['entry_id'])) {
             (:entry_id, :supervisor_id, CURDATE(), CURTIME(), :remarks)
         ");
         
+        $has_remarks = !empty($_POST['remarks']);
+        
         $stmt->execute([
             ':entry_id' => $_POST['entry_id'],
             ':supervisor_id' => $_SESSION['user_id'],
-            ':remarks' => !empty($_POST['remarks']) ? $_POST['remarks'] : null
+            ':remarks' => $has_remarks ? $_POST['remarks'] : null
         ]);
 
         // Update log entry status
@@ -35,7 +37,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['entry_id'])) {
         $stmt->execute([':entry_id' => $_POST['entry_id']]);
         
         $conn->commit();
-        echo json_encode(['success' => true]);
+        
+        // Return success message based on whether remarks were included
+        $message = $has_remarks ? 
+            'Log entry signed with your remarks' : 
+            'Log entry signed successfully';
+            
+        echo json_encode([
+            'success' => true, 
+            'message' => $message
+        ]);
     } catch(Exception $e) {
         $conn->rollBack();
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
