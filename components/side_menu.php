@@ -39,12 +39,6 @@ require_once 'includes/session_check.php';
                     </a>
                 </li>
                 <li>
-                    <a href="messages.php">
-                        <i class="fi fi-rr-messages"></i>
-                        Messages
-                    </a>
-                </li>
-                <li>
                     <a href="view_practicum_info.php">
                         <i class="fi fi-rr-circle-user"></i>
                         Practicum Info
@@ -61,12 +55,6 @@ require_once 'includes/session_check.php';
                     <a href="sv_add_student.php">
                         <i class="fi fi-rr-user-add"></i>
                         Add Interns
-                    </a>
-                </li>
-                <li>
-                    <a href="messages.php">
-                        <i class="fi fi-rr-messages"></i>
-                        Messages
                     </a>
                 </li>
                 <li>

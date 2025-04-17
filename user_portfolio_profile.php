@@ -58,6 +58,7 @@ try {
             p.portfolio_time, 
             p.category,
             u.user_name as username,
+            u.user_id,
             COALESCE(s.full_name, sv.supervisor_name) as full_name,
             m.file_name as media, 
             m.file_type,
@@ -118,21 +119,6 @@ try {
                         <?php endif; ?>
                     </p>
                 </div>
-                
-                <?php if (!$is_own_profile): ?>
-                <div class="profile-actions">
-                    <button id="messageBtn" class="message-btn" onclick="openMessageDialog(<?php echo $user_id; ?>, '<?php echo htmlspecialchars($user['full_name']); ?>')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM20 16H5.17L4 17.17V4H20V16Z" fill="currentColor"/>
-                            <path d="M12 10L16 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M8 10L9 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M12 14L14 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <path d="M8 14L9 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                        Message
-                    </button>
-                </div>
-                <?php endif; ?>
             </div>
             
             <div class="profile-details">
@@ -182,117 +168,11 @@ try {
         </div>
     </div>
     
-    <!-- Message Dialog -->
-    <div id="messageDialog" class="message-dialog">
-        <div class="message-dialog-content">
-            <div class="message-dialog-header">
-                <h3>Message to <span id="recipientName"></span></h3>
-                <button onclick="closeMessageDialog()" class="close-btn">&times;</button>
-            </div>
-            <div class="message-dialog-body">
-                <textarea id="messageContent" placeholder="Write your message here..."></textarea>
-            </div>
-            <div class="message-dialog-footer">
-                <button onclick="closeMessageDialog()" class="cancel-btn">Cancel</button>
-                <button onclick="sendMessage()" class="send-btn">Send Message</button>
-            </div>
-        </div>
-    </div>
-    
     <script src="js/video_thumbnail.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             generateVideoThumbnails();
         });
-        
-        let recipientId = null;
-        
-        function openMessageDialog(userId, userName) {
-            recipientId = userId;
-            document.getElementById('recipientName').textContent = userName;
-            document.getElementById('messageDialog').style.display = 'flex';
-            document.getElementById('messageContent').focus();
-        }
-        
-        function closeMessageDialog() {
-            document.getElementById('messageDialog').style.display = 'none';
-            document.getElementById('messageContent').value = '';
-        }
-        
-        function sendMessage() {
-            const content = document.getElementById('messageContent').value.trim();
-            if (!content) {
-                alert('Please enter a message');
-                return;
-            }
-            
-            // Disable the button and show loading state
-            const sendBtn = document.querySelector('.send-btn');
-            sendBtn.disabled = true;
-            sendBtn.innerHTML = 'Sending...';
-            
-            $.post('send_message.php', {
-                recipient_id: recipientId,
-                message: content
-            }, function(response) {
-                // Debug output
-                console.log('Raw server response:', response);
-                
-                try {
-                    // Handle different response formats
-                    let result;
-                    if (typeof response === 'object') {
-                        // Response was already parsed as JSON
-                        result = response;
-                        console.log('Response was already a JSON object');
-                    } else {
-                        // Look for JSON in the response (handles case where PHP warnings precede JSON)
-                        const jsonStart = response.indexOf('{');
-                        if (jsonStart >= 0) {
-                            const jsonStr = response.substring(jsonStart);
-                            console.log('Extracted JSON string:', jsonStr);
-                            result = JSON.parse(jsonStr);
-                        } else {
-                            // Regular parsing
-                            result = JSON.parse(response);
-                        }
-                    }
-                    
-                    console.log('Parsed result:', result);
-                    
-                    if (result.success) {
-                        alert('Message sent successfully');
-                        closeMessageDialog();
-                        
-                        // Redirect to the conversation if needed
-                        if (result.conversation_id) {
-                            if (confirm('Would you like to view this conversation?')) {
-                                window.location.href = 'messages.php?conversation=' + result.conversation_id;
-                            }
-                        }
-                    } else {
-                        alert('Error: ' + (result.message || 'Unknown server error'));
-                    }
-                } catch (e) {
-                    console.error('JSON parsing error:', e);
-                    console.error('Response that caused the error:', response);
-                    
-                    // If data is being saved but we're getting parse errors,
-                    // show a more helpful message
-                    alert('Message might have been sent, but there was a problem with the server response. Check your messages to confirm.');
-                }
-            }, 'json') // Specify 'json' as expected dataType
-            .fail(function(xhr, status, error) {
-                console.error('AJAX request failed:', status, error);
-                console.error('Server response:', xhr.responseText);
-                alert('Failed to send message. Error: ' + error);
-            })
-            .always(function() {
-                // Re-enable the button
-                sendBtn.disabled = false;
-                sendBtn.innerHTML = 'Send Message';
-            });
-        }
     </script>
 </body>
 </html>
