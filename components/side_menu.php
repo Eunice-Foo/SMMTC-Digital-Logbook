@@ -82,12 +82,60 @@ require_once 'includes/session_check.php';
     z-index: 1;
     top: 0;
     left: 0;
-    background-color: #f8f9fa;
+    background-color: var(--bg-primary); /* Changed to white */
     overflow-x: hidden;
     padding-top: 20px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
+}
+
+.sidenav nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidenav nav ul li {
+    padding: 0;
+}
+
+.sidenav nav ul li a {
+    padding: 12px 24px;  /* Updated padding */
+    margin: 6px 12px;    /* Added margin */
+    text-decoration: none;
+    font-size: 16px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    border-radius: 8px;  /* Added border radius */
+}
+
+.sidenav nav ul li a i {
+    margin-right: 16px;
+    font-size: 20px;
+    width: 20px;
+    color: var(--text-secondary);
+}
+
+.sidenav nav ul li a:hover {
+    background-color: #e9ecef;
+    color: var(--primary-color);
+}
+
+.sidenav nav ul li a:hover i {
+    color: var(--primary-color);
+}
+
+/* Active link style */
+.sidenav nav ul li a.active {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: var(--primary-color);
+}
+
+.sidenav nav ul li a.active i {
+    color: var(--primary-color);
 }
 
 .sidenav .user-info {
@@ -159,46 +207,6 @@ require_once 'includes/session_check.php';
 
 .sidenav .logout-btn i {
     font-size: 16px;
-}
-
-.sidenav nav ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.sidenav nav ul li {
-    padding: 0;
-}
-
-.sidenav nav ul li a {
-    padding: 15px 25px;
-    text-decoration: none;
-    font-size: 16px;
-    color: #333;
-    display: flex;
-    align-items: center;
-    transition: all 0.3s ease;
-}
-
-.sidenav nav ul li a i {
-    margin-right: 12px;
-    font-size: 20px;
-    width: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.sidenav nav ul li a:hover {
-    background-color: #e9ecef;
-    color: #007bff;
-}
-
-/* Active link style */
-.sidenav nav ul li a.active {
-    background-color: #007bff;
-    color: white;
 }
 
 /* Responsive design */
