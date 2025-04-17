@@ -116,6 +116,12 @@ function removeFile(button) {
 function uploadFiles(event) {
     event.preventDefault();
     
+    // Validate that files are selected
+    if (selectedFiles.length === 0) {
+        showErrorToast('Please select at least one media file to upload', 'No Files Selected', 'OK');
+        return;
+    }
+    
     const form = document.getElementById('addPortfolioForm');
     const formData = new FormData(form);
     
@@ -125,17 +131,26 @@ function uploadFiles(event) {
     progressBar.width('0%').text('0%');
     progressContainer.show();
     
+    // Clear any existing media[] entries to prevent duplicates
+    formData.delete('media[]');
+    
+    // Log file info before upload
+    console.log(`Uploading ${selectedFiles.length} files`);
+    
     // Add files to formData
-    selectedFiles.forEach(file => {
+    selectedFiles.forEach((file, index) => {
+        console.log(`Adding file ${index+1}: ${file.name}, type: ${file.type}, size: ${file.size} bytes`);
         formData.append('media[]', file);
     });
     
+    // Add longer timeout for larger files
     $.ajax({
         url: form.action,
         type: 'POST',
         data: formData,
         processData: false,
         contentType: false,
+        timeout: 300000, // 5-minute timeout for large uploads
         xhr: function() {
             const xhr = new window.XMLHttpRequest();
             xhr.upload.addEventListener("progress", function(evt) {
@@ -143,25 +158,38 @@ function uploadFiles(event) {
                     const percentComplete = (evt.loaded / evt.total) * 100;
                     progressBar.width(percentComplete + '%');
                     progressBar.text(Math.round(percentComplete) + '%');
+                    console.log(`Upload progress: ${Math.round(percentComplete)}%`);
                 }
             }, false);
             return xhr;
         },
         success: function(response) {
+            console.log('Raw server response:', response);
+            
             try {
                 // Try to parse the response as JSON
                 let result;
                 if (typeof response === 'object') {
                     result = response;
                 } else {
-                    result = JSON.parse(response);
+                    // Handle possible HTML in response
+                    const jsonStart = response.indexOf('{');
+                    if (jsonStart >= 0) {
+                        const jsonStr = response.substring(jsonStart);
+                        console.log('Extracting JSON from response:', jsonStr);
+                        result = JSON.parse(jsonStr);
+                    } else {
+                        result = JSON.parse(response);
+                    }
                 }
                 
+                console.log('Parsed response:', result);
+                
                 if (result.success) {
-                    // Use success toast notification instead of alert
+                    // Use success toast notification
                     showSuccessToast(result.message, 'Success!');
                     
-                    // Reset form
+                    // Reset form after successful upload
                     setTimeout(function() {
                         form.reset();
                         selectedFiles = [];
@@ -172,15 +200,15 @@ function uploadFiles(event) {
                         window.location.href = 'portfolio.php';
                     }, 2000);
                 } else {
-                    // Use error toast notification instead of alert
+                    // Use error toast notification
                     showErrorToast(result.message || 'Unknown error occurred', 'Upload Failed', 'OK');
                 }
             } catch (e) {
                 console.error('Parse error:', e);
-                console.error('Response:', response);
+                console.error('Response text:', response);
                 
-                // Show error toast for parsing errors
-                showErrorToast('There was a problem processing your request!', 'Error', 'OK');
+                // Show error toast
+                showErrorToast('There was a problem processing the server response', 'Error', 'OK');
             }
             
             // Hide progress bar
@@ -188,9 +216,20 @@ function uploadFiles(event) {
         },
         error: function(xhr, status, error) {
             console.error('AJAX error:', {xhr, status, error});
+            console.error('Response:', xhr.responseText);
+            
+            // Show specific error message based on HTTP status
+            let errorMessage = 'Upload failed';
+            if (xhr.status === 413) {
+                errorMessage = 'File too large. Please reduce file size and try again.';
+            } else if (xhr.status === 0) {
+                errorMessage = 'Connection lost or timed out. Please try again.';
+            } else {
+                errorMessage = `${error} (Status: ${xhr.status})`;
+            }
             
             // Show error toast for AJAX errors
-            showErrorToast('Upload failed: ' + error, 'Connection Error', 'Try Again');
+            showErrorToast(errorMessage, 'Connection Error', 'Try Again');
             
             // Hide progress bar
             progressContainer.hide();

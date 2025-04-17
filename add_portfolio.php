@@ -5,22 +5,27 @@ require_once 'includes/upload_validation.php';
 require_once 'includes/file_naming.php';
 require_once 'includes/media_functions.php';
 
-// Add this line to define upload directory
-$upload_dir = 'uploads/';
+// Ensure uploads directory has proper path and permissions
+$upload_dir = __DIR__ . '/uploads/';
+$thumbnail_dir = __DIR__ . '/uploads/thumbnails/';
 
-// Create uploads directory if it doesn't exist
+// Create directories with proper permissions if they don't exist
 if (!file_exists($upload_dir)) {
     mkdir($upload_dir, 0755, true);
+    chmod($upload_dir, 0755);
 }
 
-// Create thumbnails directory if it doesn't exist
-$thumbnail_dir = 'uploads/thumbnails/';
 if (!file_exists($thumbnail_dir)) {
     mkdir($thumbnail_dir, 0755, true);
+    chmod($thumbnail_dir, 0755);
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
+        // Add debug output if needed
+        error_log("Portfolio submission started");
+        
+        // Start transaction
         $conn->beginTransaction();
 
         // Insert new portfolio entry with current date/time
@@ -41,59 +46,73 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $portfolio_id = $conn->lastInsertId();
 
-        // Handle file uploads
+        // Handle file uploads with improved error handling
         if (!empty($_FILES['media']['name'][0])) {
             foreach ($_FILES['media']['tmp_name'] as $key => $tmp_name) {
                 if (!empty($tmp_name)) {
                     try {
                         $original_filename = $_FILES['media']['name'][$key];
                         $file_type = $_FILES['media']['type'][$key];
+                        $file_size = $_FILES['media']['size'][$key];
+                        $file_error = $_FILES['media']['error'][$key];
+                        
+                        // Check for upload errors first
+                        if ($file_error !== UPLOAD_ERR_OK) {
+                            throw new Exception("Upload error code: " . $file_error);
+                        }
+                        
+                        // Log file info for debugging
+                        error_log("Uploading file: $original_filename, type: $file_type, size: $file_size");
                         
                         // Add file size validation
-                        if (!validateFileSize($_FILES['media']['size'][$key])) {
-                            throw new Exception("File size exceeds limit of 5GB");
+                        if (!validateFileSize($file_size)) {
+                            throw new Exception("File size exceeds limit");
                         }
                         
                         // Generate unique filename
                         $unique_filename = generateUniqueFilename($original_filename, $_SESSION['username']);
                         
-                        // Handle video files differently if needed
+                        // Use relative paths for database but absolute paths for file operations
+                        $rel_path = 'uploads/' . $unique_filename;
+                        $abs_path = $upload_dir . $unique_filename;
+                        
+                        error_log("Moving file to: $abs_path");
+                        
+                        // Handle file upload with explicit error reporting
+                        if (!move_uploaded_file($tmp_name, $abs_path)) {
+                            $error = error_get_last();
+                            throw new Exception("Failed to move uploaded file: " . 
+                                               (isset($error['message']) ? $error['message'] : 'Unknown error'));
+                        }
+                        
+                        // Rest of the file handling logic...
                         if (strpos($file_type, 'video/') === 0) {
-                            if (!move_uploaded_file($tmp_name, $upload_dir . $unique_filename)) {
-                                throw new Exception("Failed to move uploaded file");
-                            }
-                            
-                            // Generate video thumbnail if possible
+                            // Video thumbnail generation...
                             try {
                                 generateVideoThumbnail(
-                                    $upload_dir . $unique_filename,
+                                    $abs_path,
                                     $thumbnail_dir . pathinfo($unique_filename, PATHINFO_FILENAME) . '.jpg'
                                 );
                             } catch (Exception $e) {
-                                // Log error but continue if thumbnail generation fails
                                 error_log("Thumbnail generation error: " . $e->getMessage());
-                            }
-                        } else {
-                            if (!move_uploaded_file($tmp_name, $upload_dir . $unique_filename)) {
-                                throw new Exception("Failed to move uploaded file");
                             }
                         }
 
-                        // Insert into media table
+                        // Insert into media table using the relative path for database
                         $media_id = insertMediaFile($conn, $_SESSION['user_id'], $unique_filename, $file_type);
-
+                        
                         // Insert into portfolio_media
                         $stmt = $conn->prepare("
-                            INSERT INTO portfolio_media 
-                            (media_id, portfolio_id)
-                            VALUES 
-                            (:media_id, :portfolio_id)
+                            INSERT INTO portfolio_media (media_id, portfolio_id)
+                            VALUES (:media_id, :portfolio_id)
                         ");
 
                         $stmt->execute([
                             ':media_id' => $media_id,
                             ':portfolio_id' => $portfolio_id
                         ]);
+                        
+                        error_log("File processed successfully: $unique_filename");
                     } catch (Exception $e) {
                         $conn->rollBack();
                         error_log("File upload error: " . $e->getMessage());
@@ -105,11 +124,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $conn->commit();
+        error_log("Portfolio saved successfully with ID: $portfolio_id");
         echo json_encode(['success' => true, 'message' => 'Portfolio item added successfully!']);
         exit();
-
     } catch(Exception $e) {
         $conn->rollBack();
+        error_log("Portfolio error: " . $e->getMessage());
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         exit();
     }
