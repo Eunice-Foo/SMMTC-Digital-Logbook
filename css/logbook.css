@@ -12,7 +12,11 @@ body {
     overflow-x: hidden;
 }
 
-.timeline-view, .calendar-view {
+.logbook-content {
+    padding: 20px;
+}
+
+.calendar-view {
     margin-top: 0;
     padding-top: 0;
 }
@@ -176,120 +180,6 @@ body {
     background-color: #4CAF50;
     color: white;
 }
-
-/* Calendar View */
-.calendar-view {
-    padding: 20px;
-    display: none;  /* Initially hidden */
-}
-
-.calendar-view.active {
-    display: block;  /* Show when active */
-}
-
-.calendar-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border: 1px solid #ddd;
-}
-
-.calendar-header th {
-    padding: 10px;
-    background: #f5f5f5;
-    border: 1px solid #ddd;
-}
-
-.calendar-day {
-    border: 1px solid #ddd;
-    height: 120px;
-    vertical-align: top;
-    padding: 5px;
-    position: relative;
-}
-
-.timeline-view.hidden {
-    display: none;
-}
-
-.calendar-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.calendar-header {
-    background-color: #f5f5f5;
-}
-
-.calendar-header th {
-    padding: 15px;
-    text-align: center;
-    border: 1px solid #ddd;
-}
-
-.calendar-day {
-    border: 1px solid #ddd;
-    height: 120px;
-    vertical-align: top;
-    padding: 5px;
-    position: relative;
-}
-
-.calendar-date {
-    position: relative;
-    z-index: 1;
-    font-weight: bold;
-    padding: 2px 5px;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 3px;
-}
-
-.calendar-entry {
-    position: absolute;
-    top: 25px; /* Space for date number */
-    left: 0;
-    right: 0;
-    bottom: 0;
-    overflow: hidden;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.calendar-entry:hover {
-    transform: scale(1.05);
-}
-
-.calendar-entry img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.video-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f5f5f5;
-    font-size: 24px;
-}
-
-.calendar-entry.has-entry {
-    background-color: #e8f5e9;
-}
-
-.has-entry {
-    background-color: #f8f9fa;
-}
-
-.other-month {
-    background-color: #f9f9f9;
-}
-
-
 
 /* Media section */
 .log-media-section {

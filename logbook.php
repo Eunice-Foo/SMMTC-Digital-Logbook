@@ -81,11 +81,10 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
 
     <div class="main-content">
         <div class="view-switcher">
-            <button class="view-btn active" onclick="switchView('timeline')">Timeline</button>
-            <button class="view-btn" onclick="switchView('calendar')">Calendar</button>
+            <h1>My Logbook</h1>
         </div>
 
-        <div class="timeline-view">
+        <div class="logbook-content">
             <?php renderMonthBar($log_entries, $practicum_info['practicum_start_date'], $practicum_info['practicum_duration']); ?>
             
             <div class="button-container" style="display: flex; justify-content: flex-end; gap: 10px; padding: 20px;">
@@ -132,23 +131,6 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
                     renderLogEntry($entry, true);
                 endforeach; 
                 ?>
-            </div>
-        </div>
-
-        <div class="calendar-view" style="display: none;">
-            <?php renderMonthBar($log_entries); ?>
-
-            <div style="display: flex; justify-content: flex-end; gap: 10px; padding: 20px;">
-                <button class="btn btn-export" onclick="window.location.href='export_logbook.php'">
-                    Export Logbook
-                </button>
-                <button class="btn btn-add" onclick="window.location.href='add_new_log.php'">
-                    Add New Log
-                </button>
-            </div>
-
-            <div id="calendar-container">
-                <!-- Calendar will be loaded here -->
             </div>
         </div>
     </div>

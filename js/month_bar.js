@@ -48,11 +48,6 @@ function filterLogsByMonth(monthIndex) {
         document.getElementById('exportControls').style.display === 'flex') {
         resetSelectAllCheckbox();
     }
-
-    // Handle calendar view if present
-    if (document.querySelector('.calendar-view').style.display !== 'none') {
-        updateCalendar(monthIndex + 1, new Date().getFullYear());
-    }
     
     // Update date headers if function exists
     if (typeof updateDateHeaders === 'function') {

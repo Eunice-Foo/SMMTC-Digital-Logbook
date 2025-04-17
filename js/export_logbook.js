@@ -124,6 +124,8 @@ function filterLogsByMonth(monthIndex) {
     if (document.getElementById('exportControls').style.display === 'flex') {
         updateSelectAllCheckbox();
     }
+    
+    // Removed calendar-related code here
 }
 
 function selectAllEntries(checked) {
