@@ -31,7 +31,8 @@ function showSelectedFiles(input) {
             const previewContainer = createPreviewContainer(file);
             previewArea.appendChild(previewContainer);
         } else {
-            alert(`File "${file.name}" already exists in this portfolio.`);
+            // Replace alert with warning toast
+            showWarningToast(`File "${file.name}" already exists in this portfolio.`, 'Duplicate File', 'OK');
         }
     });
 
@@ -128,10 +129,20 @@ function removeFile(button) {
 }
 
 function removeExistingFile(button, mediaId) {
-    if (confirm('Are you sure you want to remove this file?')) {
-        deletedMediaIds.push(mediaId);
-        button.closest('.preview-container').remove();
-    }
+    const container = button.closest('.preview-container');
+    
+    // Replace confirm with warning toast with callback
+    showWarningToast(
+        'Are you sure you want to remove this file?', 
+        'Confirm Deletion', 
+        'Delete', 
+        function() {
+            deletedMediaIds.push(mediaId);
+            container.remove();
+            // Confirmation toast after removal
+            showSuccessToast('File marked for removal', 'File Removed');
+        }
+    );
 }
 
 function uploadFiles(event) {
@@ -146,41 +157,26 @@ function uploadFiles(event) {
     progressBar.width('0%').text('0%');
     progressContainer.show();
     
-    // Debug information
-    console.log('Form submission started');
-    
     // Add deleted media IDs
     formData.append('deleted_media_ids', JSON.stringify(deletedMediaIds));
-    console.log('Deleted media IDs:', deletedMediaIds);
     
     // Clear any existing media[] entries
     formData.delete('media[]');
     
     // Add only new files that don't exist in the database
-    let newFilesCount = 0;
     selectedFiles.forEach(file => {
         if (!existingFiles.has(file.name)) {
             formData.append('media[]', file);
-            newFilesCount++;
         }
     });
-    console.log(`Adding ${newFilesCount} new files`);
     
-    // Debug form data
-    for (const pair of formData.entries()) {
-        if (pair[0] !== 'media[]') { // Don't log binary file data
-            console.log(`${pair[0]}: ${pair[1]}`);
-        }
-    }
-    
-    // Set a longer timeout for large files
     $.ajax({
         url: form.action,
         type: 'POST',
         data: formData,
         processData: false,
         contentType: false,
-        timeout: 300000, // 5 minutes
+        timeout: 300000, // 5-minute timeout for large uploads
         xhr: function() {
             const xhr = new window.XMLHttpRequest();
             xhr.upload.addEventListener("progress", function(evt) {
@@ -188,70 +184,67 @@ function uploadFiles(event) {
                     const percentComplete = (evt.loaded / evt.total) * 100;
                     progressBar.width(percentComplete + '%');
                     progressBar.text(Math.round(percentComplete) + '%');
-                    console.log(`Upload progress: ${Math.round(percentComplete)}%`);
                 }
             }, false);
             return xhr;
         },
         success: function(response) {
-            console.log('Raw server response:', response);
-            
             try {
                 // Handle responses that may already be parsed as objects by jQuery
                 let result;
                 if (typeof response === 'object') {
                     result = response;
-                    console.log('Response is already a JSON object');
                 } else {
                     // If it's a string, try to find and parse JSON
                     const jsonStart = response.indexOf('{');
                     if (jsonStart >= 0) {
                         const jsonStr = response.substring(jsonStart);
-                        console.log('Extracting JSON from response:', jsonStr);
                         result = JSON.parse(jsonStr);
                     } else {
                         result = JSON.parse(response);
                     }
                 }
                 
-                console.log('Parsed result:', result);
-                
                 if (result.success) {
-                    alert(result.message || 'Portfolio updated successfully!');
-                    window.location.href = 'view_portfolio.php?id=' + getPortfolioId();
+                    // Replace alert with success toast
+                    showSuccessToast(result.message || 'Portfolio updated successfully!', 'Portfolio Updated');
+                    // Redirect after a short delay to see the toast
+                    setTimeout(() => {
+                        window.location.href = 'view_portfolio.php?id=' + getPortfolioIdFromUrl();
+                    }, 2000);
                 } else {
-                    alert('Error: ' + (result.message || 'Unknown error'));
+                    // Replace alert with error toast
+                    showErrorToast(result.message || 'Unknown error occurred', 'Update Failed', 'Try Again');
                 }
             } catch (e) {
-                console.error('JSON parsing error:', e);
-                console.error('Response that caused the error:', response);
-                
-                // If we can't parse the response but it contains success message
-                if (typeof response === 'string' && response.includes('Portfolio updated successfully')) {
-                    alert('Portfolio updated successfully!');
-                    window.location.href = 'view_portfolio.php?id=' + getPortfolioId();
-                } else {
-                    alert('There was an error updating the portfolio. Check the console for details.');
-                }
+                // Replace alert with error toast on parsing error
+                showErrorToast('There was a problem processing the server response', 'Error', 'OK');
             }
+            
+            // Hide progress bar
+            progressContainer.hide();
         },
         error: function(xhr, status, error) {
-            console.error('AJAX error status:', status);
-            console.error('AJAX error message:', error);
-            console.error('Server response:', xhr.responseText);
+            // Show specific error message based on HTTP status
+            let errorMessage = 'Unable to update portfolio';
+            if (xhr.status === 413) {
+                errorMessage = 'File too large. Please reduce file size and try again.';
+            } else if (xhr.status === 0) {
+                errorMessage = 'Connection lost or timed out. Please try again.';
+            } else {
+                errorMessage = `${error} (Status: ${xhr.status})`;
+            }
             
-            alert('Error: ' + error);
-        },
-        complete: function() {
-            // Hide or reset progress bar when done
-            setTimeout(() => {
-                progressContainer.hide();
-            }, 1000);
+            // Replace alert with error toast
+            showErrorToast(errorMessage, 'Connection Error', 'Try Again');
+            
+            // Hide progress bar
+            progressContainer.hide();
         }
     });
 }
 
-function getPortfolioId() {
+function getPortfolioIdFromUrl() {
     // Extract portfolio ID from URL
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('id');

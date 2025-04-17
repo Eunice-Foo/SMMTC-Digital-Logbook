@@ -251,19 +251,17 @@ try {
 <body>
     <?php include 'components/side_menu.php'; ?>
     
+    <?php 
+    // Include and initialize toast notification component
+    require_once 'components/toast_notification.php';
+    initializeToast();
+    ?>
+    
     <div class="main-content">
         <div class="page-header">
             <a href="view_portfolio.php?id=<?php echo $portfolio_id; ?>" class="back-button">← Back to Portfolio</a>
             <h2>Edit Portfolio</h2>
         </div>
-
-        <?php if ($success_message): ?>
-            <div class="alert success"><?php echo $success_message; ?></div>
-        <?php endif; ?>
-
-        <?php if ($error_message): ?>
-            <div class="alert error"><?php echo $error_message; ?></div>
-        <?php endif; ?>
         
         <form id="editPortfolioForm" action="edit_portfolio.php?id=<?php echo $portfolio_id; ?>" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles(event)">
             <div class="form-header">
