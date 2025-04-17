@@ -258,18 +258,6 @@ try {
             font-size: 12px;
         }
 
-        .back-button {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .back-button:hover {
-            text-decoration: underline;
-        }
-
         .user-link {
             color: var(--primary-color);
             text-decoration: none;
@@ -295,8 +283,6 @@ try {
     ?>
 
     <div class="main-content">
-        <a href="portfolio.php" class="back-button">← Back to Portfolio</a>
-        
         <div class="portfolio-container">
             <div class="portfolio-header">
                 <h1 class="portfolio-title"><?php echo htmlspecialchars($portfolio['portfolio_title']); ?></h1>
