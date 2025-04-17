@@ -134,16 +134,11 @@ function uploadFiles(event) {
     // Clear any existing media[] entries to prevent duplicates
     formData.delete('media[]');
     
-    // Log file info before upload
-    console.log(`Uploading ${selectedFiles.length} files`);
-    
     // Add files to formData
-    selectedFiles.forEach((file, index) => {
-        console.log(`Adding file ${index+1}: ${file.name}, type: ${file.type}, size: ${file.size} bytes`);
+    selectedFiles.forEach(file => {
         formData.append('media[]', file);
     });
     
-    // Add longer timeout for larger files
     $.ajax({
         url: form.action,
         type: 'POST',
@@ -158,14 +153,11 @@ function uploadFiles(event) {
                     const percentComplete = (evt.loaded / evt.total) * 100;
                     progressBar.width(percentComplete + '%');
                     progressBar.text(Math.round(percentComplete) + '%');
-                    console.log(`Upload progress: ${Math.round(percentComplete)}%`);
                 }
             }, false);
             return xhr;
         },
         success: function(response) {
-            console.log('Raw server response:', response);
-            
             try {
                 // Try to parse the response as JSON
                 let result;
@@ -176,14 +168,11 @@ function uploadFiles(event) {
                     const jsonStart = response.indexOf('{');
                     if (jsonStart >= 0) {
                         const jsonStr = response.substring(jsonStart);
-                        console.log('Extracting JSON from response:', jsonStr);
                         result = JSON.parse(jsonStr);
                     } else {
                         result = JSON.parse(response);
                     }
                 }
-                
-                console.log('Parsed response:', result);
                 
                 if (result.success) {
                     // Use success toast notification
@@ -204,10 +193,6 @@ function uploadFiles(event) {
                     showErrorToast(result.message || 'Unknown error occurred', 'Upload Failed', 'OK');
                 }
             } catch (e) {
-                console.error('Parse error:', e);
-                console.error('Response text:', response);
-                
-                // Show error toast
                 showErrorToast('There was a problem processing the server response', 'Error', 'OK');
             }
             
@@ -215,9 +200,6 @@ function uploadFiles(event) {
             progressContainer.hide();
         },
         error: function(xhr, status, error) {
-            console.error('AJAX error:', {xhr, status, error});
-            console.error('Response:', xhr.responseText);
-            
             // Show specific error message based on HTTP status
             let errorMessage = 'Upload failed';
             if (xhr.status === 413) {
