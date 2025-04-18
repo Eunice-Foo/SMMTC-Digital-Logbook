@@ -242,37 +242,25 @@ try {
             color: var(--primary-color);
         }
 
-        /* Edit button */
-        .edit-portfolio-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
-        }
-
-        .edit-portfolio-btn:hover {
-            background-color: var(--primary-hover);
-            text-decoration: none;
-            color: white;
-        }
-
-        .edit-portfolio-btn i {
-            font-size: 14px;
-        }
-
         /* Responsive design */
         @media (max-width: 768px) {
-            .portfolio-top-header, .portfolio-meta-row {
+            .portfolio-top-header {
+                flex-direction: row;  /* Keep as row even on mobile */
+                flex-wrap: wrap;      /* Allow wrapping */
+                justify-content: space-between; /* Space between title and menu */
+                align-items: center;  /* Center align items */
+            }
+            
+            .portfolio-title {
+                flex: 1;  /* Take available space */
+            }
+            
+            .category-tag {
+                order: 3;  /* Move category below title */
+                margin-top: 10px;
+            }
+            
+            .portfolio-meta-row {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 12px;
@@ -280,13 +268,6 @@ try {
             
             .media-section {
                 width: 100%;
-            }
-            
-            .edit-portfolio-btn {
-                position: static;
-                margin-top: 20px;
-                width: 100%;
-                justify-content: center;
             }
         }
     </style>
@@ -303,17 +284,18 @@ try {
     ?>
 
     <div class="main-content">
-        <?php if ($is_owner): ?>
-        <a href="edit_portfolio.php?id=<?php echo $portfolio_id; ?>" class="edit-portfolio-btn">
-            <i class="fi fi-rr-edit"></i> Edit Portfolio
-        </a>
-        <?php endif; ?>
-        
         <div class="portfolio-container">
             <!-- Top header with title and category -->
             <div class="portfolio-top-header">
                 <h1 class="portfolio-title"><?php echo htmlspecialchars($portfolio['portfolio_title']); ?></h1>
                 <span class="category-tag"><?php echo htmlspecialchars($portfolio['category']); ?></span>
+                
+                <?php if ($is_owner): ?>
+                    <?php 
+                    require_once 'components/three_dot_menu.php';
+                    renderThreeDotMenu($portfolio_id); 
+                    ?>
+                <?php endif; ?>
             </div>
             
             <!-- User info and date row -->
