@@ -85,15 +85,16 @@ try {
     <style>
         .portfolio-container {
             padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .portfolio-header {
+        /* Top header with title and category */
+        .portfolio-top-header {
             display: flex;
-            justify-content: space-between;
+            gap: 12px;  /* Added fixed gap */
             align-items: center;
             margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
         }
 
         .portfolio-title {
@@ -103,98 +104,75 @@ try {
             color: var(--text-primary);
         }
 
-        .portfolio-meta {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
-        .portfolio-user {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .portfolio-datetime {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-top: 5px;
-        }
-
-        .portfolio-actions {
-            margin-top: 10px;
-        }
-
-        .edit-portfolio-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background-color: var(--primary-color);
-            color: white;
+        .category-tag {
+            background-color: #f0f0f0;
             padding: 6px 12px;
-            border-radius: 4px;
-            text-decoration: none;
+            border-radius: 16px;
             font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
+            color: var(--text-primary);
         }
 
-        .edit-portfolio-btn:hover {
-            background-color: var(--primary-hover);
-            text-decoration: none;
-            color: white;
-        }
-
-        .edit-portfolio-btn i {
-            font-size: 14px;
-        }
-
-        @media (max-width: 768px) {
-            .portfolio-meta {
-                align-items: flex-start;
-            }
-            
-            .portfolio-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .portfolio-actions {
-                margin-top: 15px;
-            }
-            
-            .edit-portfolio-btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        .portfolio-description {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: var(--box-shadow);
-            line-height: 1.6;
-        }
-
-        .portfolio-metadata {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: var(--box-shadow);
+        /* User info and date row */
+        .portfolio-meta-row {
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
-        .metadata-item {
-            flex: 1;
-            min-width: 250px;
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .metadata-label {
-            display: block;
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--text-secondary);
+            overflow: hidden;
+        }
+
+        .user-avatar i {
+            font-size: 18px;
+        }
+
+        .user-name {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .upload-date {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Divider */
+        .content-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 20px 0;
+        }
+
+        /* Description */
+        .portfolio-description {
+            line-height: 1.6;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+
+        /* Tools section */
+        .tools-section {
+            margin-bottom: 30px;
+        }
+
+        .tools-label {
             font-size: 14px;
             font-weight: 500;
             color: var(--text-secondary);
@@ -207,32 +185,26 @@ try {
             gap: 8px;
         }
 
-        .metadata-tag {
+        .tool-tag {
             background-color: #f0f0f0;
             padding: 6px 12px;
             border-radius: 16px;
             font-size: 14px;
-            display: inline-block;
             color: var(--text-primary);
         }
 
-        @media (max-width: 768px) {
-            .portfolio-metadata {
-                flex-direction: column;
-                gap: 15px;
-            }
-        }
-
-        .media-grid {
+        /* Media section */
+        .media-section {
+            width: 80%;
+            margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
         }
 
         .media-item {
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: var(--box-shadow);
             cursor: pointer;
             position: relative;
             aspect-ratio: 16/9;
@@ -259,7 +231,7 @@ try {
         }
 
         .user-link {
-            color: var(--primary-color);
+            color: var(--text-primary);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s;
@@ -267,7 +239,55 @@ try {
         
         .user-link:hover {
             text-decoration: underline;
-            color: var(--primary-hover);
+            color: var(--primary-color);
+        }
+
+        /* Edit button */
+        .edit-portfolio-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .edit-portfolio-btn:hover {
+            background-color: var(--primary-hover);
+            text-decoration: none;
+            color: white;
+        }
+
+        .edit-portfolio-btn i {
+            font-size: 14px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .portfolio-top-header, .portfolio-meta-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .media-section {
+                width: 100%;
+            }
+            
+            .edit-portfolio-btn {
+                position: static;
+                margin-top: 20px;
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -283,63 +303,71 @@ try {
     ?>
 
     <div class="main-content">
+        <?php if ($is_owner): ?>
+        <a href="edit_portfolio.php?id=<?php echo $portfolio_id; ?>" class="edit-portfolio-btn">
+            <i class="fi fi-rr-edit"></i> Edit Portfolio
+        </a>
+        <?php endif; ?>
+        
         <div class="portfolio-container">
-            <div class="portfolio-header">
+            <!-- Top header with title and category -->
+            <div class="portfolio-top-header">
                 <h1 class="portfolio-title"><?php echo htmlspecialchars($portfolio['portfolio_title']); ?></h1>
-                <div class="portfolio-meta">
-                    <div class="portfolio-user">
-                        By: <a href="user_portfolio_profile.php?id=<?php echo $portfolio['user_id']; ?>" class="user-link"><?php echo htmlspecialchars(!empty($portfolio['full_name']) ? $portfolio['full_name'] : $portfolio['user_name']); ?></a>
+                <span class="category-tag"><?php echo htmlspecialchars($portfolio['category']); ?></span>
+            </div>
+            
+            <!-- User info and date row -->
+            <div class="portfolio-meta-row">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fi fi-rr-user"></i>
                     </div>
-                    <div class="portfolio-datetime">
-                        Uploaded on <?php 
-                            $timestamp = strtotime($portfolio['portfolio_date'] . ' ' . $portfolio['portfolio_time']);
-                            echo date('d M, Y h:i A', $timestamp); 
-                        ?>
-                    </div>
-                    <?php if ($is_owner): ?>
-                    <div class="portfolio-actions">
-                        <a href="edit_portfolio.php?id=<?php echo $portfolio_id; ?>" class="edit-portfolio-btn">
-                            <i class="fi fi-rr-edit"></i> Edit Portfolio
+                    <span class="user-name">
+                        <a href="user_portfolio_profile.php?id=<?php echo $portfolio['user_id']; ?>" class="user-link">
+                            <?php echo htmlspecialchars(!empty($portfolio['full_name']) ? $portfolio['full_name'] : $portfolio['user_name']); ?>
                         </a>
-                    </div>
-                    <?php endif; ?>
+                    </span>
+                </div>
+                <div class="upload-date">
+                    <?php 
+                        $timestamp = strtotime($portfolio['portfolio_date']);
+                        echo date('d M, Y', $timestamp); 
+                    ?>
                 </div>
             </div>
-
+            
+            <!-- Divider -->
+            <div class="content-divider"></div>
+            
+            <!-- Description -->
             <?php if (!empty($portfolio['portfolio_description'])): ?>
                 <div class="portfolio-description">
                     <?php echo nl2br(htmlspecialchars($portfolio['portfolio_description'])); ?>
                 </div>
             <?php endif; ?>
-
-            <!-- Add this new section for category and tools -->
-            <div class="portfolio-metadata">
-                <div class="metadata-item">
-                    <span class="metadata-label">Category:</span>
-                    <span class="metadata-tag"><?php echo htmlspecialchars($portfolio['category']); ?></span>
-                </div>
-                
-                <?php if (!empty($portfolio['tools'])): ?>
-                <div class="metadata-item">
-                    <span class="metadata-label">Tools Used:</span>
+            
+            <!-- Tools section -->
+            <?php if (!empty($portfolio['tools'])): ?>
+                <div class="tools-section">
+                    <div class="tools-label">Tools Used:</div>
                     <div class="tools-list">
                         <?php 
                         $tools = explode(',', $portfolio['tools']);
                         foreach ($tools as $tool): 
                             if (!empty(trim($tool))): 
                         ?>
-                            <span class="metadata-tag"><?php echo htmlspecialchars(trim($tool)); ?></span>
+                            <span class="tool-tag"><?php echo htmlspecialchars(trim($tool)); ?></span>
                         <?php 
                             endif; 
                         endforeach; 
                         ?>
                     </div>
                 </div>
-                <?php endif; ?>
-            </div>
+            <?php endif; ?>
 
+            <!-- Media section -->
             <?php if (!empty($media)): ?>
-                <div class="media-grid">
+                <div class="media-section">
                     <?php foreach ($media as $index => $item): ?>
                         <div class="media-item" onclick="initMediaViewer('<?php echo $media_files_str; ?>', <?php echo $index; ?>)">
                             <?php if (strpos($item['file_type'], 'video/') === 0): ?>
