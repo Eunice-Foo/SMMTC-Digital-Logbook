@@ -79,9 +79,18 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($portfolio['portfolio_title']); ?> - Portfolio</title>
+    
+    <!-- Preload critical CSS -->
+    <link rel="preload" href="css/theme.css" as="style">
+    <link rel="preload" href="css/media_viewer.css" as="style">
+    
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/media_viewer.css">
     <link rel="stylesheet" href="css/video_thumbnail.css">
+    
+    <!-- Preconnect to improve resource load time -->
+    <link rel="preconnect" href="https://cdn-uicons.flaticon.com">
+    
     <style>
         .portfolio-container {
             padding: 20px;
@@ -92,7 +101,7 @@ try {
         /* Top header with title and category */
         .portfolio-top-header {
             display: flex;
-            gap: 12px;  /* Added fixed gap */
+            gap: 12px;
             align-items: center;
             margin-bottom: 20px;
         }
@@ -209,6 +218,7 @@ try {
             position: relative;
             aspect-ratio: 16/9;
             background: #f5f5f5;
+            min-height: 140px;
         }
 
         .media-item img,
@@ -217,6 +227,21 @@ try {
             height: 100%;
             object-fit: contain;
             background-color: white;
+        }
+
+        /* Add image placeholder styling */
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+            background-size: 200% 100%;
+            animation: 1.5s shine linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position-x: -200%;
+            }
         }
 
         .play-indicator {
@@ -245,18 +270,18 @@ try {
         /* Responsive design */
         @media (max-width: 768px) {
             .portfolio-top-header {
-                flex-direction: row;  /* Keep as row even on mobile */
-                flex-wrap: wrap;      /* Allow wrapping */
-                justify-content: space-between; /* Space between title and menu */
-                align-items: center;  /* Center align items */
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                align-items: center;
             }
             
             .portfolio-title {
-                flex: 1;  /* Take available space */
+                flex: 1;
             }
             
             .category-tag {
-                order: 3;  /* Move category below title */
+                order: 3;
                 margin-top: 10px;
             }
             
@@ -271,18 +296,14 @@ try {
             }
         }
     </style>
+    
+    <!-- Defer non-critical JavaScript -->
+    <script src="js/video_thumbnail.js" defer></script>
+    <script src="js/media_viewer.js" defer></script>
 </head>
 <body>
     <?php include 'components/side_menu.php'; ?>
     
-    <?php 
-    // Include media viewer component
-    if (!empty($media_files_str)) {
-        require_once 'components/media_viewer.php';
-        renderMediaViewer($media_files_str);
-    }
-    ?>
-
     <div class="main-content">
         <div class="portfolio-container">
             <!-- Top header with title and category -->
@@ -353,14 +374,21 @@ try {
                     <?php foreach ($media as $index => $item): ?>
                         <div class="media-item" onclick="initMediaViewer('<?php echo $media_files_str; ?>', <?php echo $index; ?>)">
                             <?php if (strpos($item['file_type'], 'video/') === 0): ?>
-                                <?php 
-                                require_once 'components/video_thumbnail.php';
-                                renderVideoThumbnail($item['file_name']);
-                                ?>
-                                <div class="play-indicator">🎥 Video</div>
+                                <div class="video-placeholder" data-src="<?php echo htmlspecialchars($item['file_name']); ?>" 
+                                     data-index="<?php echo $index; ?>">
+                                    <div class="image-placeholder"></div>
+                                    <div class="play-indicator">🎥 Video</div>
+                                </div>
                             <?php else: ?>
-                                <img src="uploads/<?php echo htmlspecialchars($item['file_name']); ?>" 
-                                     alt="Portfolio media">
+                                <!-- Use a placeholder first, then lazy load the actual image -->
+                                <div class="image-placeholder"></div>
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'%3E%3C/svg%3E" 
+                                     data-src="uploads/<?php echo htmlspecialchars($item['file_name']); ?>"
+                                     alt="Portfolio media"
+                                     loading="lazy"
+                                     class="lazy-image"
+                                     width="250" 
+                                     height="140">
                             <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
@@ -370,13 +398,134 @@ try {
             <?php endif; ?>
         </div>
     </div>
+    
+    <!-- Only include the media viewer component when needed, not upfront -->
+    <div id="mediaViewerContainer"></div>
 
-    <script src="js/video_thumbnail.js"></script>
-    <script src="js/media_viewer.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            generateVideoThumbnails();
+            // Lazy load images
+            const lazyImages = document.querySelectorAll('img.lazy-image');
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.onload = () => {
+                            img.classList.add('loaded');
+                            const placeholder = img.previousElementSibling;
+                            if (placeholder && placeholder.classList.contains('image-placeholder')) {
+                                placeholder.style.display = 'none';
+                            }
+                        };
+                        observer.unobserve(img);
+                    }
+                });
+            });
+            
+            lazyImages.forEach(img => {
+                imageObserver.observe(img);
+            });
+            
+            // Lazy initialize video thumbnails
+            const videoPlaceholders = document.querySelectorAll('.video-placeholder');
+            const videoObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const placeholder = entry.target;
+                        const filename = placeholder.dataset.src;
+                        
+                        // Create video thumbnail
+                        const thumbnailContainer = document.createElement('div');
+                        thumbnailContainer.className = 'video-thumbnail';
+                        
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 250;
+                        canvas.height = 140;
+                        canvas.className = 'video-canvas';
+                        
+                        thumbnailContainer.appendChild(canvas);
+                        
+                        // Replace placeholder with actual thumbnail
+                        placeholder.parentNode.appendChild(thumbnailContainer);
+                        
+                        // Generate the thumbnail
+                        generateThumbnailFromFilename(filename, canvas);
+                        
+                        observer.unobserve(placeholder);
+                    }
+                });
+            });
+            
+            videoPlaceholders.forEach(placeholder => {
+                videoObserver.observe(placeholder);
+            });
         });
+        
+        // Only load media viewer when needed
+        function initMediaViewer(files, index) {
+            const container = document.getElementById('mediaViewerContainer');
+            if (container) {
+                // First time initialization
+                if (container.innerHTML === '') {
+                    container.innerHTML = `
+                        <div id="mediaViewer" class="media-viewer">
+                            <div class="media-viewer-content">
+                                <button class="nav-button prev-button" onclick="navigateMedia(-1)">❮</button>
+                                <div class="main-media-container">
+                                    <div class="media-display"></div>
+                                </div>
+                                <button class="nav-button next-button" onclick="navigateMedia(1)">❯</button>
+                                <button class="close-button" onclick="closeMediaViewer()">×</button>
+                            </div>
+                            <div class="media-thumbnails">
+                                <!-- Thumbnails will be generated dynamically -->
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Load media viewer script if not already loaded
+                    if (typeof showMedia !== 'function') {
+                        const script = document.createElement('script');
+                        script.src = 'js/media_viewer.js';
+                        script.onload = () => showMediaViewer(files, index);
+                        document.head.appendChild(script);
+                    } else {
+                        showMediaViewer(files, index);
+                    }
+                } else {
+                    showMediaViewer(files, index);
+                }
+            }
+        }
+        
+        function showMediaViewer(files, index) {
+            mediaFiles = files.split(',');
+            currentMediaIndex = index;
+            document.getElementById('mediaViewer').style.display = 'block';
+            showMedia(index);
+            generateThumbnails();
+        }
+        
+        function generateThumbnailFromFilename(filename, canvas) {
+            const video = document.createElement('video');
+            video.style.display = 'none';
+            video.src = `uploads/${filename}`;
+            video.preload = 'metadata';
+            
+            video.addEventListener('loadeddata', function() {
+                video.currentTime = 1;
+            });
+
+            video.addEventListener('seeked', function() {
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                URL.revokeObjectURL(video.src);
+                video.remove();
+            });
+            
+            document.body.appendChild(video);
+        }
     </script>
 </body>
 </html>
