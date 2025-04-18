@@ -159,30 +159,44 @@ select {
     margin-top: 20px;
 }
 
-.cancel-btn {
-    padding: 10px 20px;
-    background-color: #f0f0f0;
-    color: #333;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+/* Form buttons container */
+.form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
 }
 
+/* Submit button */
 .submit-btn {
-    padding: 10px 20px;
     background-color: var(--primary-color);
     color: white;
+    padding: 12px 24px;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
+    font-family: var(--font-primary);
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
 }
 
 .submit-btn:hover {
     background-color: var(--primary-hover);
+}
+
+/* Cancel button */
+.cancel-btn {
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-primary);
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
 }
 
 .cancel-btn:hover {

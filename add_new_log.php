@@ -150,7 +150,8 @@ $stmt = $conn->prepare("
             'date' => date('Y-m-d'),
             'time' => date('H:i'),
             'mediaFiles' => [],
-            'isEdit' => false
+            'isEdit' => false,
+            'showCustomButtons' => true // Add this parameter to use custom buttons
         ]);
         ?>
         
@@ -175,6 +176,11 @@ $stmt = $conn->prepare("
             document.getElementById('addLogForm').addEventListener('submit', function(event) {
                 // This will call the uploadFiles function from media_preview.js
                 uploadFiles(event);
+            });
+
+            // Add event handler for the cancel button
+            document.querySelector('.cancel-btn').addEventListener('click', function() {
+                window.location.href = 'logbook.php';
             });
         });
     </script>
