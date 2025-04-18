@@ -156,6 +156,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             document.querySelector('.cancel-btn').addEventListener('click', function() {
                 window.location.href = 'logbook.php';
             });
+            
+            // IMPORTANT: Add this event handler for form submission
+            document.getElementById('addLogForm').addEventListener('submit', function(event) {
+                // Call the uploadFiles function from media_preview.js
+                uploadFiles(event);
+            });
         });
     </script>
 </body>
