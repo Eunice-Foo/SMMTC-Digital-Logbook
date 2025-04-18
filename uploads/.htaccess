@@ -21,3 +21,26 @@ php_value post_max_size 64M
 php_value memory_limit 256M
 php_value max_execution_time 300
 php_value max_input_time 300
+
+# Add WebP MIME type
+<IfModule mod_mime.c>
+    AddType image/webp .webp
+</IfModule>
+
+# Allow WebP delivery through content negotiation
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Check if browser supports WebP
+    RewriteCond %{HTTP_ACCEPT} image/webp
+    
+    # Check if WebP version exists
+    RewriteCond %{DOCUMENT_ROOT}/$1.webp -f
+    
+    # Serve WebP file instead
+    RewriteRule (.+)\.(jpe?g|png)$ $1.webp [T=image/webp,E=accept:1]
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header append Vary Accept env=REDIRECT_accept
+</IfModule>

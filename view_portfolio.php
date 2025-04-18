@@ -380,15 +380,16 @@ try {
                                     <div class="play-indicator">🎥 Video</div>
                                 </div>
                             <?php else: ?>
-                                <!-- Use a placeholder first, then lazy load the actual image -->
+                                <!-- Use placeholder and optimized image -->
                                 <div class="image-placeholder"></div>
-                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3 2'%3E%3C/svg%3E" 
-                                     data-src="uploads/<?php echo htmlspecialchars($item['file_name']); ?>"
-                                     alt="Portfolio media"
-                                     loading="lazy"
-                                     class="lazy-image"
-                                     width="250" 
-                                     height="140">
+                                <?php 
+                                    echo renderOptimizedImage(
+                                        'uploads/' . $item['file_name'],
+                                        'Portfolio media',
+                                        'lazy-image',
+                                        'loading="lazy" width="250" height="140" data-src="uploads/' . htmlspecialchars($item['file_name']) . '"'
+                                    );
+                                ?>
                             <?php endif; ?>
                         </div>
                     <?php endforeach; ?>

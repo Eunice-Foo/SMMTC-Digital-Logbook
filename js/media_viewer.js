@@ -114,22 +114,40 @@ function showMedia(index) {
     // Clear previous content
     mediaDisplay.innerHTML = '';
     
+    // Handle different media types
     if (file.endsWith('.mp4') || file.endsWith('.mov')) {
+        // Video handling
         const video = document.createElement('video');
         video.controls = true;
         video.autoplay = true;
         video.src = `uploads/${file}`;
         mediaDisplay.appendChild(video);
     } else {
+        // Image handling with WebP support
+        const picture = document.createElement('picture');
+        
+        // Add WebP source if not already a WebP
+        if (!file.endsWith('.webp')) {
+            const webpSource = document.createElement('source');
+            webpSource.srcset = `uploads/${file.substring(0, file.lastIndexOf('.'))}.webp`;
+            webpSource.type = 'image/webp';
+            picture.appendChild(webpSource);
+        }
+        
+        // Original image as fallback
         const img = document.createElement('img');
         img.src = `uploads/${file}`;
         img.style.maxHeight = '80vh';
-        mediaDisplay.appendChild(img);
+        picture.appendChild(img);
+        
+        mediaDisplay.appendChild(picture);
     }
 
     // Scroll thumbnail into view
     const activeThumbnail = document.querySelector('.thumbnail.active');
-    activeThumbnail?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    if (activeThumbnail) {
+        activeThumbnail.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
 }
 
 function navigateMedia(direction) {

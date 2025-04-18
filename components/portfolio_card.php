@@ -1,9 +1,12 @@
 <?php
 // filepath: c:\xampp\htdocs\log\components\portfolio_card.php
+require_once 'includes/image_converter.php';
+
 function renderPortfolioCard($item) {
     ?>
     <div class="portfolio-card" data-category="<?php echo htmlspecialchars($item['category']); ?>" onclick="window.location.href='view_portfolio.php?id=<?php echo $item['portfolio_id']; ?>'">
         <div class="card-media">
+            <div class="placeholder-image"></div>
             <?php if (strpos($item['file_type'], 'video/') === 0): ?>
                 <?php 
                 require_once 'components/video_thumbnail.php';
@@ -15,7 +18,15 @@ function renderPortfolioCard($item) {
                     </svg>
                 </div>
             <?php else: ?>
-                <img src="uploads/<?php echo htmlspecialchars($item['media']); ?>" alt="Portfolio Media">
+                <?php 
+                // Use the optimized image renderer
+                echo renderOptimizedImage(
+                    'uploads/' . $item['media'],
+                    htmlspecialchars($item['portfolio_title']),
+                    'portfolio-image',
+                    'loading="lazy" width="100%" height="100%"'
+                );
+                ?>
             <?php endif; ?>
             
             <?php 
@@ -31,7 +42,9 @@ function renderPortfolioCard($item) {
                 <a href="user_portfolio_profile.php?id=<?php echo $item['user_id']; ?>" class="author" onclick="event.stopPropagation();">
                     <?php echo htmlspecialchars(!empty($item['full_name']) ? $item['full_name'] : $item['username']); ?>
                 </a>
-                <div class="timestamp"><?php echo date('M j, Y', strtotime($item['portfolio_date'])); ?></div>
+                <div class="timestamp">
+                    <?php echo date('M d, Y', strtotime($item['portfolio_date'])); ?>
+                </div>
             </div>
         </div>
     </div>
