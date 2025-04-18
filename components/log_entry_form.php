@@ -50,6 +50,9 @@ function renderLogEntryForm($formData = null, $isEdit = false) {
         require_once 'components/media_upload_button.php';
         renderMediaUploadButton();
         ?>
+    </div>
+
+    <div class="form-group">
         <div id="selectedFiles" class="selected-files"></div>
         <div id="previewArea" class="preview-area">
             <?php 

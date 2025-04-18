@@ -106,19 +106,30 @@ function removeFile(button) {
 function uploadFiles(event) {
     event.preventDefault();
     
+    // Check if files have been selected
+    if (selectedFiles.length === 0 && document.getElementById('description').value.trim() === '') {
+        showErrorToast('Please enter a description or select files to upload', 'Empty Form');
+        return;
+    }
+    
     const form = document.getElementById('addLogForm');
     const formData = new FormData(form);
+    
+    // Show progress bar
+    const progressBar = $('.progress-bar');
+    const progressContainer = $('.progress');
+    progressBar.width('0%').text('0%');
+    progressContainer.show();
     
     // Clear any existing media[] entries
     formData.delete('media[]');
     
-    // Add selected files
+    // Add files to formData - THIS IS THE KEY PART
     selectedFiles.forEach(file => {
         formData.append('media[]', file);
     });
     
-    const progressBar = $('.progress-bar');
-    progressBar.width('0%').text('0%');
+    console.log('Uploading files:', selectedFiles.length);
     
     $.ajax({
         url: form.action,
@@ -137,21 +148,37 @@ function uploadFiles(event) {
             return xhr;
         },
         success: function(response) {
+            console.log('Upload response:', response);
             try {
-                const result = JSON.parse(response);
-                if (result.success) {
-                    alert(result.message);
-                    window.location.href = 'logbook.php';
+                // Handle response properly
+                let result;
+                if (typeof response === 'string') {
+                    // Try to parse JSON from the response
+                    result = JSON.parse(response);
                 } else {
-                    alert('Error: ' + result.message);
+                    result = response;
+                }
+                
+                if (result.success) {
+                    showSuccessToast('Log entry added successfully!', 'Success');
+                    // Redirect after a short delay
+                    setTimeout(() => {
+                        window.location.href = 'logbook.php';
+                    }, 1500);
+                } else {
+                    showErrorToast(result.message || 'Unknown error occurred', 'Upload Failed');
                 }
             } catch (e) {
                 console.error('Parse error:', e);
-                alert('Error processing response');
+                console.error('Response was:', response);
+                showErrorToast('Error processing server response', 'Upload Error');
             }
+            progressContainer.hide();
         },
-        error: function() {
-            alert('Error uploading files');
+        error: function(xhr, status, error) {
+            console.error('Upload failed:', status, error);
+            showErrorToast(`Upload failed: ${error || 'Connection error'}`, 'Upload Error');
+            progressContainer.hide();
         }
     });
 }

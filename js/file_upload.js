@@ -1,7 +1,17 @@
 // Global variables
-let selectedFiles = [];
+let selectedFiles = []; // Store new files
+let existingFiles = new Set(); // Store names of existing files
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize existing files if any
+    if (typeof document.currentMediaFiles !== 'undefined' && document.currentMediaFiles) {
+        document.currentMediaFiles.forEach(file => {
+            if (file.file_name) {
+                existingFiles.add(file.file_name);
+            }
+        });
+    }
+
     // Initialize video thumbnails for uploaded videos
     if (typeof generateVideoThumbnails === 'function') {
         generateVideoThumbnails();
@@ -12,13 +22,25 @@ function showSelectedFiles(input) {
     const previewArea = document.getElementById('previewArea');
     const files = Array.from(input.files);
     
+    console.log('Files selected:', files.length);
+    
     files.forEach(file => {
-        selectedFiles.push(file);
-        const previewContainer = createPreviewContainer(file);
-        previewArea.appendChild(previewContainer);
+        // Check if file already exists
+        if (!existingFiles.has(file.name)) {
+            // Add to selected files array for upload
+            selectedFiles.push(file);
+            
+            console.log('Added file to selection:', file.name);
+            
+            // Create preview container
+            const previewContainer = createPreviewContainer(file);
+            previewArea.appendChild(previewContainer);
+        } else {
+            showWarningToast(`File "${file.name}" already exists in this log entry.`, 'Duplicate File');
+        }
     });
 
-    // Clear the file input
+    // Clear the file input to allow selecting the same file again
     input.value = '';
 }
 

@@ -1,3 +1,4 @@
+/* Media upload button styles */
 .media-upload-container {
     width: 150px;
     height: 150px;
@@ -25,7 +26,7 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
-    position: relative; /* Add this */
+    position: relative;
 }
 
 .media-upload-button:hover {
@@ -34,16 +35,23 @@
 }
 
 .plus-icon {
-    position: absolute; /* Add this */
-    top: 50%; /* Add this */
-    left: 50%; /* Add this */
-    transform: translate(-50%, -50%); /* Add this */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-size: 48px;
     color: var(--text-secondary);
     font-weight: 300;
-    line-height: 1; /* Add this */
+    line-height: 1;
 }
 
 .media-upload-button:hover .plus-icon {
     color: var(--primary-color);
+}
+
+.file-info-text {
+    display: block;
+    margin-top: 8px;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
 }

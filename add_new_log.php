@@ -1,13 +1,15 @@
 <?php
+// filepath: c:\xampp\htdocs\log\add_new_log.php
 require_once 'includes/session_check.php';
+require_once 'includes/constants.php';    // Include this first
 require_once 'includes/db.php';
 require_once 'includes/upload_validation.php';
 require_once 'includes/file_naming.php';
 require_once 'includes/media_functions.php';
 require_once 'components/log_entry_form.php';
 
-// Add this line to define upload directory
-$upload_dir = 'uploads/';
+// Use constant value instead of redefining
+$upload_dir = UPLOAD_DIR;
 
 // Create uploads directory if it doesn't exist
 if (!file_exists($upload_dir)) {
@@ -41,61 +43,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $entry_id = $conn->lastInsertId();
 
-        // Handle file uploads
+        // Handle file uploads using the improved approach
         if (!empty($_FILES['media']['name'][0])) {
+            // Log the incoming files for debugging
+            error_log("Found " . count($_FILES['media']['name']) . " files to upload");
+            
             foreach ($_FILES['media']['tmp_name'] as $key => $tmp_name) {
                 if (!empty($tmp_name)) {
                     try {
                         $original_filename = $_FILES['media']['name'][$key];
                         $file_type = $_FILES['media']['type'][$key];
+                        $file_size = $_FILES['media']['size'][$key];
                         
-                        // Generate unique filename
-                        $unique_filename = generateUniqueFilename($original_filename, $_SESSION['username']);
+                        // Log processing each file
+                        error_log("Processing file: $key - $original_filename ($file_type, $file_size bytes)");
                         
-                        // Remove thumbnail directory references:
-                        if (!empty($file_type) && strpos($file_type, 'video/') === 0) {
-                            if (!move_uploaded_file($tmp_name, $upload_dir . $unique_filename)) {
-                                throw new Exception("Failed to move uploaded file");
-                            }
-                        } else {
-                            if (!move_uploaded_file($tmp_name, $upload_dir . $unique_filename)) {
-                                throw new Exception("Failed to move uploaded file");
-                            }
-                        }
-
+                        // Process media upload using the media_functions helper
+                        $unique_filename = processMediaUpload($tmp_name, $original_filename, $file_type, $_SESSION['user_id']);
+                        
+                        // Log successful processing
+                        error_log("Media processed: $unique_filename");
+                        
                         // Insert into media table
-                        $stmt = $conn->prepare("
-                            INSERT INTO media (user_id, file_name, file_type, upload_date, upload_time)
-                            VALUES (:user_id, :file_name, :file_type, CURDATE(), CURTIME())
-                        ");
-
-                        $stmt->execute([
-                            ':user_id' => $_SESSION['user_id'],
-                            ':file_name' => $unique_filename,
-                            ':file_type' => $file_type
-                        ]);
-
-                        $media_id = $conn->lastInsertId();
-
-                        // Insert into log_media
-                        $stmt = $conn->prepare("
-                            INSERT INTO log_media (media_id, entry_id)
-                            VALUES (:media_id, :entry_id)
-                        ");
-
-                        $stmt->execute([
-                            ':media_id' => $media_id,
-                            ':entry_id' => $entry_id
-                        ]);
-
+                        $media_id = insertMediaFile($conn, $_SESSION['user_id'], $unique_filename, $file_type);
+                        
+                        // Associate with log entry
+                        associateMediaWithLog($conn, $media_id, $entry_id);
+                        
+                        // Log successful database entry
+                        error_log("Media added to database: ID $media_id");
                     } catch (Exception $e) {
-                        $conn->rollBack();
-                        error_log("File upload error: " . $e->getMessage());
-                        echo json_encode(['success' => false, 'message' => 'Error processing file upload: ' . $e->getMessage()]);
-                        exit();
+                        error_log("Error processing file $key ($original_filename): " . $e->getMessage());
+                        throw $e; // Re-throw to be caught by the outer try-catch
                     }
                 }
             }
+        } else {
+            error_log("No files found in the request");
         }
 
         $conn->commit();
@@ -157,45 +141,41 @@ $stmt = $conn->prepare("
     
     <div class="main-content">
         <h2>Add New Log Entry</h2>
-        <form id="addLogForm" action="add_new_log.php" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles(event)">
-            <div class="form-header">
-                <div class="form-group">
-                    <label for="date">Date:</label>
-                    <input type="date" id="date" name="date" value="<?php echo date('Y-m-d'); ?>" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="title">Title: (Optional)</label>
-                    <input type="text" id="title" name="title" placeholder="Enter log title">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <textarea id="description" name="description" rows="4" required placeholder="Enter log description"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="media">Upload Media Files:</label>
-                <?php 
-                require_once 'components/media_upload_button.php';
-                renderMediaUploadButton();
-                ?>
-                <div id="selectedFiles" class="selected-files"></div>
-                <div id="previewArea" class="preview-area"></div>
-            </div>
-
-            <input type="hidden" name="time" value="<?php echo date('H:i'); ?>">
-            <button type="submit" class="submit-button">Add</button>
-        </form>
+        
+        <?php
+        // Use log entry form component for consistent form markup
+        renderLogEntryForm([
+            'title' => '',
+            'description' => '',
+            'date' => date('Y-m-d'),
+            'time' => date('H:i'),
+            'mediaFiles' => [],
+            'isEdit' => false
+        ]);
+        ?>
+        
+        <!-- Progress bar outside the form for better visibility -->
         <div class="progress">
             <div class="progress-bar" style="width: 0%"></div>
         </div>
     </div>
 
     <script>
+        // Initialize with empty selected files array
         document.addEventListener('DOMContentLoaded', function() {
-            generateVideoThumbnails();
+            // Clear any previously selected files
+            selectedFiles = [];
+            
+            // Initialize video thumbnails
+            if (typeof generateVideoThumbnails === 'function') {
+                generateVideoThumbnails();
+            }
+            
+            // Ensure form submission is handled by the media_preview.js uploadFiles function
+            document.getElementById('addLogForm').addEventListener('submit', function(event) {
+                // This will call the uploadFiles function from media_preview.js
+                uploadFiles(event);
+            });
         });
     </script>
 </body>
