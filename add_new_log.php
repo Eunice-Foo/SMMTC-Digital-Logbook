@@ -144,19 +144,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Clear any previously selected files
-            selectedFiles = [];
+            // Initialize with empty media files array
+            document.currentMediaFiles = [];
             
             // Initialize video thumbnails
             if (typeof generateVideoThumbnails === 'function') {
                 generateVideoThumbnails();
             }
             
-            // Ensure form submission is handled by the media_preview.js uploadFiles function
-            document.getElementById('addLogForm').addEventListener('submit', function(event) {
-                uploadFiles(event);
-            });
-
             // Add event handler for the cancel button
             document.querySelector('.cancel-btn').addEventListener('click', function() {
                 window.location.href = 'logbook.php';

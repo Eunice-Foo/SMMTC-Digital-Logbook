@@ -222,15 +222,15 @@ try {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
     <script src="js/file_upload.js" defer></script>
-    <script src="js/edit_log.js" defer></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            generateVideoThumbnails();
-        });
-    </script>
 </head>
 <body>
     <?php include 'components/side_menu.php'; ?>
+    
+    <?php 
+    // Include and initialize toast notification component
+    require_once 'components/toast_notification.php';
+    initializeToast();
+    ?>
     
     <div class="main-content">
         <h2>Edit Log Entry</h2>
@@ -258,40 +258,44 @@ try {
                 require_once 'components/media_upload_button.php';
                 renderMediaUploadButton();
                 ?>
-                <div id="selectedFiles" class="selected-files"></div>
-                <div id="previewArea" class="preview-area">
-                    <?php if (!empty($mediaFiles)): ?>
-                        <?php foreach ($mediaFiles as $media): ?>
-                            <div class="preview-container" data-media-id="<?php echo $media['media_id']; ?>">
-                                <div class="file-info">
-                                    <span><?php echo htmlspecialchars($media['file_name']); ?></span>
-                                    <button type="button" class="remove-file-btn" onclick="removeExistingFile(this, <?php echo $media['media_id']; ?>)">×</button>
-                                </div>
-                                <?php if (strpos($media['file_type'], 'video/') === 0): ?>
-                                    <?php 
-                                    require_once 'components/video_thumbnail.php';
-                                    renderVideoThumbnail($media['file_name']);
-                                    ?>
-                                <?php else: ?>
-                                    <div class="preview-item">
-                                        <img src="uploads/<?php echo htmlspecialchars($media['file_name']); ?>" alt="Media Preview">
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
             </div>
+
             <input type="hidden" name="time" value="<?php echo htmlspecialchars($entry['entry_time']); ?>">
             <input type="hidden" name="status" value="<?php echo htmlspecialchars($entry['entry_status']); ?>">
-            <button type="submit" class="submit-button">Save Changes</button>
+            
+            <div class="form-buttons">
+                <button type="button" class="cancel-btn" onclick="window.location.href='view_log.php?id=<?php echo $_GET['id']; ?>'">Cancel</button>
+                <button type="submit" class="submit-btn">Save Changes</button>
+            </div>
         </form>
         <div class="progress">
             <div class="progress-bar" style="width: 0%"></div>
         </div>
     </div>
     <script>
-        document.currentMediaFiles = <?php echo json_encode($mediaFiles); ?>;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize with current media files - do this BEFORE file_upload.js processes it
+            document.currentMediaFiles = <?php echo json_encode($mediaFiles); ?>;
+            
+            // Initialize existingFiles set
+            window.existingFiles = new Set();
+            if (document.currentMediaFiles) {
+                document.currentMediaFiles.forEach(file => {
+                    if (file.file_name) {
+                        window.existingFiles.add(file.file_name);
+                    }
+                });
+            }
+            
+            // Initialize selected files array
+            window.selectedFiles = [];
+            
+            // Initialize deleted media IDs array
+            window.deletedMediaIds = [];
+            
+            // These will be handled by file_upload.js initializeExistingMediaPreviews function
+            // No need to manually set grid properties here
+        });
     </script>
 </body>
 </html>

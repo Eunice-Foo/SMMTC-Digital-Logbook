@@ -10,21 +10,29 @@
     min-height: 150px;
 }
 
-/* Preview grid layout */
+/* Add these styles to fix media preview grid */
+.media-preview-container {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+/* Preview grid layout - fix the grid columns */
 .preview-area {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 0fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Changed from 0fr to 1fr */
     gap: 20px;
     margin-top: 0;
     max-height: none;
     padding: 0;
+    width: 100%;
 }
 
 /* Preview container - change overflow to visible to allow button outside */
 .preview-container {
     position: relative;
     height: 150px;
-    width: 150px;
+    width: 100% !important;
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: visible; /* Changed from hidden to show button outside */
@@ -116,7 +124,9 @@
 
 /* Remove button - updated positioning and styling */
 .remove-file-btn {
-    position: relative;
+    position: absolute;
+    top: -10px;
+    right: -10px;
     background-color: #ff4444;
     color: white;
     border: none;
@@ -138,4 +148,19 @@
     background-color: #cc0000;
     transform: scale(1.1);
     box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+/* File icon styles for non-media files */
+.file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background-color: #f8f8f8;
+}
+
+.file-icon-container {
+    font-size: 48px;
+    color: #666;
+    text-align: center;
 }

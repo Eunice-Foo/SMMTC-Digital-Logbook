@@ -1,6 +1,7 @@
 // Global variables
 let selectedFiles = []; // Store new files
 let existingFiles = new Set(); // Store names of existing files
+let deletedMediaIds = []; // Store IDs of files to delete (for edit mode)
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('file_upload.js loaded');
@@ -14,11 +15,89 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Initialize existing media previews if in edit mode
+    initializeExistingMediaPreviews();
+    
     // Initialize video thumbnails for uploaded videos
     if (typeof generateVideoThumbnails === 'function') {
         generateVideoThumbnails();
     }
 });
+
+/**
+ * Initialize existing media previews for edit mode
+ */
+function initializeExistingMediaPreviews() {
+    const previewArea = document.getElementById('previewArea');
+    if (!previewArea || !document.currentMediaFiles || !Array.isArray(document.currentMediaFiles)) {
+        return;
+    }
+    
+    // Clear the preview area first
+    while (previewArea.firstChild) {
+        previewArea.removeChild(previewArea.firstChild);
+    }
+    
+    // Create preview containers for each existing file
+    document.currentMediaFiles.forEach(media => {
+        if (!media.file_name || !media.media_id || !media.file_type) {
+            return;
+        }
+        
+        const container = document.createElement('div');
+        container.className = 'preview-container';
+        container.dataset.mediaId = media.media_id;
+        
+        // Create appropriate preview based on file type
+        if (media.file_type.startsWith('image/')) {
+            const preview = document.createElement('div');
+            preview.className = 'preview-item';
+            preview.innerHTML = `<img src="uploads/${media.file_name}" alt="${media.file_name}">`;
+            container.appendChild(preview);
+        } else if (media.file_type.startsWith('video/')) {
+            const preview = document.createElement('div');
+            preview.className = 'preview-item video-preview';
+            
+            const thumbnailContainer = document.createElement('div');
+            thumbnailContainer.className = 'video-thumbnail';
+            
+            const canvas = document.createElement('canvas');
+            canvas.className = 'video-canvas';
+            canvas.dataset.videoSrc = `uploads/${media.file_name}`;
+            
+            const playButton = document.createElement('div');
+            playButton.className = 'play-button';
+            playButton.innerHTML = '▶';
+            
+            thumbnailContainer.appendChild(canvas);
+            thumbnailContainer.appendChild(playButton);
+            preview.appendChild(thumbnailContainer);
+            container.appendChild(preview);
+        } else {
+            // For other file types (PDF, docs, etc)
+            const preview = document.createElement('div');
+            preview.className = 'preview-item file-icon';
+            
+            let icon = '📄';
+            if (media.file_type.includes('pdf')) icon = '📝';
+            else if (media.file_type.includes('word') || media.file_type.includes('document')) icon = '📃';
+            
+            preview.innerHTML = `<div class="file-icon-container">${icon}</div>`;
+            container.appendChild(preview);
+        }
+        
+        // Add file info and remove button
+        const fileInfo = document.createElement('div');
+        fileInfo.className = 'file-info';
+        fileInfo.innerHTML = `
+            <span>${media.file_name}</span>
+            <button type="button" class="remove-file-btn" onclick="removeExistingFile(this, ${media.media_id})">×</button>
+        `;
+        container.appendChild(fileInfo);
+        
+        previewArea.appendChild(container);
+    });
+}
 
 function showSelectedFiles(input) {
     console.log('showSelectedFiles called');
@@ -60,9 +139,6 @@ function createPreviewContainer(file) {
     container.className = 'preview-container';
     container.dataset.fileName = file.name;
     
-    const fileInfo = createFileInfo(file);
-    container.appendChild(fileInfo);
-    
     if (file.type.startsWith('image/')) {
         createImagePreview(file, container);
     } else if (file.type.startsWith('video/')) {
@@ -79,6 +155,10 @@ function createPreviewContainer(file) {
         preview.innerHTML = `<div class="file-icon-container">${icon}</div>`;
         container.appendChild(preview);
     }
+    
+    // Add file info after the preview
+    const fileInfo = createFileInfo(file);
+    container.appendChild(fileInfo);
     
     return container;
 }
@@ -154,10 +234,77 @@ function removeFile(button) {
     container.remove();
 }
 
+function removeExistingFile(button, mediaId) {
+    if (typeof showWarningToast === 'function') {
+        // Create unique toast ID for this confirmation
+        const confirmToastId = 'delete-confirm-' + mediaId;
+        
+        // Show the warning toast first
+        showWarningToast(
+            'Are you sure you want to remove this file?', 
+            'Confirm Deletion', 
+            'Delete'
+        );
+        
+        // Get the toast button and add a direct click handler
+        setTimeout(() => {
+            const toastButton = document.querySelector('.toast.warning .toast-button');
+            if (toastButton) {
+                // Replace the default click handler with our custom one
+                toastButton.onclick = function() {
+                    // Close all toasts
+                    const toasts = document.querySelectorAll('.toast');
+                    toasts.forEach(toast => {
+                        toast.classList.add('toast-hide');
+                        setTimeout(() => {
+                            if (toast && toast.parentNode) {
+                                toast.parentNode.removeChild(toast);
+                            }
+                        }, 300);
+                    });
+                    
+                    // Store the media ID for server-side deletion
+                    deletedMediaIds.push(mediaId);
+                    
+                    // Get the container and remove it from the DOM immediately
+                    const container = button.closest('.preview-container');
+                    if (container) {
+                        // Add a fade-out animation before removal
+                        container.style.transition = 'opacity 0.3s ease';
+                        container.style.opacity = '0';
+                        
+                        // Remove from DOM after animation completes
+                        setTimeout(() => {
+                            container.remove();
+                        }, 300);
+                    }
+                };
+            }
+        }, 100); // Small delay to ensure toast is rendered
+    } else if (confirm('Are you sure you want to remove this file?')) {
+        // Fallback for when toast function isn't available
+        deletedMediaIds.push(mediaId);
+        
+        const container = button.closest('.preview-container');
+        if (container) {
+            container.remove();
+        }
+    }
+}
+
 function uploadFiles(event) {
     event.preventDefault();
     
-    const form = document.getElementById('addLogForm');
+    // Determine if we're adding or editing
+    const isEditMode = window.location.pathname.includes('edit_log.php');
+    const formId = isEditMode ? 'editLogForm' : 'addLogForm';
+    const form = document.getElementById(formId);
+    
+    if (!form) {
+        console.error(`Form with id '${formId}' not found`);
+        return;
+    }
+    
     const formData = new FormData(form);
     
     // Show progress bar
@@ -166,10 +313,22 @@ function uploadFiles(event) {
     progressBar.width('0%').text('0%');
     progressContainer.show();
     
+    // Clear any existing media[] entries
+    for (const pair of formData.entries()) {
+        if (pair[0] === 'media[]') {
+            formData.delete(pair[0]);
+        }
+    }
+    
     // Add files to formData
     selectedFiles.forEach(file => {
         formData.append('media[]', file);
     });
+    
+    // If in edit mode, add deleted media IDs
+    if (isEditMode && deletedMediaIds.length > 0) {
+        formData.append('deleted_media_ids', JSON.stringify(deletedMediaIds));
+    }
     
     $.ajax({
         url: form.action,
@@ -204,12 +363,12 @@ function uploadFiles(event) {
                     
                     // Reset form after a short delay
                     setTimeout(function() {
-                        form.reset();
-                        selectedFiles = [];
-                        document.getElementById('previewArea').innerHTML = '';
-                        
-                        // Redirect to logbook
-                        window.location.href = 'logbook.php';
+                        // Redirect to appropriate page
+                        if (isEditMode) {
+                            window.location.href = 'view_log.php?id=' + new URLSearchParams(window.location.search).get('id');
+                        } else {
+                            window.location.href = 'logbook.php';
+                        }
                     }, 2000);
                 } else {
                     // Use error toast notification
