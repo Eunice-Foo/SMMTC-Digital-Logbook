@@ -3,6 +3,7 @@
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
 require_once 'components/media_viewer.php';
+require_once 'includes/image_converter.php'; // Add this line to include the image converter
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: portfolio.php");
@@ -221,21 +222,32 @@ try {
             min-height: 140px;
         }
 
-        .media-item img,
-        .media-item .video-thumbnail {
+        .media-item img.lazy-image {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            background-color: white;
+            object-fit: cover; /* Changed from contain to cover for better display */
+            z-index: 2; /* Above the placeholder */
+            opacity: 0; /* Start hidden */
+            transition: opacity 0.3s ease;
         }
 
-        /* Add image placeholder styling */
+        .media-item img.lazy-image.loaded {
+            opacity: 1; /* Show when loaded */
+        }
+
         .image-placeholder {
             width: 100%;
             height: 100%;
             background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
             background-size: 200% 100%;
             animation: 1.5s shine linear infinite;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1; /* Below the actual image */
         }
 
         @keyframes shine {
@@ -380,16 +392,14 @@ try {
                                     <div class="play-indicator">🎥 Video</div>
                                 </div>
                             <?php else: ?>
-                                <!-- Use placeholder and optimized image -->
+                                <!-- Fixed image display -->
                                 <div class="image-placeholder"></div>
-                                <?php 
-                                    echo renderOptimizedImage(
-                                        'uploads/' . $item['file_name'],
-                                        'Portfolio media',
-                                        'lazy-image',
-                                        'loading="lazy" width="250" height="140" data-src="uploads/' . htmlspecialchars($item['file_name']) . '"'
-                                    );
-                                ?>
+                                <img 
+                                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" 
+                                    data-src="uploads/<?php echo htmlspecialchars($item['file_name']); ?>" 
+                                    alt="Portfolio media" 
+                                    class="lazy-image"
+                                    loading="lazy">
                             <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
@@ -414,14 +424,23 @@ try {
                         img.src = img.dataset.src;
                         img.onload = () => {
                             img.classList.add('loaded');
+                            // Don't hide the placeholder until the image is loaded
                             const placeholder = img.previousElementSibling;
                             if (placeholder && placeholder.classList.contains('image-placeholder')) {
-                                placeholder.style.display = 'none';
+                                // Just fade out instead of display: none
+                                placeholder.style.opacity = '0';
+                                // Remove after transition
+                                setTimeout(() => {
+                                    placeholder.style.display = 'none';
+                                }, 300);
                             }
                         };
                         observer.unobserve(img);
                     }
                 });
+            }, {
+                rootMargin: '50px',
+                threshold: 0.1
             });
             
             lazyImages.forEach(img => {
