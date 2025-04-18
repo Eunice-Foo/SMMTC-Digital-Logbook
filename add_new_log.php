@@ -1,7 +1,7 @@
 <?php
 // filepath: c:\xampp\htdocs\log\add_new_log.php
 require_once 'includes/session_check.php';
-require_once 'includes/constants.php';    // Include this first
+require_once 'includes/constants.php';
 require_once 'includes/db.php';
 require_once 'includes/upload_validation.php';
 require_once 'includes/file_naming.php';
@@ -43,43 +43,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $entry_id = $conn->lastInsertId();
 
-        // Handle file uploads using the improved approach
-        if (!empty($_FILES['media']['name'][0])) {
-            // Log the incoming files for debugging
-            error_log("Found " . count($_FILES['media']['name']) . " files to upload");
-            
+        // Handle file uploads
+        if (!empty($_FILES) && isset($_FILES['media']) && is_array($_FILES['media']['name'])) {
             foreach ($_FILES['media']['tmp_name'] as $key => $tmp_name) {
-                if (!empty($tmp_name)) {
+                if (!empty($tmp_name) && is_uploaded_file($tmp_name)) {
                     try {
                         $original_filename = $_FILES['media']['name'][$key];
                         $file_type = $_FILES['media']['type'][$key];
                         $file_size = $_FILES['media']['size'][$key];
+                        $file_error = $_FILES['media']['error'][$key];
                         
-                        // Log processing each file
-                        error_log("Processing file: $key - $original_filename ($file_type, $file_size bytes)");
-                        
-                        // Process media upload using the media_functions helper
-                        $unique_filename = processMediaUpload($tmp_name, $original_filename, $file_type, $_SESSION['user_id']);
-                        
-                        // Log successful processing
-                        error_log("Media processed: $unique_filename");
-                        
-                        // Insert into media table
-                        $media_id = insertMediaFile($conn, $_SESSION['user_id'], $unique_filename, $file_type);
-                        
-                        // Associate with log entry
-                        associateMediaWithLog($conn, $media_id, $entry_id);
-                        
-                        // Log successful database entry
-                        error_log("Media added to database: ID $media_id");
+                        // Check for upload errors
+                        if ($file_error !== UPLOAD_ERR_OK) {
+                            throw new Exception("Upload error detected: {$file_error} for file {$original_filename}");
+                        } else {
+                            // Process media upload
+                            $unique_filename = generateUniqueFilename($original_filename, $_SESSION['user_id']);
+                            $upload_destination = $upload_dir . $unique_filename;
+                            
+                            if (!move_uploaded_file($tmp_name, $upload_destination)) {
+                                throw new Exception("Failed to move uploaded file {$original_filename}");
+                            }
+                            
+                            // Process media with helper functions
+                            $media_id = insertMediaFile($conn, $_SESSION['user_id'], $unique_filename, $file_type);
+                            
+                            if (!$media_id) {
+                                throw new Exception("Failed to insert media record into database");
+                            }
+                            
+                            // Associate with log entry
+                            associateMediaWithLog($conn, $media_id, $entry_id);
+                        }
                     } catch (Exception $e) {
-                        error_log("Error processing file $key ($original_filename): " . $e->getMessage());
                         throw $e; // Re-throw to be caught by the outer try-catch
                     }
                 }
             }
-        } else {
-            error_log("No files found in the request");
         }
 
         $conn->commit();
@@ -88,29 +88,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     } catch(Exception $e) {
         $conn->rollBack();
-        error_log("Log entry error: " . $e->getMessage());
         echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         exit();
     }
 }
-
-// New code block to fetch log entries with media files
-$stmt = $conn->prepare("
-    SELECT 
-        le.entry_id,
-        le.entry_title,
-        le.entry_description,
-        le.entry_status,
-        le.entry_date,
-        le.entry_time,
-        GROUP_CONCAT(CONCAT('uploads/', m.file_name)) as media_files
-    FROM log_entry le
-    LEFT JOIN log_media lm ON le.entry_id = lm.entry_id
-    LEFT JOIN media m ON lm.media_id = m.media_id
-    WHERE le.user_id = :user_id
-    GROUP BY le.entry_id
-    ORDER BY le.entry_date DESC, le.entry_time DESC
-");
 ?>
 
 <!DOCTYPE html>
@@ -151,7 +132,7 @@ $stmt = $conn->prepare("
             'time' => date('H:i'),
             'mediaFiles' => [],
             'isEdit' => false,
-            'showCustomButtons' => true // Add this parameter to use custom buttons
+            'showCustomButtons' => true
         ]);
         ?>
         
@@ -162,7 +143,6 @@ $stmt = $conn->prepare("
     </div>
 
     <script>
-        // Initialize with empty selected files array
         document.addEventListener('DOMContentLoaded', function() {
             // Clear any previously selected files
             selectedFiles = [];
@@ -174,7 +154,6 @@ $stmt = $conn->prepare("
             
             // Ensure form submission is handled by the media_preview.js uploadFiles function
             document.getElementById('addLogForm').addEventListener('submit', function(event) {
-                // This will call the uploadFiles function from media_preview.js
                 uploadFiles(event);
             });
 

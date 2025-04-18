@@ -19,6 +19,7 @@ function renderLogEntryForm($formData = null) {
     $formId = $isEdit ? 'editLogForm' : 'addLogForm';
     ?>
     
+    <!-- IMPORTANT: Ensure enctype is multipart/form-data -->
     <form id="<?php echo $formId; ?>" action="<?php echo $isEdit ? 'edit_log.php?id=' . $_GET['id'] : 'add_new_log.php'; ?>" method="POST" enctype="multipart/form-data">
         <div class="form-header">
             <div class="form-group">

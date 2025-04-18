@@ -105,14 +105,16 @@ function removeFile(button) {
 
 function uploadFiles(event) {
     event.preventDefault();
+    console.log("Upload function triggered");
     
-    // Check if files have been selected
-    if (selectedFiles.length === 0 && document.getElementById('description').value.trim() === '') {
-        showErrorToast('Please enter a description or select files to upload', 'Empty Form');
+    // Check if form is valid first
+    const form = document.getElementById('addLogForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
         return;
     }
     
-    const form = document.getElementById('addLogForm');
+    // Create FormData object
     const formData = new FormData(form);
     
     // Show progress bar
@@ -121,21 +123,43 @@ function uploadFiles(event) {
     progressBar.width('0%').text('0%');
     progressContainer.show();
     
+    // Log the selected files array for debugging
+    console.log('Selected files count before processing:', selectedFiles.length);
+    
     // Clear any existing media[] entries
-    formData.delete('media[]');
+    for (const pair of formData.entries()) {
+        if (pair[0] === 'media[]') {
+            formData.delete(pair[0]);
+        }
+    }
     
-    // Add files to formData - THIS IS THE KEY PART
-    selectedFiles.forEach(file => {
-        formData.append('media[]', file);
-    });
+    // Add each file to formData
+    if (selectedFiles.length > 0) {
+        console.log('Adding files to form data');
+        selectedFiles.forEach(file => {
+            console.log('Adding file:', file.name, file.type, file.size);
+            formData.append('media[]', file);
+        });
+    } else {
+        console.log('No files selected');
+    }
     
-    console.log('Uploading files:', selectedFiles.length);
+    // Log form data entries for debugging
+    console.log('Form data entries:');
+    for (const pair of formData.entries()) {
+        if (pair[0] !== 'media[]') {
+            console.log(pair[0], pair[1]);
+        } else {
+            console.log(pair[0], 'File object');
+        }
+    }
     
+    // Submit the form using AJAX
     $.ajax({
         url: form.action,
         type: 'POST',
         data: formData,
-        processData: false,
+        processData: false, 
         contentType: false,
         xhr: function() {
             const xhr = new window.XMLHttpRequest();
@@ -148,12 +172,12 @@ function uploadFiles(event) {
             return xhr;
         },
         success: function(response) {
-            console.log('Upload response:', response);
+            console.log('Server response:', response);
+            
             try {
-                // Handle response properly
+                // Parse response if it's a string
                 let result;
                 if (typeof response === 'string') {
-                    // Try to parse JSON from the response
                     result = JSON.parse(response);
                 } else {
                     result = response;
@@ -169,14 +193,15 @@ function uploadFiles(event) {
                     showErrorToast(result.message || 'Unknown error occurred', 'Upload Failed');
                 }
             } catch (e) {
-                console.error('Parse error:', e);
-                console.error('Response was:', response);
+                console.error('Error parsing response:', e);
+                console.error('Raw response:', response);
                 showErrorToast('Error processing server response', 'Upload Error');
             }
             progressContainer.hide();
         },
         error: function(xhr, status, error) {
-            console.error('Upload failed:', status, error);
+            console.error('AJAX error:', status, error);
+            console.error('Response text:', xhr.responseText);
             showErrorToast(`Upload failed: ${error || 'Connection error'}`, 'Upload Error');
             progressContainer.hide();
         }

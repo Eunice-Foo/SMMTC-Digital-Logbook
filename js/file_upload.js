@@ -3,6 +3,8 @@ let selectedFiles = []; // Store new files
 let existingFiles = new Set(); // Store names of existing files
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('file_upload.js loaded');
+    
     // Initialize existing files if any
     if (typeof document.currentMediaFiles !== 'undefined' && document.currentMediaFiles) {
         document.currentMediaFiles.forEach(file => {
@@ -19,9 +21,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function showSelectedFiles(input) {
+    console.log('showSelectedFiles called');
     const previewArea = document.getElementById('previewArea');
-    const files = Array.from(input.files);
+    if (!previewArea) {
+        console.error('Preview area not found');
+        return;
+    }
     
+    const files = Array.from(input.files);
     console.log('Files selected:', files.length);
     
     files.forEach(file => {
@@ -29,14 +36,18 @@ function showSelectedFiles(input) {
         if (!existingFiles.has(file.name)) {
             // Add to selected files array for upload
             selectedFiles.push(file);
-            
-            console.log('Added file to selection:', file.name);
+            console.log('Added file to selection:', file.name, file.type, file.size);
             
             // Create preview container
             const previewContainer = createPreviewContainer(file);
             previewArea.appendChild(previewContainer);
         } else {
-            showWarningToast(`File "${file.name}" already exists in this log entry.`, 'Duplicate File');
+            console.log('File already exists:', file.name);
+            if (typeof showWarningToast === 'function') {
+                showWarningToast(`File "${file.name}" already exists in this log entry.`, 'Duplicate File');
+            } else {
+                alert(`File "${file.name}" already exists in this log entry.`);
+            }
         }
     });
 
@@ -56,6 +67,17 @@ function createPreviewContainer(file) {
         createImagePreview(file, container);
     } else if (file.type.startsWith('video/')) {
         createVideoPreview(file, container);
+    } else {
+        // For other file types (PDF, docs, etc)
+        const preview = document.createElement('div');
+        preview.className = 'preview-item file-icon';
+        
+        let icon = '📄';
+        if (file.type.includes('pdf')) icon = '📝';
+        else if (file.type.includes('word') || file.type.includes('document')) icon = '📃';
+        
+        preview.innerHTML = `<div class="file-icon-container">${icon}</div>`;
+        container.appendChild(preview);
     }
     
     return container;
