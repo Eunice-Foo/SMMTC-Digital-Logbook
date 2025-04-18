@@ -56,11 +56,14 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="css/video_thumbnail.css">
     <link rel="stylesheet" href="css/export_logbook.css">
     <link rel="stylesheet" href="css/log_actions.css">
+    <link rel="stylesheet" href="css/delete_modal.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/logbook.js"></script>
     <script src="js/media_viewer.js"></script>
     <script src="js/month_bar.js"></script>
     <script src="js/export_logbook.js" defer></script>
+    <script src="js/delete_confirmation.js"></script>
 </head>
 <body data-user-id="<?php echo $_SESSION['user_id']; ?>">
     <?php include 'components/side_menu.php'; ?>
