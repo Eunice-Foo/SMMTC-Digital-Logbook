@@ -1,7 +1,8 @@
 <?php
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
-require_once 'components/log_entry.php'; // Move this line here
+require_once 'components/log_entry.php';
+require_once 'components/supervisor_feedback.php'; // Add this line
 
 // Check if user is supervisor and student_id is provided
 if ($_SESSION['role'] != ROLE_SUPERVISOR || !isset($_GET['student_id'])) {
@@ -37,13 +38,17 @@ try {
             le.entry_time,
             le.entry_status,
             GROUP_CONCAT(DISTINCT m.file_name) as media_files,
-            GROUP_CONCAT(DISTINCT m.file_type) as media_types
+            GROUP_CONCAT(DISTINCT m.file_type) as media_types,
+            f.remarks,
+            f.signature_date,
+            f.signature_time
         FROM log_entry le
         LEFT JOIN log_media lm ON le.entry_id = lm.entry_id
         LEFT JOIN media m ON lm.media_id = m.media_id
+        LEFT JOIN feedback f ON le.entry_id = f.entry_id
         WHERE le.user_id = :student_id 
         AND le.entry_status = 'Pending'
-        GROUP BY le.entry_id, le.entry_title, le.entry_description, le.entry_date, le.entry_time
+        GROUP BY le.entry_id
         ORDER BY le.entry_date DESC, le.entry_time DESC
     ");
     
@@ -62,13 +67,17 @@ try {
             le.entry_time,
             le.entry_status,
             GROUP_CONCAT(DISTINCT m.file_name) as media_files,
-            GROUP_CONCAT(DISTINCT m.file_type) as media_types
+            GROUP_CONCAT(DISTINCT m.file_type) as media_types,
+            f.remarks,
+            f.signature_date,
+            f.signature_time
         FROM log_entry le
         LEFT JOIN log_media lm ON le.entry_id = lm.entry_id
         LEFT JOIN media m ON lm.media_id = m.media_id
+        LEFT JOIN feedback f ON le.entry_id = f.entry_id
         WHERE le.user_id = :student_id 
         AND le.entry_status = 'Signed'
-        GROUP BY le.entry_id, le.entry_title, le.entry_description, le.entry_date, le.entry_time
+        GROUP BY le.entry_id
         ORDER BY le.entry_date DESC, le.entry_time DESC
     ");
     
