@@ -8,7 +8,7 @@ require_once 'components/toast_notification.php'; // Include and initialize toas
 checkUserLogin();
 
 try {
-    // Prepare and execute query to get log entries with media
+    // Prepare and execute query to get log entries with media and feedback information
     $stmt = $conn->prepare("
         SELECT 
             le.entry_id,
@@ -17,10 +17,14 @@ try {
             le.entry_status,
             le.entry_date,
             le.entry_time,
-            GROUP_CONCAT(m.file_name) as media_files
+            GROUP_CONCAT(m.file_name) as media_files,
+            f.remarks,
+            f.signature_date,
+            f.signature_time
         FROM log_entry le
         LEFT JOIN log_media lm ON le.entry_id = lm.entry_id
         LEFT JOIN media m ON lm.media_id = m.media_id
+        LEFT JOIN feedback f ON le.entry_id = f.entry_id
         WHERE le.user_id = :user_id
         GROUP BY le.entry_id
         ORDER BY le.entry_date DESC, le.entry_time DESC

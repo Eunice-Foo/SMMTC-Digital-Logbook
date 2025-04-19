@@ -1,6 +1,7 @@
 <?php
 function renderLogEntry($entry, $showActions = true) {
     require_once 'components/media_count_label.php';
+    require_once 'components/supervisor_feedback.php'; // Add this line
     ?>
     <div class="log-entry" data-date="<?php echo $entry['entry_date']; ?>">
         <div class="log-entry-grid">
@@ -54,6 +55,18 @@ function renderLogEntry($entry, $showActions = true) {
                 <div class="log-description">
                     <p><?php echo nl2br(htmlspecialchars($entry['entry_description'])); ?></p>
                 </div>
+                
+                <?php 
+                // Add supervisor feedback if available - handle both field naming conventions
+                $remarks = $entry['remarks'] ?? $entry['supervisor_remarks'] ?? null;
+                if (!empty($remarks)): 
+                    renderSupervisorFeedback(
+                        $remarks,
+                        $entry['signature_date'] ?? null, 
+                        $entry['signature_time'] ?? null
+                    );
+                endif;
+                ?>
             </div>
 
             <!-- Right - Actions -->

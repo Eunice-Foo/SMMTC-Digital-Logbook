@@ -3,6 +3,7 @@ require_once 'includes/session_check.php';
 require_once 'includes/db.php';
 require_once 'components/supervisor_signature.php';
 require_once 'components/export_logbook_profile.php';
+require_once 'components/supervisor_feedback.php';
 
 if (!isset($_POST['entries'])) {
     header('Location: export_logbook.php');
@@ -134,10 +135,11 @@ try {
                 <?php endif; ?>
 
                 <?php if (!empty($entry['supervisor_remarks'])): ?>
-                    <div class="supervisor-feedback">
-                        <h4>Supervisor's Remarks</h4>
-                        <p><?php echo nl2br(htmlspecialchars($entry['supervisor_remarks'])); ?></p>
-                    </div>
+                    <?php renderSupervisorFeedback(
+                        $entry['supervisor_remarks'],
+                        $entry['signature_date'] ?? null,
+                        $entry['signature_time'] ?? null
+                    ); ?>
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
