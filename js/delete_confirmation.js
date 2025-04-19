@@ -48,6 +48,8 @@ function proceedDelete(entryId) {
     // Close the modal first
     closeDeleteModal();
     
+    // Remove the warning toast code - no loading indicator needed
+    
     // Proceed with deletion
     fetch('delete_log.php', {
         method: 'POST',
@@ -57,19 +59,33 @@ function proceedDelete(entryId) {
         body: 'entry_id=' + entryId
     })
     .then(response => response.json())
-    .then(handleDeleteResponse)
-    .catch(handleDeleteError);
+    .then(data => handleDeleteResponse(data))
+    .catch(error => handleDeleteError(error));
 }
 
 function handleDeleteResponse(data) {
     if (data.success) {
         // Show success toast if available
         if (typeof showSuccessToast === 'function') {
+            // Make sure the toast is initialized in the page
+            const toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                // Create toast container if it doesn't exist
+                const container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.style.display = 'block';
+                document.body.appendChild(container);
+            }
+            
             showSuccessToast('Log entry deleted successfully!', 'Deleted');
+            
+            // Redirect after a short delay to allow toast to be seen
             setTimeout(() => {
                 window.location.href = 'logbook.php';
-            }, 1500);
+            }, 2000); // Keep 2 seconds for better visibility
         } else {
+            // Fallback if toast function isn't available
+            alert('Log entry deleted successfully!');
             window.location.href = 'logbook.php';
         }
     } else {
@@ -77,16 +93,18 @@ function handleDeleteResponse(data) {
         if (typeof showErrorToast === 'function') {
             showErrorToast(data.message || 'Failed to delete log entry', 'Error');
         } else {
-            alert('Error deleting entry: ' + data.message);
+            alert('Error deleting entry: ' + (data.message || 'Unknown error'));
         }
     }
 }
 
 function handleDeleteError(error) {
     console.error('Error:', error);
+    
+    // Show error toast if available
     if (typeof showErrorToast === 'function') {
         showErrorToast('Failed to connect to the server', 'Connection Error');
     } else {
-        alert('Error deleting entry');
+        alert('Error deleting entry: Connection failed');
     }
 }

@@ -2,6 +2,7 @@
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
 require_once 'components/month_bar.php'; // Add this line
+require_once 'components/toast_notification.php'; // Include and initialize toast notification component
 
 // Use the function from session_check.php
 checkUserLogin();
@@ -66,7 +67,10 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
     <script src="js/delete_confirmation.js"></script>
 </head>
 <body data-user-id="<?php echo $_SESSION['user_id']; ?>">
-    <?php include 'components/side_menu.php'; ?>
+    <?php 
+    include 'components/side_menu.php'; 
+    initializeToast(); // Initialize toast inside the body
+    ?>
     <!-- Move the media viewer component call after the side menu -->
     <div id="mediaViewer" class="media-viewer">
         <div class="media-viewer-content">
@@ -155,5 +159,6 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
         console.log('toggleExportMode function available:', typeof toggleExportMode === 'function');
     });
     </script>
+    <script src="js/delete_confirmation.js"></script> <!-- Include the delete confirmation script at the end of the body -->
 </body>
 </html>
