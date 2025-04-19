@@ -5,22 +5,15 @@
  * 
  * @param string $remarks The supervisor's remarks text
  * @param string|null $signatureDate Optional date when signed (format YYYY-MM-DD)
- * @param string|null $signatureTime Optional time when signed (format HH:MM:SS)
  */
-function renderSupervisorFeedback($remarks, $signatureDate = null, $signatureTime = null) {
+function renderSupervisorFeedback($remarks, $signatureDate = null) {
     if (empty($remarks) && empty($signatureDate)) {
         return; // Don't render anything if no remarks or signature date
     }
     ?>
     <div class="supervisor-feedback">
-        <h4>Supervisor's Remarks</h4>
+        <h4 class="feedback-heading">Supervisor's Remarks</h4>
         <p><?php echo !empty($remarks) ? nl2br(htmlspecialchars($remarks)) : 'No remarks provided'; ?></p>
-        
-        <?php if (!empty($signatureDate) && !empty($signatureTime)): ?>
-            <div class="signature-date">
-                Signed on: <?php echo date('M d, Y g:i A', strtotime($signatureDate . ' ' . $signatureTime)); ?>
-            </div>
-        <?php endif; ?>
     </div>
     <?php
 }
@@ -30,28 +23,20 @@ function renderSupervisorFeedback($remarks, $signatureDate = null, $signatureTim
 /* Supervisor feedback styles */
 .supervisor-feedback {
     background: #f8f9fa;
-    padding: 15px;
+    padding: 24px;
     margin-top: 15px;
     border-left: 3px solid var(--primary-color);
     border-radius: 4px;
 }
 
 .supervisor-feedback h4 {
-    margin-top: 0;
-    margin-bottom: 10px;
+    margin: 0;
     font-weight: 500;
     color: var(--text-primary);
 }
 
 .supervisor-feedback p {
-    margin-bottom: 10px;
-}
-
-.signature-date {
-    font-size: 0.85em;
-    color: var(--text-secondary);
-    text-align: right;
-    font-style: italic;
+    margin: 0;
 }
 
 /* Print styles for export preview */
