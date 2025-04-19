@@ -14,8 +14,10 @@ function renderMediaViewer($mediaFiles) {
         <div class="media-thumbnails">
             <?php
             $media_array = explode(',', $mediaFiles);
-            if (isset($media_array)):
-                foreach ($media_array as $index => $media): ?>
+            if (isset($media_array) && !empty($media_array)):
+                foreach ($media_array as $index => $media): 
+                    if (empty($media)) continue; // Skip empty entries
+                ?>
                     <div class="thumbnail" onclick="showMedia(<?php echo $index; ?>)">
                         <?php if (strpos($media, '.mp4') !== false || strpos($media, '.mov') !== false): ?>
                             <?php 
@@ -23,7 +25,7 @@ function renderMediaViewer($mediaFiles) {
                             renderVideoThumbnail($media, true); // Pass true for media viewer context
                             ?>
                         <?php else: ?>
-                            <img src="uploads/<?php echo htmlspecialchars($media); ?>" alt="Media Thumbnail">
+                            <img src="uploads/<?php echo htmlspecialchars($media); ?>" alt="Media Thumbnail" loading="lazy">
                         <?php endif; ?>
                     </div>
                 <?php endforeach;

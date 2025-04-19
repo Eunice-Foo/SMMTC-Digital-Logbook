@@ -123,24 +123,21 @@ function showMedia(index) {
         video.src = `uploads/${file}`;
         mediaDisplay.appendChild(video);
     } else {
-        // Image handling with WebP support
-        const picture = document.createElement('picture');
-        
-        // Add WebP source if not already a WebP
-        if (!file.endsWith('.webp')) {
-            const webpSource = document.createElement('source');
-            webpSource.srcset = `uploads/${file.substring(0, file.lastIndexOf('.'))}.webp`;
-            webpSource.type = 'image/webp';
-            picture.appendChild(webpSource);
-        }
-        
-        // Original image as fallback
+        // Simple image handling without WebP conversion - more reliable
         const img = document.createElement('img');
         img.src = `uploads/${file}`;
-        img.style.maxHeight = '80vh';
-        picture.appendChild(img);
+        img.alt = "Media content";
+        img.className = "media-display-image";
         
-        mediaDisplay.appendChild(picture);
+        // Add error handling to show a placeholder if image fails to load
+        img.onerror = function() {
+            console.error('Failed to load image:', file);
+            img.src = 'images/placeholder.png'; // Path to your placeholder image
+            img.alt = "Image not available";
+            img.className += " image-error";
+        };
+        
+        mediaDisplay.appendChild(img);
     }
 
     // Scroll thumbnail into view
