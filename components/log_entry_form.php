@@ -97,9 +97,17 @@ function renderLogEntryForm($formData = null) {
         <div class="form-buttons">
             <?php if ($showCustomButtons): ?>
                 <button type="button" class="cancel-btn">Cancel</button>
-                <button type="submit" class="submit-btn">Add Log Entry</button>
+                <button type="submit" class="submit-btn">
+                    <i class="fi fi-rr-square-plus"></i> Add New
+                </button>
             <?php else: ?>
-                <button type="submit" class="submit-button"><?php echo $isEdit ? 'Save Changes' : 'Add Log Entry'; ?></button>
+                <button type="submit" class="submit-button">
+                    <?php if ($isEdit): ?>
+                        Save Changes
+                    <?php else: ?>
+                        <i class="fi fi-rr-square-plus"></i> Add New
+                    <?php endif; ?>
+                </button>
             <?php endif; ?>
         </div>
     </form>

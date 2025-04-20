@@ -96,3 +96,33 @@
     display: flex;
     gap: 10px;
 }
+
+/* Actions placeholder for signed entries */
+.actions-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    align-self: center;
+}
+
+/* Fix for signed entries in export mode */
+.log-entry-grid {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr) auto;
+    gap: 20px;
+}
+
+/* Ensure consistent spacing for signed entries */
+@media screen and (max-width: 768px) {
+    .actions-placeholder {
+        width: auto;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .actions-placeholder {
+        width: 100%;
+        margin-top: 15px;
+    }
+}

@@ -97,7 +97,6 @@ button, .btn {
     line-height: 1;
     display: inline-block;
     vertical-align: middle;
-    margin-right: 5px;
 }
 
 /* Adjust button padding when containing icons */
@@ -105,10 +104,12 @@ button i, .btn i {
     font-size: 16px;
     position: relative;
     top: -1px;
+    margin-right: 5px;
 }
 
 /* Form elements */
 input, select, textarea {
+    width: 100% !important;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 8px;
@@ -169,5 +170,4 @@ th {
     box-sizing: border-box;
     position: relative;
     top: 0;
-    background-color: var(--bg-secondary);
 }
