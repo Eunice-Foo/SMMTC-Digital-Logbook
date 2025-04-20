@@ -1,38 +1,31 @@
 <?php
 // filepath: c:\xampp\htdocs\log\components\portfolio_card.php
 require_once 'includes/image_converter.php';
+require_once 'components/media_gallery_preview.php';
 
 function renderPortfolioCard($item) {
+    global $conn; // Make sure database connection is available
+    
+    // Get all media files for this portfolio
+    $stmt = $conn->prepare("
+        SELECT m.file_name 
+        FROM portfolio_media pm 
+        JOIN media m ON pm.media_id = m.media_id 
+        WHERE pm.portfolio_id = :portfolio_id
+        LIMIT 5
+    ");
+    $stmt->execute([':portfolio_id' => $item['portfolio_id']]);
+    $mediaFiles = [];
+    
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $mediaFiles[] = $row['file_name'];
+    }
     ?>
-    <div class="portfolio-card" data-category="<?php echo htmlspecialchars($item['category']); ?>" onclick="window.location.href='view_portfolio.php?id=<?php echo $item['portfolio_id']; ?>'">
+    
+    <div class="portfolio-card" data-category="<?php echo htmlspecialchars($item['category']); ?>" 
+         onclick="window.location.href='view_portfolio.php?id=<?php echo $item['portfolio_id']; ?>'">
         <div class="card-media">
-            <div class="placeholder-image"></div>
-            <?php if (strpos($item['file_type'], 'video/') === 0): ?>
-                <?php 
-                require_once 'components/video_thumbnail.php';
-                renderVideoThumbnail($item['media']);
-                ?>
-                <div class="video-badge">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 0C3.6 0 0 3.6 0 8C0 12.4 3.6 16 8 16C12.4 16 16 12.4 16 8C16 3.6 12.4 0 8 0ZM6 11.5V4.5L12 8L6 11.5Z" fill="white"/>
-                    </svg>
-                </div>
-            <?php else: ?>
-                <?php 
-                // Use the optimized image renderer
-                echo renderOptimizedImage(
-                    'uploads/' . $item['media'],
-                    htmlspecialchars($item['portfolio_title']),
-                    'portfolio-image',
-                    'loading="lazy" width="100%" height="100%"'
-                );
-                ?>
-            <?php endif; ?>
-            
-            <?php 
-            require_once 'components/media_count_label.php';
-            renderMediaCountLabel($item['media_count']); 
-            ?>
+            <?php renderMediaGalleryPreview($mediaFiles, 4); ?>
         </div>
         <div class="card-content">
             <div class="card-header">

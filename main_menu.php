@@ -26,15 +26,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
                 u.user_id,
                 u.user_name as username,
                 COALESCE(s.full_name, sv.supervisor_name) as full_name,
-                m.file_name as media, 
-                m.file_type,
                 (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
             FROM portfolio p
             INNER JOIN user u ON p.user_id = u.user_id
             LEFT JOIN student s ON u.user_id = s.student_id
             LEFT JOIN supervisor sv ON u.user_id = sv.supervisor_id
-            LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
-            LEFT JOIN media m ON pm.media_id = m.media_id
             " . ($category_filter !== 'all' ? "WHERE p.category = :category" : "") . "
             GROUP BY p.portfolio_id
             ORDER BY p.portfolio_date DESC, p.portfolio_time DESC
@@ -59,15 +55,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
                 u.user_id,
                 u.user_name as username,
                 COALESCE(s.full_name, sv.supervisor_name) as full_name,
-                m.file_name as media, 
-                m.file_type,
                 (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
             FROM portfolio p
             INNER JOIN user u ON p.user_id = u.user_id
             LEFT JOIN student s ON u.user_id = s.student_id
             LEFT JOIN supervisor sv ON u.user_id = sv.supervisor_id
-            LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
-            LEFT JOIN media m ON pm.media_id = m.media_id
             WHERE (p.portfolio_title LIKE :search OR p.portfolio_description LIKE :search)
             " . ($category_filter !== 'all' ? "AND p.category = :category" : "") . "
             GROUP BY p.portfolio_id
@@ -134,15 +126,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
             u.user_id,
             u.user_name as username,
             COALESCE(s.full_name, sv.supervisor_name) as full_name,
-            m.file_name as media, 
-            m.file_type,
             (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
         FROM portfolio p
         INNER JOIN user u ON p.user_id = u.user_id
         LEFT JOIN student s ON u.user_id = s.student_id
         LEFT JOIN supervisor sv ON u.user_id = sv.supervisor_id
-        LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
-        LEFT JOIN media m ON pm.media_id = m.media_id
         " . ($category_filter !== 'all' ? "WHERE p.category = :category" : "") . "
         GROUP BY p.portfolio_id
         ORDER BY p.portfolio_date DESC, p.portfolio_time DESC
@@ -190,16 +178,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
     <link rel="stylesheet" href="css/category_tabs.css">
     
     <style>
-        .placeholder-image {
-            background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
-            background-size: 200% 100%;
-            animation: 1.5s shine linear infinite;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
         
         @keyframes shine {
             to { background-position-x: -200%; }
@@ -242,49 +220,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
                 </div>
             <?php else: ?>
                 <?php foreach ($search_results as $result): ?>
-                    <div class="portfolio-card" onclick="window.location.href='view_portfolio.php?id=<?php echo $result['portfolio_id']; ?>'" data-category="<?php echo $result['category']; ?>">
-                        <div class="card-media">
-                            <!-- Add placeholder before actual content -->
-                            <div class="placeholder-image"></div>
-                            
-                            <?php if (isset($result['file_type']) && strpos($result['file_type'], 'video/') === 0): ?>
-                                <!-- Use data attributes to lazy load video thumbnails -->
-                                <div class="video-thumbnail" data-video="<?php echo htmlspecialchars($result['media']); ?>"></div>
-                                <div class="video-badge">
-                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M8 0C3.6 0 0 3.6 0 8C0 12.4 3.6 16 8 16C12.4 16 16 12.4 16 8C16 3.6 12.4 0 8 0ZM6 11.5V4.5L12 8L6 11.5Z" fill="white"/>
-                                    </svg>
-                                </div>
-                            <?php else: ?>
-                                <!-- Optimized lazy loading for images -->
-                                <img 
-                                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" 
-                                    data-src="uploads/<?php echo htmlspecialchars($result['media']); ?>" 
-                                    alt="Portfolio Media" 
-                                    class="lazy-image"
-                                    loading="lazy"
-                                    width="300"
-                                    height="180">
-                            <?php endif; ?>
-                            
-                            <?php if ($result['media_count'] > 1): ?>
-                                <div class="media-count">+<?php echo $result['media_count'] - 1; ?> more</div>
-                            <?php endif; ?>
-                        </div>
-                        <div class="card-content">
-                            <div class="card-header">
-                                <h3><?php echo htmlspecialchars($result['portfolio_title']); ?></h3>
-                            </div>
-                            <div class="card-meta">
-                                <a href="user_portfolio_profile.php?id=<?php echo $result['user_id']; ?>" class="author" onclick="event.stopPropagation();">
-                                    <?php echo htmlspecialchars(!empty($result['full_name']) ? $result['full_name'] : $result['username']); ?>
-                                </a>
-                                <div class="timestamp">
-                                    <?php echo date('M d, Y', strtotime($result['portfolio_date'])); ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <?php renderPortfolioCard($result); ?>
                 <?php endforeach; ?>
             <?php endif; ?>
             
@@ -294,17 +230,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
         </div>
     </div>
 
-    <!-- Move JS to external file and load it deferred -->
     <script>
-    // Store initial data as simple values to avoid complex parsing
-    window.portfolioData = {
-        currentPage: 1,
-        hasMore: <?php echo $total_results > ($page * $items_per_page) ? 'true' : 'false'; ?>,
-        itemsPerPage: <?php echo $items_per_page; ?>,
-        category: '<?php echo $category_filter; ?>',
-        loading: false
-    };
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up category tabs
+            setupCategoryTabs();
+        });
     </script>
-    <script src="js/main_menu_lazy_load.js" defer></script>
+    <script src="js/category_tabs.js" defer></script>
 </body>
 </html>
