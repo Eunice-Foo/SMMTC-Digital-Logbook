@@ -103,10 +103,10 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
                 <!-- Regular buttons -->
                 <div id="regularButtons">
                     <button class="btn btn-export" onclick="toggleExportMode()">
-                        Export Logbook
+                        <i class="fi fi-rr-file-export"></i> Export
                     </button>
                     <button class="btn btn-add" onclick="window.location.href='add_new_log.php'">
-                        Add New Log
+                        <i class="fi fi-rr-square-plus"></i> Add New
                     </button>
                 </div>
 
@@ -125,7 +125,7 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
                     <!-- Right side -->
                     <div class="export-buttons">
                         <button id="downloadButton" class="btn btn-export" onclick="downloadExport()" disabled>
-                            Export
+                            <i class="fi fi-rr-file-export"></i> Export
                         </button>
                         <button class="btn btn-secondary" onclick="toggleExportMode()">
                             Cancel
