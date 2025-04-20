@@ -1,7 +1,9 @@
 <?php
 function renderMonthBar($log_entries, $practicum_start_date, $practicum_duration) {
-    $months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
-              'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    $months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
     
     // Get start month and generate sequence of months
     $start_month = (int)date('n', strtotime($practicum_start_date)) - 1; // 0-based index

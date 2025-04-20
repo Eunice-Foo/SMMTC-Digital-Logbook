@@ -12,10 +12,6 @@ body {
     overflow-x: hidden;
 }
 
-.logbook-content {
-    padding: 20px;
-}
-
 .calendar-view {
     margin-top: 0;
     padding-top: 0;
@@ -97,14 +93,6 @@ body {
 .view-btn.active {
     background-color: var(--primary-color);
     color: white;
-}
-
-/* Button container */
-.button-container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    padding: 20px;
 }
 
 /* No entries message */

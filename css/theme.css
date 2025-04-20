@@ -152,4 +152,5 @@ th {
     box-sizing: border-box;
     position: relative;
     top: 0;
+    background-color: var(--bg-secondary);
 }
