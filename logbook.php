@@ -56,6 +56,7 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
     <title>My Logbook</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/logbook.css">
+    <link rel="stylesheet" href="css/log_entry.css">
     <link rel="stylesheet" href="css/media_viewer.css">
     <link rel="stylesheet" href="css/month_bar.css">
     <link rel="stylesheet" href="css/video_thumbnail.css">

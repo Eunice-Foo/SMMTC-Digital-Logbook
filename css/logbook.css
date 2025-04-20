@@ -21,70 +21,6 @@ body {
     padding-top: 0;
 }
 
-.log-entry-grid {
-    display: grid;
-    grid-template-columns: 300px minmax(0, 1fr) auto;
-    gap: 20px;
-    align-items: center;
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    position: relative;
-}
-
-/* When no media is present */
-.log-entry-grid:not(:has(.media-gallery-preview)) {
-    grid-template-columns: minmax(0, 1fr) auto; /* Changed to auto for actions */
-}
-
-.log-entry {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin: 15px 0;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    display: flex;
-    flex-direction: column;
-}
-
-.log-entry:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-/* Content section */
-.log-content {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    align-self: center;
-    padding: 20px;
-}
-
-.log-status {
-    padding: 8px 16px;
-    border-radius: 24px;
-    font-size: 0.85em;
-    font-weight: 500;
-}
-
-.log-status.Pending {
-    background-color: var(--warning-color);
-    color: white;
-}
-
-.log-status.Signed {
-    background-color: var(--success-color);
-    color: white;
-}
-
-.log-description p {
-    color: #666;
-    line-height: 1.5;
-    text-align: justify;
-}
-
 /* Media gallery styles */
 .media-gallery {
     display: grid;
@@ -98,7 +34,7 @@ body {
 .media-item {
     position: relative;
     aspect-ratio: 1;
-    height: 100px; /* Reduced from default height */
+    height: 100px;
     overflow: hidden;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
@@ -126,13 +62,61 @@ body {
     opacity: 0.5;
 }
 
+/* Button colors - inherit other styles from theme.css */
 .btn-add {
     background-color: var(--primary-color);
     color: white;
 }
 
-.btn:hover {
-    opacity: 0.9;
+/* View Switcher */
+.view-switcher {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 20px 0;
+}
+
+.view-switcher h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.view-btn {
+    padding: 8px 16px;
+    border: 2px solid var(--primary-color);
+    background-color: white;
+    color: var(--primary-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Button container */
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px;
+}
+
+/* No entries message */
+.no-entries {
+    display: block;
+    text-align: center;
+    padding: 30px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    color: #666;
+    font-size: 16px;
 }
 
 /* Responsive adjustments */
@@ -144,182 +128,10 @@ body {
     .media-gallery {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
-    
-    .log-entry-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
 }
 
 @media screen and (max-width: 576px) {
     body {
         flex-direction: column;
     }
-
-}
-
-/* View Switcher */
-.view-switcher {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin: 0 0 20px 0; /* Remove top margin */
-}
-
-.view-btn {
-    padding: 8px 16px;
-    border: 2px solid #4CAF50;
-    background-color: white;
-    color: #4CAF50;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.view-btn.active {
-    background-color: #4CAF50;
-    color: white;
-}
-
-/* Media section */
-.log-media-section {
-    width: 300px; /* Increased fixed width */
-    height: 100%; /* Take full height of container */
-    max-height: 250px; /* Optional: set a maximum height */
-    overflow: hidden;
-    border-radius: 8px;
-    position: relative;
-}
-
-
-/* Single item */
-.media-gallery-preview:has(.media-preview:only-child) {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr;
-}
-
-/* Two items */
-.media-gallery-preview:has(.media-preview:nth-child(2)) {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: 1fr;
-}
-
-/* Three items */
-.media-gallery-preview:has(.media-preview:nth-child(3)) {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-}
-
-/* Make third item span full width of second row */
-.media-gallery-preview:has(.media-preview:nth-child(3)) .media-preview:nth-child(3) {
-    grid-column: 1 / -1;
-}
-
-/* Four items */
-.media-gallery-preview:has(.media-preview:nth-child(4)) {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-}
-
-/* Remove span for third item when there are 4 items */
-.media-gallery-preview:has(.media-preview:nth-child(4)) .media-preview:nth-child(3) {
-    grid-column: auto;
-}
-
-.media-preview {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    position: relative;
-}
-
-/* Remove the auto-fit styles that were causing the issue */
-.media-gallery-preview {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(50%, 1fr)); /* Minimum 50% width */
-    grid-auto-rows: 50%; /* Each row takes 50% height */
-    gap: 6px;
-}
-
-.log-datetime {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.datetime-group {
-    display: flex;
-    align-items: baseline;
-    gap: 15px;
-}
-
-.log-datetime h3 {
-    font-size: 1.2em;
-    margin: 0;
-    color: var(--text-primary);
-    white-space: nowrap;
-}
-
-.upload-time {
-    font-size: 0.9em;
-    color: var(--text-secondary);
-    font-weight: normal;
-    white-space: nowrap;
-}
-
-.log-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.log-title {
-    color: var(--text-primary);
-    font-weight: 500;
-    font-size: 1.2em;
-}
-
-/* Responsive adjustments */
-@media screen and (max-width: 768px) {
-    .log-entry-grid {
-        grid-template-columns: 200px minmax(0, 1fr) auto;
-        gap: 15px;
-        padding-right: 120px;
-    }
-    
-    .log-media-section {
-        width: 200px;
-        max-height: 200px;
-    }
-}
-
-@media screen and (max-width: 576px) {
-    .log-entry-grid {
-        grid-template-columns: 1fr;
-        padding-right: 15px;
-    }
-}
-
-.log-datetime {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.log-datetime h3 {
-    font-size: 1.2em;
-    margin: 0;
-    color: var(--text-primary);
-}
-
-.upload-time {
-    font-size: 0.9em;
-    color: var(--text-secondary);
-    font-weight: normal;
 }

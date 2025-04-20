@@ -61,7 +61,9 @@ button, .btn {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-weight: 400;
+    font-family: var(--font-primary);
+    font-size: 16px;
+    font-weight: 500;
     transition: background-color 0.2s ease;
 }
 
@@ -72,6 +74,10 @@ button, .btn {
 
 .btn-primary:hover {
     background-color: var(--primary-hover);
+}
+
+.btn:hover {
+    opacity: 0.9;
 }
 
 .btn-secondary {

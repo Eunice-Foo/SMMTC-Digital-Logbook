@@ -50,7 +50,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Log Entry</title>
     <link rel="stylesheet" href="css/theme.css">
-    <link rel="stylesheet" href="css/logbook.css">
+    <link rel="stylesheet" href="css/log_entry.css">
     <link rel="stylesheet" href="css/media_viewer.css">
     <link rel="stylesheet" href="css/video_thumbnail.css">
     <style>
