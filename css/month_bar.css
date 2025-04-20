@@ -13,7 +13,7 @@
     padding: 12px 24px; /* Inherit padding from theme */
     border: none;
     border-radius: 8px;
-    background: white;
+    background: var(--bg-tertiary); /* Use secondary background color from theme */
     cursor: pointer;
     transition: all 0.3s ease;
     white-space: nowrap;
