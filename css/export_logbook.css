@@ -50,7 +50,7 @@
     align-items: center;
     width: 100%;
     padding: 0;
-    background: white;
+    margin: 24px 0;
 }
 
 .export-left {
@@ -86,8 +86,10 @@
 
 /* Button container */
 .button-container {
-    background: white;
     position: relative;
+    background: none !important;
+    padding: 0 !important;
+    margin: 24px 0 !important;
 }
 
 #regularButtons {

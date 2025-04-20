@@ -1,65 +1,46 @@
 .month-bar {
-    display: grid;
-    width: 100%;
-    background: white;
+    display: flex;
+    gap: 10px;
+    background: transparent;
     border-radius: 8px;
-    margin: 50px 0;
+    margin: 24px 0;
     overflow-x: auto;
+    justify-content: flex-start; /* Changed from center to flex-start */
+    flex-wrap: wrap;
 }
 
-/* Use CSS custom property for dynamic grid columns */
-.month-bar[data-duration="3"] { grid-template-columns: repeat(3, 1fr); }
-.month-bar[data-duration="4"] { grid-template-columns: repeat(4, 1fr); }
-.month-bar[data-duration="5"] { grid-template-columns: repeat(5, 1fr); }
-.month-bar[data-duration="6"] { grid-template-columns: repeat(6, 1fr); }
-/* Add more as needed */
-
 .month-btn {
-    width: 100%;
-    min-width: 80px;
-    padding: 12px 8px;
+    padding: 12px 24px; /* Inherit padding from theme */
     border: none;
-    background: none;
+    border-radius: 8px;
+    background: white;
     cursor: pointer;
     transition: all 0.3s ease;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    border-radius: 0;
+    font-family: var(--font-primary);
     font-size: 16px;
-    font-weight: normal;
-}
-
-/* Dynamic max-width based on duration */
-.month-bar[data-duration="3"] .month-btn { max-width: calc(100vw / 3); }
-.month-bar[data-duration="4"] .month-btn { max-width: calc(100vw / 4); }
-.month-bar[data-duration="5"] .month-btn { max-width: calc(100vw / 5); }
-.month-bar[data-duration="6"] .month-btn { max-width: calc(100vw / 6); }
-/* Add more as needed */
-
-.month-btn:last-child {
-    border-right: none;
-}
-
-.month-btn.active {
-    color: var(--primary-color);
-    border-bottom: 3px solid var(--primary-color);
+    color: var(--text-secondary); /* Use secondary text color from theme */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 .month-btn:hover {
+    background-color: #f5f5f5;
     color: var(--primary-color);
 }
 
-.month-btn.hidden {
-    display: none;
+.month-btn.active {
+    background-color: var(--primary-color);
+    color: white;
 }
 
 /* Responsive adjustments */
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 768px) {
     .month-bar {
-        grid-template-columns: repeat(3, 1fr) !important;
+        justify-content: flex-start;
     }
+    
     .month-btn {
-        max-width: calc(100vw / 3) !important;
+        padding: 10px 16px;
+        font-size: 14px;
     }
 }
