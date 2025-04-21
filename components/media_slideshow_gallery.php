@@ -5,7 +5,7 @@
  * Renders a slideshow gallery of media files
  * 
  * @param array $mediaFiles Array of media file data from database
- * @param string $title Optional title for the slideshow
+ * @param string $title Optional title for the slideshow (now ignored)
  * @return void
  */
 function renderMediaSlideshowGallery($mediaFiles, $title = '') {
@@ -26,10 +26,6 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
     $galleryId = 'gallery_' . rand(1000, 9999);
 ?>
 <div class="slideshow-gallery-container" id="<?php echo $galleryId; ?>_container">
-    <?php if (!empty($title)): ?>
-        <h2 style="text-align:center"><?php echo htmlspecialchars($title); ?></h2>
-    <?php endif; ?>
-    
     <div class="slideshow-container">
         <?php foreach ($files as $index => $item): 
             $filename = $item['file_name'];
@@ -38,8 +34,6 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
             $number = $index + 1;
         ?>
             <div class="mySlides fade">
-                <div class="numbertext"><?php echo $number; ?> / <?php echo $totalFiles; ?></div>
-                
                 <?php if ($isVideo): ?>
                     <div class="video-container">
                         <video controls class="slide-media">
@@ -54,8 +48,12 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
         <?php endforeach; ?>
         
         <!-- Navigation arrows -->
-        <a class="prev" onclick="plusSlides(-1, '<?php echo $galleryId; ?>')">❮</a>
-        <a class="next" onclick="plusSlides(1, '<?php echo $galleryId; ?>')">❯</a>
+        <div class="prev" onclick="plusSlides(-1, '<?php echo $galleryId; ?>')">
+            <i class="fi fi-rr-arrow-small-left"></i>
+        </div>
+        <div class="next" onclick="plusSlides(1, '<?php echo $galleryId; ?>')">
+            <i class="fi fi-rr-arrow-small-right"></i>
+        </div>
 
         <!-- Thumbnail row -->
         <div class="thumbnail-row">
@@ -149,40 +147,42 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
     max-height: 100%;
 }
 
+/* Updated styles for navigation arrows */
 .prev, .next {
     cursor: pointer;
     position: absolute;
-    top: 40%;
-    width: auto;
-    padding: 16px;
-    margin-top: -22px;
-    color: white;
-    font-weight: bold;
-    font-size: 20px;
-    border-radius: 0 3px 3px 0;
+    top: 0;
+    width: 20%;
+    height: 100%;
+    background-color: transparent;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     user-select: none;
-    background-color: rgba(0,0,0,0.3);
-    transition: 0.3s ease;
+    transition: background-color 0.3s ease;
+}
+
+.prev {
+    left: 0;
+    justify-content: flex-start;
+    padding-left: 20px;
 }
 
 .next {
     right: 0;
-    border-radius: 3px 0 0 3px;
+    justify-content: flex-end;
+    padding-right: 20px;
 }
 
-.prev:hover, .next:hover {
-    background-color: rgba(0,0,0,0.8);
+.prev i, .next i {
+    font-size: 36px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
 }
 
-.numbertext {
-    color: #f2f2f2;
-    font-size: 14px;
-    padding: 8px 12px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: rgba(0,0,0,0.5);
-    border-radius: 0 0 8px 0;
+.prev:hover i, .next:hover i {
+    opacity: 1;
 }
 
 .thumbnail-row {
@@ -191,13 +191,17 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
     gap: 8px;
     padding-bottom: 10px;
     scrollbar-width: thin;
-    margin-top: 16px; /* Added more spacing now that caption is gone */
+    margin-top: 16px;
+    justify-content: center;
+    padding: 0 20px;
 }
 
 .column {
     flex: 0 0 auto;
     width: 120px;
     position: relative;
+    display: flex;
+    justify-content: center;
 }
 
 .demo {
