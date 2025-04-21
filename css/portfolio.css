@@ -63,6 +63,7 @@
     color: var(--text-secondary);
 }
 
+/* Update the add button and dropdown styles */
 .add-options {
     position: fixed;
     bottom: 30px;
@@ -70,32 +71,38 @@
     z-index: 100;
 }
 
-.btn-dropdown {
-    padding: 15px 25px;
+.btn-add {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
     background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 8px;
     cursor: pointer;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
     font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
 }
 
-.btn-dropdown:hover {
+.btn-add:hover {
     background-color: var(--primary-hover);
 }
 
 .dropdown-content {
     display: none;
     position: absolute;
-    bottom: 100%; /* Position above the button */
+    bottom: 100%;
     right: 0;
-    margin-bottom: 10px; /* Space between button and dropdown */
+    margin-bottom: 10px;
     background-color: white;
     min-width: 200px;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     border-radius: 8px;
     overflow: hidden;
+    transition: all 0.2s ease;
 }
 
 .dropdown-content a {
@@ -110,8 +117,20 @@
     background-color: var(--bg-secondary);
 }
 
-.show {
+.dropdown-content.show {
     display: block;
+    animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Category tabs styling */

@@ -58,7 +58,9 @@ try {
         <?php renderCategoryTabs('all'); ?>
 
         <div class="add-options">
-            <button class="btn-dropdown" onclick="toggleDropdown()">Add to Portfolio ▼</button>
+            <button class="btn-add" onclick="toggleDropdown()">
+                <i class="fi fi-rr-square-plus"></i> Add New
+            </button>
             <div id="addOptions" class="dropdown-content">
                 <a href="add_portfolio.php">Upload Media</a>
                 <a href="import_logbook_media.php">Import from Logbook</a>
@@ -84,17 +86,18 @@ try {
     <script src="js/lazy_blur.js"></script>
     <script>
     function toggleDropdown() {
-        document.getElementById("addOptions").classList.toggle("show");
+        const dropdown = document.getElementById("addOptions");
+        dropdown.classList.toggle("show");
     }
 
     // Close dropdown when clicking outside
     window.onclick = function(event) {
-        if (!event.target.matches('.btn-dropdown')) {
-            var dropdowns = document.getElementsByClassName("dropdown-content");
-            for (var i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
+        // Change from .btn-dropdown to .btn-add
+        if (!event.target.matches('.btn-add') && !event.target.matches('.fi-rr-square-plus')) {
+            const dropdowns = document.getElementsByClassName("dropdown-content");
+            for (let dropdown of dropdowns) {
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
                 }
             }
         }
