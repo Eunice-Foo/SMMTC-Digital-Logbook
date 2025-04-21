@@ -33,7 +33,7 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
             $isVideo = strpos($fileType, 'video/') === 0 || preg_match('/\.(mp4|mov)$/i', $filename);
             $number = $index + 1;
         ?>
-            <div class="mySlides fade">
+            <div class="mySlides slide">
                 <?php if ($isVideo): ?>
                     <div class="video-container">
                         <video controls class="slide-media">
@@ -112,18 +112,45 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
 }
 
 .mySlides {
-    display: none;
     text-align: center;
 }
 
-.fade {
-    animation-name: fade;
-    animation-duration: 0.5s;
+/* Updated animation styles for smoother transitions */
+.slide {
+    position: relative;
+    display: none;
 }
 
-@keyframes fade {
-    from {opacity: .4} 
-    to {opacity: 1}
+/* Faster and smoother float-in animations */
+.slide.slide-right {
+    animation: floatRight 0.4s ease-out;
+}
+
+.slide.slide-left {
+    animation: floatLeft 0.4s ease-out;
+}
+
+@keyframes floatRight {
+    from {
+        opacity: 0;
+        transform: translateX(-40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes floatLeft {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
 }
 
 .slide-media {
@@ -272,8 +299,35 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Mark as initialized
     window.slideshows['<?php echo $galleryId; ?>'].initialized = true;
+    
+    // Add keyboard navigation event listener
+    document.addEventListener('keydown', function(e) {
+        // Only handle keyboard events when this slideshow is visible
+        const container = document.getElementById('<?php echo $galleryId; ?>_container');
+        if (!container || !isElementInViewport(container)) return;
+        
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            plusSlides(-1, '<?php echo $galleryId; ?>');
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            plusSlides(1, '<?php echo $galleryId; ?>');
+        }
+    });
 });
 
+// Helper function to check if element is visible in viewport
+function isElementInViewport(el) {
+    const rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}
+
+// Rest of existing functions
 function plusSlides(n, galleryId) {
     const slideshow = window.slideshows[galleryId];
     showSlides(slideshow.index + n, galleryId);
@@ -294,12 +348,27 @@ function showSlides(n, galleryId) {
     if (n > slides.length) newIndex = 1;
     if (n < 1) newIndex = slides.length;
     
+    // Determine direction (added this)
+    let direction = 'slide-left'; // default direction
+    if (slideshow.initialized && slideshow.index > newIndex) {
+        direction = 'slide-right';
+    }
+    // Special case: going from last slide to first
+    if (slideshow.index === 1 && newIndex === slides.length) {
+        direction = 'slide-right';
+    }
+    // Special case: going from first slide to last
+    if (slideshow.index === slides.length && newIndex === 1) {
+        direction = 'slide-left';
+    }
+    
     // Update slideshow state
     slideshow.index = newIndex;
     
-    // Hide all slides
+    // Hide all slides and remove direction classes
     for (let i = 0; i < slides.length; i++) {
         slides[i].style.display = "none";
+        slides[i].classList.remove("slide-left", "slide-right");
     }
     
     // Remove active class from thumbnails
@@ -307,13 +376,14 @@ function showSlides(n, galleryId) {
         dots[i].className = dots[i].className.replace(" active", "");
     }
     
-    // Show current slide
+    // Add direction class to current slide and show it
+    slides[newIndex - 1].classList.add(direction);
     slides[newIndex - 1].style.display = "block";
     
     // Highlight current thumbnail
     dots[newIndex - 1].className += " active";
     
-    // If there's a video in the previous slide, pause it
+    // If there's a video in the slides, pause them all
     if (slideshow.initialized) {
         for (let i = 0; i < slides.length; i++) {
             const video = slides[i].querySelector('video');
