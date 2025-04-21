@@ -76,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(0, 0, 0, 0.2);
             z-index: 1;
         }
         
@@ -210,8 +210,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="split-container">
         <div class="image-side">
             <div class="image-overlay"></div>
-            <!-- You can replace this with your actual image path -->
-            <img src="images/login-cover.jpg" alt="Login Cover" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'; this.alt='Fallback cover image';">
+            <img src="images/login-cover.png" alt="Login Cover">
         </div>
         
         <div class="form-side">
