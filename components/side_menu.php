@@ -67,7 +67,7 @@ require_once 'includes/session_check.php';
         </ul>
     </nav>
     <div class="logout-container">
-        <a href="logout.php" class="logout-btn">
+        <a href="javascript:void(0)" class="logout-btn" onclick="handleLogout()">
             <i class="fi fi-rr-sign-out-alt"></i>
             Logout
         </a>
@@ -261,5 +261,23 @@ document.addEventListener('DOMContentLoaded', function() {
             link.classList.add('active');
         }
     });
+});
+
+// Secure logout function
+function handleLogout() {
+    // Clear any local/session storage data
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    // Redirect to logout script
+    window.location.href = 'logout.php';
+}
+
+// Prevent back button after logout
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+        // Page was restored from the back-forward cache
+        window.location.reload();
+    }
 });
 </script>

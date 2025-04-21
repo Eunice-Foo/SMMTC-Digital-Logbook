@@ -1,4 +1,7 @@
 <?php
+require_once 'includes/session_check.php';
+checkUserLogin(); // This will ensure user is logged in and set cache headers
+
 session_start();
 require_once 'includes/db.php'; // Update path
 
