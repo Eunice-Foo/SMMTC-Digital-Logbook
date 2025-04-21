@@ -54,19 +54,22 @@ try {
     <div class="main-content">
         <h2>My Portfolio</h2>
         
-        <!-- Using the category tabs component -->
-        <?php renderCategoryTabs('all'); ?>
-
-        <div class="add-options">
-            <button class="btn-add" onclick="toggleDropdown()">
-                <i class="fi fi-rr-square-plus"></i> Add New
-            </button>
-            <div id="addOptions" class="dropdown-content">
-                <a href="add_portfolio.php">Upload Media</a>
-                <a href="import_logbook_media.php">Import from Logbook</a>
+        <!-- Add New button moved to its own row -->
+        <div class="add-options-container">
+            <div class="add-options">
+                <button class="btn-add" onclick="toggleDropdown()">
+                    <i class="fi fi-rr-square-plus"></i> Add New
+                </button>
+                <div id="addOptions" class="dropdown-content">
+                    <a href="add_portfolio.php">Upload Media</a>
+                    <a href="import_logbook_media.php">Import from Logbook</a>
+                </div>
             </div>
         </div>
         
+        <!-- Using the category tabs component -->
+        <?php renderCategoryTabs('all'); ?>
+
         <?php if (empty($portfolio_items)): ?>
             <div class="empty-state">
                 <h3>No portfolio items yet</h3>

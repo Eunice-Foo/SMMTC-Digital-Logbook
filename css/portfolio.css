@@ -64,27 +64,22 @@
 }
 
 /* Update the add button and dropdown styles */
+.add-options-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 24px;
+}
+
 .add-options {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 100;
+    position: relative;
 }
 
 .btn-add {
+    background-color: var(--primary-color);
+    color: white;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 24px;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: all 0.2s ease;
 }
 
 .btn-add:hover {
@@ -94,15 +89,15 @@
 .dropdown-content {
     display: none;
     position: absolute;
-    bottom: 100%;
+    top: 100%;
     right: 0;
-    margin-bottom: 10px;
+    margin-top: 5px;
     background-color: white;
     min-width: 200px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     border-radius: 8px;
     overflow: hidden;
-    transition: all 0.2s ease;
+    z-index: 100;
 }
 
 .dropdown-content a {
@@ -110,7 +105,6 @@
     padding: 12px 16px;
     text-decoration: none;
     display: block;
-    transition: background-color 0.2s ease;
 }
 
 .dropdown-content a:hover {
@@ -119,18 +113,6 @@
 
 .dropdown-content.show {
     display: block;
-    animation: slideIn 0.2s ease;
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 /* Category tabs styling */
