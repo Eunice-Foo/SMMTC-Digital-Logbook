@@ -88,6 +88,11 @@ try {
                 <p>Start adding items to your portfolio!</p>
             </div>
         <?php else: ?>
+            <div class="view-options">
+                <a href="media_slideshow.php" class="view-option-btn">
+                    <i class="fi fi-rr-slideshow"></i> View All Media as Slideshow
+                </a>
+            </div>
             <!-- Use gallery class instead of portfolio-grid for consistency with main_menu.php -->
             <div class="gallery">
                 <?php foreach ($portfolio_items as $item): ?>
