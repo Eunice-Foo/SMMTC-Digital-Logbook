@@ -11,8 +11,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== ROLE_ADMIN) {
 
 $stats = [
     'total' => 0,
-    'sm_thumbs' => 0,
-    'md_thumbs' => 0,
+    'thumbnails' => 0,
     'lqip_thumbs' => 0,
     'webp_main' => 0,
     'missing_thumbs' => 0
@@ -35,24 +34,26 @@ $missing_thumbs = [];
 foreach ($images as $image) {
     $filename = pathinfo($image['file_name'], PATHINFO_FILENAME);
     
-    // Check for thumbnails
-    $sm = file_exists("../uploads/thumbnails/{$filename}_sm.webp");
-    $md = file_exists("../uploads/thumbnails/{$filename}_md.webp");
+    // Check for thumbnails with new naming convention
+    $thumb = file_exists("../uploads/thumbnails/{$filename}_thumb.webp");
     $lqip = file_exists("../uploads/thumbnails/{$filename}_lqip.webp");
     $webp = file_exists("../uploads/{$filename}.webp");
     
-    if ($sm) $stats['sm_thumbs']++;
-    if ($md) $stats['md_thumbs']++;
+    // Legacy check (for backward compatibility)
+    $sm = file_exists("../uploads/thumbnails/{$filename}_sm.webp");
+    $md = file_exists("../uploads/thumbnails/{$filename}_md.webp");
+    
+    // Count if either new thumb or any legacy thumb exists
+    if ($thumb || $sm || $md) $stats['thumbnails']++;
     if ($lqip) $stats['lqip_thumbs']++;
     if ($webp) $stats['webp_main']++;
     
-    if (!$sm || !$md || !$lqip) {
+    if (!$thumb && !$lqip) {
         $stats['missing_thumbs']++;
         $missing_thumbs[] = [
             'id' => $image['media_id'],
             'filename' => $image['file_name'],
-            'sm' => $sm,
-            'md' => $md,
+            'thumb' => $thumb,
             'lqip' => $lqip,
             'webp' => $webp
         ];
@@ -148,12 +149,8 @@ if (isset($_POST['regenerate'])) {
                 <div class="stat-value"><?php echo $stats['total']; ?></div>
             </div>
             <div class="stat-card">
-                <div>SM Thumbnails</div>
-                <div class="stat-value"><?php echo $stats['sm_thumbs']; ?></div>
-            </div>
-            <div class="stat-card">
-                <div>MD Thumbnails</div>
-                <div class="stat-value"><?php echo $stats['md_thumbs']; ?></div>
+                <div>Thumbnails</div>
+                <div class="stat-value"><?php echo $stats['thumbnails']; ?></div>
             </div>
             <div class="stat-card">
                 <div>LQIP Thumbnails</div>
@@ -176,8 +173,7 @@ if (isset($_POST['regenerate'])) {
                     <tr>
                         <th>ID</th>
                         <th>Filename</th>
-                        <th>SM</th>
-                        <th>MD</th>
+                        <th>Thumb</th>
                         <th>LQIP</th>
                         <th>WebP</th>
                     </tr>
@@ -187,8 +183,7 @@ if (isset($_POST['regenerate'])) {
                         <tr>
                             <td><?php echo $img['id']; ?></td>
                             <td><?php echo htmlspecialchars($img['filename']); ?></td>
-                            <td><?php echo $img['sm'] ? '✅' : '❌'; ?></td>
-                            <td><?php echo $img['md'] ? '✅' : '❌'; ?></td>
+                            <td><?php echo $img['thumb'] ? '✅' : '❌'; ?></td>
                             <td><?php echo $img['lqip'] ? '✅' : '❌'; ?></td>
                             <td><?php echo $img['webp'] ? '✅' : '❌'; ?></td>
                         </tr>

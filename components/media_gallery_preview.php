@@ -33,20 +33,23 @@ function renderMediaGalleryPreview($mediaFiles, $maxDisplay = 4) {
                     </div>
                 <?php else: ?>
                     <?php
-                    // For images, prioritize thumbnails with fallbacks
-                    $smThumb = "uploads/thumbnails/{$filename}_sm.webp";
-                    $mdThumb = "uploads/thumbnails/{$filename}_md.webp";
-                    $thumbWebP = "uploads/{$filename}.webp";
+                    // For images, check thumbnail with fallbacks using new naming convention
+                    $thumbWebP = "uploads/thumbnails/{$filename}_thumb.webp";
+                    $smWebP = "uploads/thumbnails/{$filename}_sm.webp";   // Legacy fallback
+                    $mdWebP = "uploads/thumbnails/{$filename}_md.webp";   // Legacy fallback
+                    $mainWebP = "uploads/{$filename}.webp";
                     $fallbackOriginal = "uploads/{$media}";
                     ?>
                     
                     <img 
-                        <?php if (file_exists($smThumb)): ?>
-                            src="<?php echo $smThumb; ?>"
-                        <?php elseif (file_exists($mdThumb)): ?>
-                            src="<?php echo $mdThumb; ?>"
-                        <?php elseif (file_exists($thumbWebP)): ?>
+                        <?php if (file_exists($thumbWebP)): ?>
                             src="<?php echo $thumbWebP; ?>"
+                        <?php elseif (file_exists($smWebP)): ?>
+                            src="<?php echo $smWebP; ?>"
+                        <?php elseif (file_exists($mdWebP)): ?>
+                            src="<?php echo $mdWebP; ?>"
+                        <?php elseif (file_exists($mainWebP)): ?>
+                            src="<?php echo $mainWebP; ?>"
                         <?php else: ?>
                             src="<?php echo $fallbackOriginal; ?>"
                         <?php endif; ?>

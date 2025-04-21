@@ -154,9 +154,8 @@ function createThumbnailsAndWebP($srcPath, $filename, $quality = 90) {
     if (!file_exists($thumbDir)) mkdir($thumbDir, 0755, true);
 
     $sizes = [
-        'sm' => 350,    // Grid thumbnail - CHANGE 'thumb' TO 'sm' for consistency
-        'md' => 600,    // Medium size for detail views
-        'lqip' => 24    // Low-quality image placeholder for blur-up effect
+        'thumb' => 500,  // Single thumbnail size for all grid displays
+        'lqip' => 24     // Low-quality image placeholder for blur-up effect
     ];
 
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
