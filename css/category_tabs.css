@@ -16,6 +16,8 @@
     cursor: pointer;
     transition: all 0.2s ease;
     color: var(--text-secondary);
+    text-decoration: none; /* For links */
+    display: inline-block; /* For links */
 }
 
 .category-tab:hover {

@@ -234,14 +234,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Set up category tabs
-            setupCategoryTabs();
+            // Initialize category filter functionality
+            initCategoryFilter('.portfolio-card', 'data-category');
             
             // Initialize lazy loading for images
             initializeLazyLoading();
         });
     </script>
-    <script src="js/category_tabs.js" defer></script>
+    <script src="js/category_filter.js"></script>
     <script src="js/lazy_blur.js"></script>
 </body>
 </html>
