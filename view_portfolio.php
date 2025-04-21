@@ -310,28 +310,6 @@ try {
             }
         }
 
-        .view-options {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .view-option-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 14px;
-            transition: background-color 0.2s;
-        }
-
-        .view-option-btn:hover {
-            background-color: var(--primary-hover);
-        }
-
         /* Slideshow-specific adjustments for portfolio view */
         .slideshow-gallery-compact {
             margin: 0 auto;
@@ -436,12 +414,6 @@ try {
 
             <!-- Media section -->
             <?php if (!empty($media)): ?>
-                <div class="view-options">
-                    <a href="media_slideshow.php?id=<?php echo $portfolio_id; ?>" class="view-option-btn">
-                        <i class="fi fi-rr-slideshow"></i> View Fullscreen Slideshow
-                    </a>
-                </div>
-                
                 <!-- Embedded slideshow gallery -->
                 <?php 
                 require_once 'components/media_slideshow_gallery.php';
