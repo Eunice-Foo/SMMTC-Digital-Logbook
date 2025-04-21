@@ -7,32 +7,32 @@ function initCategoryFilter(itemSelector = '.portfolio-card', categoryAttr = 'da
     const categoryTabs = document.querySelectorAll('.category-tab');
     
     categoryTabs.forEach(tab => {
-        tab.addEventListener('click', (e) => {
-            e.preventDefault();
+        tab.addEventListener('click', function(e) {
+            // Only prevent default if it's a button (not a link)
+            if (tab.tagName === 'BUTTON') {
+                e.preventDefault();
+            }
             
             const selectedCategory = tab.getAttribute('data-category');
             
-            // If we're in main_menu.php, navigate to the filtered URL
-            if (window.location.pathname.includes('main_menu.php')) {
-                window.location.href = 'main_menu.php?category=' + selectedCategory;
-                return;
+            // For buttons (client-side filtering)
+            if (tab.tagName === 'BUTTON') {
+                const portfolioItems = document.querySelectorAll(itemSelector);
+                
+                // Update active state for tabs
+                categoryTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Filter items
+                portfolioItems.forEach(item => {
+                    if (selectedCategory === 'all' || item.getAttribute(categoryAttr) === selectedCategory) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
             }
-            
-            // For other pages (like portfolio.php), do client-side filtering
-            const portfolioItems = document.querySelectorAll(itemSelector);
-            
-            // Update active state for tabs
-            categoryTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            
-            // Filter items
-            portfolioItems.forEach(item => {
-                if (selectedCategory === 'all' || item.getAttribute(categoryAttr) === selectedCategory) {
-                    item.style.display = '';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+            // Links will navigate normally
         });
     });
 }

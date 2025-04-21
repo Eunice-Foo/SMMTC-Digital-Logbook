@@ -6,9 +6,15 @@ require_once 'components/portfolio_card.php'; // Add this line to include the po
 require_once 'components/category_tabs.php';
 
 $user_id = $_SESSION['user_id'];
+$category_filter = isset($_REQUEST['category']) ? $_REQUEST['category'] : 'all';
 
 try {
-    // Modified query to match the structure expected by portfolio_card component
+    // Modified query to include category filtering
+    $where_clause = "WHERE p.user_id = :user_id";
+    if ($category_filter !== 'all') {
+        $where_clause .= " AND p.category = :category";
+    }
+    
     $stmt = $conn->prepare("
         SELECT 
             p.portfolio_id,
@@ -24,12 +30,15 @@ try {
         INNER JOIN user u ON p.user_id = u.user_id
         LEFT JOIN student s ON u.user_id = s.student_id
         LEFT JOIN supervisor sv ON u.user_id = sv.supervisor_id
-        WHERE p.user_id = :user_id
+        {$where_clause}
         GROUP BY p.portfolio_id
         ORDER BY p.portfolio_date DESC, p.portfolio_time DESC
     ");
     
     $stmt->bindParam(':user_id', $user_id);
+    if ($category_filter !== 'all') {
+        $stmt->bindParam(':category', $category_filter);
+    }
     $stmt->execute();
     
     $portfolio_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -70,8 +79,8 @@ try {
             </div>
         </div>
         
-        <!-- Using the category tabs component -->
-        <?php renderCategoryTabs('all'); ?>
+        <!-- Update this line in portfolio.php (around line 72) -->
+        <?php renderCategoryTabs($category_filter); ?>
 
         <?php if (empty($portfolio_items)): ?>
             <div class="empty-state">
@@ -119,7 +128,8 @@ try {
     
     // Initialize category filtering and lazy loading
     document.addEventListener('DOMContentLoaded', function() {
-        initCategoryFilter();
+        // Pass the correct selector and attribute name
+        initCategoryFilter('.portfolio-card', 'data-category');
         initializeLazyLoading();
     });
     </script>
