@@ -41,6 +41,8 @@ try {
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/portfolio.css">
     <link rel="stylesheet" href="css/category_tabs.css">
+    <link rel="stylesheet" href="css/delete_modal.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <style>
         .media-count {
             position: absolute;
@@ -129,6 +131,11 @@ try {
     // Initialize category filtering
     initCategoryFilter();
     </script>
+    <script src="js/delete_confirmation.js"></script>
+    <?php
+    require_once 'components/toast_notification.php';
+    initializeToast();
+    ?>
 </body>
 </html>
 <?php

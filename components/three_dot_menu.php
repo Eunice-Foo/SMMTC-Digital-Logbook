@@ -15,11 +15,39 @@ function renderThreeDotMenu($portfolio_id) {
                 <i class="fi fi-rr-edit"></i> Edit
             </a>
             <div class="menu-divider"></div>
-            <button class="menu-item delete-item" onclick="confirmDeletePortfolio(<?php echo $portfolio_id; ?>)">
+            <button class="menu-item delete-item" onclick="confirmDelete(<?php echo $portfolio_id; ?>, 'portfolio')">
                 <i class="fi fi-rr-trash"></i> Delete Portfolio
             </button>
         </div>
     </div>
+    
+    <script>
+    function toggleMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('portfolioMenu');
+        const isVisible = menu.style.display === 'block';
+        
+        // Close any open menus first
+        closeAllMenus();
+        
+        // Toggle this menu
+        if (!isVisible) {
+            menu.style.display = 'block';
+        }
+    }
+
+    function closeAllMenus() {
+        const menus = document.querySelectorAll('.menu-dropdown');
+        menus.forEach(menu => {
+            menu.style.display = 'none';
+        });
+    }
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function() {
+        closeAllMenus();
+    });
+    </script>
     <?php
 }
 ?>
@@ -33,39 +61,26 @@ function renderThreeDotMenu($portfolio_id) {
 
 .three-dot-btn {
     background: none;
-    border: 2px solid var(--border-color);
-    width: 36px;
-    height: 36px;
-    color: var(--text-secondary);
+    border: none;
     cursor: pointer;
+    padding: 8px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
-    padding: 0; /* Removed padding */
-}
-
-.three-dot-btn i {
-    font-size: 18px;
-    color: var(--text-secondary); /* Set icon color to text-secondary */
+    transition: background-color 0.2s;
 }
 
 .three-dot-btn:hover {
     background-color: rgba(0, 0, 0, 0.05);
-    border-color: var(--primary-color);
-}
-
-.three-dot-btn:hover i {
-    color: var(--primary-color); /* Icon color changes on hover */
 }
 
 .menu-dropdown {
     position: absolute;
     right: 0;
-    top: 100%;
-    background-color: white;
+    top: calc(100% + 5px);
     min-width: 180px;
+    background-color: white;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     border-radius: 8px;
     display: none;
@@ -109,32 +124,6 @@ function renderThreeDotMenu($portfolio_id) {
 </style>
 
 <script>
-function toggleMenu(event) {
-    event.stopPropagation();
-    const menu = document.getElementById('portfolioMenu');
-    const isVisible = menu.style.display === 'block';
-    
-    // Close any open menus first
-    closeAllMenus();
-    
-    // Toggle this menu
-    if (!isVisible) {
-        menu.style.display = 'block';
-    }
-}
-
-function closeAllMenus() {
-    const menus = document.querySelectorAll('.menu-dropdown');
-    menus.forEach(menu => {
-        menu.style.display = 'none';
-    });
-}
-
-// Close menu when clicking outside
-document.addEventListener('click', function() {
-    closeAllMenus();
-});
-
 function confirmDeletePortfolio(portfolioId) {
     // Check if toast functions exist for better UX
     if (typeof showWarningToast === 'function') {

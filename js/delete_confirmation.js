@@ -1,7 +1,12 @@
-function confirmDelete(entryId) {
+function confirmDelete(itemId, itemType = 'log') {
     // Remove any existing modals first
     const existingModals = document.querySelectorAll('.delete-modal');
     existingModals.forEach(modal => modal.remove());
+    
+    // Set content based on item type
+    const title = itemType === 'portfolio' 
+        ? 'Are you sure you want to delete this portfolio item?' 
+        : 'Are you sure you want to delete this log entry?';
     
     // Create modal overlay
     const modal = document.createElement('div');
@@ -13,11 +18,11 @@ function confirmDelete(entryId) {
             <div class="delete-modal-icon">
                 <i class="fi fi-rr-trash"></i>
             </div>
-            <h3>Are you sure you want to delete this log entry?</h3>
+            <h3>${title}</h3>
             <p>This action cannot be undone.</p>
             <div class="delete-modal-buttons">
                 <button class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
-                <button class="delete-btn" onclick="proceedDelete(${entryId})">Delete</button>
+                <button class="delete-btn" onclick="proceedDelete(${itemId}, '${itemType}')">Delete</button>
             </div>
         </div>
     `;
@@ -44,26 +49,32 @@ function closeDeleteModal() {
     }
 }
 
-function proceedDelete(entryId) {
+function proceedDelete(itemId, itemType = 'log') {
     // Close the modal first
     closeDeleteModal();
     
-    // Remove the warning toast code - no loading indicator needed
+    // Determine API endpoint and parameter name based on item type
+    const endpoint = itemType === 'portfolio' ? 'delete_portfolio.php' : 'delete_log.php';
+    const paramName = itemType === 'portfolio' ? 'portfolio_id' : 'entry_id';
+    const redirectPage = itemType === 'portfolio' ? 'portfolio.php' : 'logbook.php';
+    const successMessage = itemType === 'portfolio' 
+        ? 'Portfolio deleted successfully!' 
+        : 'Log entry deleted successfully!';
     
     // Proceed with deletion
-    fetch('delete_log.php', {
+    fetch(endpoint, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'entry_id=' + entryId
+        body: `${paramName}=${itemId}`
     })
     .then(response => response.json())
-    .then(data => handleDeleteResponse(data))
+    .then(data => handleDeleteResponse(data, redirectPage, successMessage))
     .catch(error => handleDeleteError(error));
 }
 
-function handleDeleteResponse(data) {
+function handleDeleteResponse(data, redirectPage, successMessage) {
     if (data.success) {
         // Show success toast if available
         if (typeof showSuccessToast === 'function') {
@@ -77,23 +88,23 @@ function handleDeleteResponse(data) {
                 document.body.appendChild(container);
             }
             
-            showSuccessToast('Log entry deleted successfully!', 'Deleted');
+            showSuccessToast(successMessage, 'Deleted');
             
             // Redirect after a short delay to allow toast to be seen
             setTimeout(() => {
-                window.location.href = 'logbook.php';
+                window.location.href = redirectPage;
             }, 2000); // Keep 2 seconds for better visibility
         } else {
             // Fallback if toast function isn't available
-            alert('Log entry deleted successfully!');
-            window.location.href = 'logbook.php';
+            alert(successMessage);
+            window.location.href = redirectPage;
         }
     } else {
         // Show error toast if available
         if (typeof showErrorToast === 'function') {
-            showErrorToast(data.message || 'Failed to delete log entry', 'Error');
+            showErrorToast(data.message || 'Failed to delete item', 'Error');
         } else {
-            alert('Error deleting entry: ' + (data.message || 'Unknown error'));
+            alert('Error: ' + (data.message || 'Unknown error'));
         }
     }
 }
@@ -105,6 +116,6 @@ function handleDeleteError(error) {
     if (typeof showErrorToast === 'function') {
         showErrorToast('Failed to connect to the server', 'Connection Error');
     } else {
-        alert('Error deleting entry: Connection failed');
+        alert('Error: Connection failed');
     }
 }

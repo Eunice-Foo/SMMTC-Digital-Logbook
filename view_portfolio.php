@@ -88,6 +88,8 @@ try {
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/media_viewer.css">
     <link rel="stylesheet" href="css/video_thumbnail.css">
+    <link rel="stylesheet" href="css/delete_modal.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     
     <!-- Preconnect to improve resource load time -->
     <link rel="preconnect" href="https://cdn-uicons.flaticon.com">
@@ -547,5 +549,13 @@ try {
             document.body.appendChild(video);
         }
     </script>
+
+    <script src="js/delete_confirmation.js"></script>
+
+    <!-- Make sure toast notification is initialized -->
+    <?php
+    require_once 'components/toast_notification.php';
+    initializeToast();
+    ?>
 </body>
 </html>
