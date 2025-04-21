@@ -5,10 +5,10 @@
  * Renders a slideshow gallery of media files
  * 
  * @param array $mediaFiles Array of media file data from database
- * @param string $title Optional title for the slideshow (now ignored)
+ * @param bool $isCompact Whether to render in compact mode (for embedding)
  * @return void
  */
-function renderMediaSlideshowGallery($mediaFiles, $title = '') {
+function renderMediaSlideshowGallery($mediaFiles, $isCompact = false) {
     if (empty($mediaFiles)) {
         echo '<div class="empty-state"><p>No media available to display.</p></div>';
         return;
@@ -24,8 +24,11 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
     
     // Create unique ID for this gallery instance
     $galleryId = 'gallery_' . rand(1000, 9999);
+    
+    // Determine container class based on mode
+    $containerClass = $isCompact ? 'slideshow-gallery-compact' : 'slideshow-gallery-container';
 ?>
-<div class="slideshow-gallery-container" id="<?php echo $galleryId; ?>_container">
+<div class="<?php echo $containerClass; ?>" id="<?php echo $galleryId; ?>_container">
     <div class="slideshow-container">
         <?php foreach ($files as $index => $item): 
             $filename = $item['file_name'];
@@ -95,8 +98,9 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
     </div>
 </div>
 
+<?php if (!defined('SLIDESHOW_GALLERY_STYLES_LOADED')): ?>
 <style>
-/* Slideshow Gallery Styles - Adapted to match your theme */
+/* Slideshow Gallery Styles */
 .slideshow-gallery-container {
     max-width: 1200px;
     margin: 30px auto;
@@ -104,6 +108,11 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
     border-radius: 8px;
     padding: 25px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.slideshow-gallery-compact {
+    width: 100%;
+    margin: 0 auto;
 }
 
 .slideshow-container {
@@ -115,13 +124,12 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
     text-align: center;
 }
 
-/* Updated animation styles for smoother transitions */
+/* Animation styles for transitions */
 .slide {
     position: relative;
     display: none;
 }
 
-/* Faster and smoother float-in animations */
 .slide.slide-right {
     animation: floatRight 0.4s ease-out;
 }
@@ -150,7 +158,6 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
         opacity: 1;
         transform: translateX(0);
     }
-
 }
 
 .slide-media {
@@ -174,7 +181,7 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
     max-height: 100%;
 }
 
-/* Updated styles for navigation arrows */
+/* Navigation arrows */
 .prev, .next {
     cursor: pointer;
     position: absolute;
@@ -212,6 +219,7 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
     opacity: 1;
 }
 
+/* Thumbnail row */
 .thumbnail-row {
     display: flex;
     overflow-x: auto;
@@ -262,6 +270,7 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
     pointer-events: none;
 }
 
+/* Responsive adjustments */
 @media (max-width: 768px) {
     .slideshow-gallery-container {
         padding: 15px;
@@ -283,40 +292,49 @@ function renderMediaSlideshowGallery($mediaFiles, $title = '') {
 </style>
 
 <script>
-// Initialize the slideshow
-document.addEventListener('DOMContentLoaded', function() {
-    // Create slideshow state object
+// Initialize slideshows
+window.initializeSlideshow = function(galleryId) {
+    // Create slideshow state object if not exists
     if (!window.slideshows) window.slideshows = {};
     
     // Initialize this slideshow instance
-    window.slideshows['<?php echo $galleryId; ?>'] = {
+    window.slideshows[galleryId] = {
         index: 1,
         initialized: false
     };
     
     // Show first slide
-    showSlides(1, '<?php echo $galleryId; ?>');
+    showSlides(1, galleryId);
     
     // Mark as initialized
-    window.slideshows['<?php echo $galleryId; ?>'].initialized = true;
-    
-    // Add keyboard navigation event listener
+    window.slideshows[galleryId].initialized = true;
+};
+
+// Add the global event listener for keyboard navigation
+if (!window.slideshowKeyListenerAdded) {
     document.addEventListener('keydown', function(e) {
-        // Only handle keyboard events when this slideshow is visible
-        const container = document.getElementById('<?php echo $galleryId; ?>_container');
-        if (!container || !isElementInViewport(container)) return;
+        // Find the visible slideshow
+        if (!window.slideshows) return;
         
-        if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            plusSlides(-1, '<?php echo $galleryId; ?>');
-        } else if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            plusSlides(1, '<?php echo $galleryId; ?>');
+        for (const galleryId in window.slideshows) {
+            const container = document.getElementById(galleryId + '_container');
+            if (container && isElementInViewport(container)) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    plusSlides(-1, galleryId);
+                    break;
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    plusSlides(1, galleryId);
+                    break;
+                }
+            }
         }
     });
-});
+    window.slideshowKeyListenerAdded = true;
+}
 
-// Helper function to check if element is visible in viewport
+// Helper functions
 function isElementInViewport(el) {
     const rect = el.getBoundingClientRect();
     return (
@@ -327,7 +345,6 @@ function isElementInViewport(el) {
     );
 }
 
-// Rest of existing functions
 function plusSlides(n, galleryId) {
     const slideshow = window.slideshows[galleryId];
     showSlides(slideshow.index + n, galleryId);
@@ -348,16 +365,15 @@ function showSlides(n, galleryId) {
     if (n > slides.length) newIndex = 1;
     if (n < 1) newIndex = slides.length;
     
-    // Determine direction (added this)
+    // Determine direction
     let direction = 'slide-left'; // default direction
     if (slideshow.initialized && slideshow.index > newIndex) {
         direction = 'slide-right';
     }
-    // Special case: going from last slide to first
+    // Special cases for wrapping
     if (slideshow.index === 1 && newIndex === slides.length) {
         direction = 'slide-right';
     }
-    // Special case: going from first slide to last
     if (slideshow.index === slides.length && newIndex === 1) {
         direction = 'slide-left';
     }
@@ -376,14 +392,14 @@ function showSlides(n, galleryId) {
         dots[i].className = dots[i].className.replace(" active", "");
     }
     
-    // Add direction class to current slide and show it
+    // Add direction class and show current slide
     slides[newIndex - 1].classList.add(direction);
     slides[newIndex - 1].style.display = "block";
     
     // Highlight current thumbnail
     dots[newIndex - 1].className += " active";
     
-    // If there's a video in the slides, pause them all
+    // Pause all videos
     if (slideshow.initialized) {
         for (let i = 0; i < slides.length; i++) {
             const video = slides[i].querySelector('video');
@@ -393,6 +409,17 @@ function showSlides(n, galleryId) {
         }
     }
 }
+</script>
+<?php 
+    define('SLIDESHOW_GALLERY_STYLES_LOADED', true);
+endif; 
+?>
+
+<script>
+// Initialize this specific slideshow instance
+document.addEventListener('DOMContentLoaded', function() {
+    window.initializeSlideshow('<?php echo $galleryId; ?>');
+});
 </script>
 <?php
 }

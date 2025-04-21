@@ -331,6 +331,36 @@ try {
         .view-option-btn:hover {
             background-color: var(--primary-hover);
         }
+
+        /* Slideshow-specific adjustments for portfolio view */
+        .slideshow-gallery-compact {
+            margin: 0 auto;
+            max-width: 1000px;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .slideshow-gallery-compact .slide-media {
+            max-height: 400px;
+        }
+
+        .slideshow-gallery-compact .video-container {
+            height: 400px;
+        }
+
+        @media (max-width: 768px) {
+            .slideshow-gallery-compact {
+                padding: 10px;
+            }
+            
+            .slideshow-gallery-compact .slide-media,
+            .slideshow-gallery-compact .video-container {
+                max-height: 300px;
+                height: 300px;
+            }
+        }
     </style>
     
     <!-- Defer non-critical JavaScript -->
@@ -408,31 +438,15 @@ try {
             <?php if (!empty($media)): ?>
                 <div class="view-options">
                     <a href="media_slideshow.php?id=<?php echo $portfolio_id; ?>" class="view-option-btn">
-                        <i class="fi fi-rr-slideshow"></i> View as Slideshow
+                        <i class="fi fi-rr-slideshow"></i> View Fullscreen Slideshow
                     </a>
                 </div>
-                <div class="media-section">
-                    <?php foreach ($media as $index => $item): ?>
-                        <div class="media-item" onclick="initMediaViewer('<?php echo $media_files_str; ?>', <?php echo $index; ?>)">
-                            <?php if (strpos($item['file_type'], 'video/') === 0): ?>
-                                <div class="video-placeholder" data-src="<?php echo htmlspecialchars($item['file_name']); ?>" 
-                                     data-index="<?php echo $index; ?>">
-                                    <div class="image-placeholder"></div>
-                                    <div class="play-indicator">🎥 Video</div>
-                                </div>
-                            <?php else: ?>
-                                <!-- Fixed image display -->
-                                <div class="image-placeholder"></div>
-                                <img 
-                                    src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E" 
-                                    data-src="uploads/<?php echo htmlspecialchars($item['file_name']); ?>" 
-                                    alt="Portfolio media" 
-                                    class="lazy-image"
-                                    loading="lazy">
-                            <?php endif; ?>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
+                
+                <!-- Embedded slideshow gallery -->
+                <?php 
+                require_once 'components/media_slideshow_gallery.php';
+                renderMediaSlideshowGallery($media, true); // Pass true for compact view
+                ?>
             <?php else: ?>
                 <p>No media available for this portfolio item.</p>
             <?php endif; ?>
