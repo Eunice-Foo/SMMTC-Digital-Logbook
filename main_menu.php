@@ -202,7 +202,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
                     class="search-input"
                     value="<?php echo isset($_POST['search']) ? htmlspecialchars($_POST['search']) : ''; ?>"
                 >
-                <button type="submit" class="search-button">Search</button>
+                <button type="submit" class="search-button">
+                    <i class="fi fi-rr-search"></i> Search
+                </button>
             </form>
         </div>
 

@@ -103,7 +103,6 @@ button, .btn {
 button i, .btn i {
     font-size: 16px;
     position: relative;
-    top: -1px;
     margin-right: 5px;
 }
 

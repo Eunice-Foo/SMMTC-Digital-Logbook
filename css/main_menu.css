@@ -10,11 +10,11 @@ body {
     padding: 30px 20px;
 }
 
-/* Search section */
+/* Search section - centered */
 .search-section {
     display: flex;
+    justify-content: center; /* Center horizontally */
     align-items: center;
-    gap: 15px;
     margin-bottom: 24px;
     position: sticky;
     top: 0;
@@ -22,13 +22,14 @@ body {
     background-color: #f7f8fa;
     padding: 20px 0;
     border-bottom: 1px solid #eaedf2;
+    width: 100%;
 }
 
 .search-form {
     display: flex;
-    flex: 1;
+    width: 100%;
+    max-width: 600px; /* Control the width of the search form */
     gap: 12px;
-    max-width: 600px;
 }
 
 .search-input {
@@ -44,17 +45,15 @@ body {
 .search-input:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+    outline: none;
 }
 
 .search-button {
-    padding: 0 24px;
     background-color: var(--primary-color);
     color: white;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .search-button:hover {
@@ -305,10 +304,12 @@ body {
     .search-section {
         flex-direction: column;
         align-items: stretch;
+        padding: 15px;
     }
     
     .search-form {
-        max-width: 100%;
+        max-width: 90%;
+        width: 100%;
     }
     
     .card-media {
@@ -324,6 +325,11 @@ body {
     
     .search-form {
         flex-direction: column;
+    }
+    
+    .search-button {
+        width: 100%;
+        padding: 12px;
     }
     
     .main-content {
