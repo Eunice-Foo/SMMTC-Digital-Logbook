@@ -43,7 +43,7 @@ try {
     <title>My Portfolio</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/portfolio.css">
-    <link rel="stylesheet" href="css/main_menu.css"> <!-- Add main_menu.css for portfolio card styles -->
+    <link rel="stylesheet" href="css/main_menu.css">
     <link rel="stylesheet" href="css/category_tabs.css">
     <link rel="stylesheet" href="css/delete_modal.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
@@ -52,17 +52,20 @@ try {
     <?php include 'components/side_menu.php'; ?>
     
     <div class="main-content">
-        <h2>My Portfolio</h2>
-        
-        <!-- Add New button moved to its own row -->
-        <div class="add-options-container">
+        <!-- Update the header section to have a bottom border -->
+        <div class="page-header">
+            <h2>My Portfolio</h2>
             <div class="add-options">
-                <button class="btn-add" onclick="toggleDropdown()">
+                <button class="btn-add" onclick="toggleDropdown(event)">
                     <i class="fi fi-rr-square-plus"></i> Add New
                 </button>
-                <div id="addOptions" class="dropdown-content">
-                    <a href="add_portfolio.php">Upload Media</a>
-                    <a href="import_logbook_media.php">Import from Logbook</a>
+                <div id="addOptions" class="menu-dropdown">
+                    <a href="add_portfolio.php" class="menu-item">
+                        <i class="fi fi-rr-cloud-upload-alt"></i> Upload Media
+                    </a>
+                    <a href="import_logbook_media.php" class="menu-item">
+                        <i class="fi fi-rr-file-import"></i> Import from Logbook
+                    </a>
                 </div>
             </div>
         </div>
@@ -88,23 +91,31 @@ try {
     <script src="js/category_filter.js"></script>
     <script src="js/lazy_blur.js"></script>
     <script>
-    function toggleDropdown() {
+    function toggleDropdown(event) {
+        event.stopPropagation();
         const dropdown = document.getElementById("addOptions");
-        dropdown.classList.toggle("show");
-    }
-
-    // Close dropdown when clicking outside
-    window.onclick = function(event) {
-        // Change from .btn-dropdown to .btn-add
-        if (!event.target.matches('.btn-add') && !event.target.matches('.fi-rr-square-plus')) {
-            const dropdowns = document.getElementsByClassName("dropdown-content");
-            for (let dropdown of dropdowns) {
-                if (dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                }
-            }
+        const isVisible = dropdown.style.display === 'block';
+        
+        // Close any open menus first
+        closeAllMenus();
+        
+        // Toggle this menu
+        if (!isVisible) {
+            dropdown.style.display = 'block';
         }
     }
+
+    function closeAllMenus() {
+        const menus = document.querySelectorAll('.menu-dropdown');
+        menus.forEach(menu => {
+            menu.style.display = 'none';
+        });
+    }
+
+    // Close menu when clicking outside
+    document.addEventListener('click', function() {
+        closeAllMenus();
+    });
     
     // Initialize category filtering and lazy loading
     document.addEventListener('DOMContentLoaded', function() {
