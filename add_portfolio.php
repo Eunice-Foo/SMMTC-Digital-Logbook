@@ -1,4 +1,10 @@
 <?php
+// Increase memory and time limits for large uploads
+ini_set('memory_limit', '512M');
+ini_set('max_execution_time', 300); // 5 minutes
+
+ob_start(); // Start output buffering to prevent any unexpected output
+
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
 require_once 'includes/upload_validation.php';
@@ -25,7 +31,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Add debug output if needed
         error_log("Portfolio submission started");
         
-        // Start transaction
+        // Optimize database operations
+        $conn->exec("SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED");
         $conn->beginTransaction();
 
         // Insert new portfolio entry with current date/time
@@ -78,41 +85,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         
                         error_log("Moving file to: $abs_path");
                         
-                        // Handle file upload with explicit error reporting
+                        // First just move the file to make uploads faster
                         if (!move_uploaded_file($tmp_name, $abs_path)) {
                             $error = error_get_last();
                             throw new Exception("Failed to move uploaded file: " . 
-                                               (isset($error['message']) ? $error['message'] : 'Unknown error'));
+                                                (isset($error['message']) ? $error['message'] : 'Unknown error'));
                         }
 
-                        // After move_uploaded_file() succeeds
-                        require_once 'includes/image_converter.php';
-                        createThumbnailsAndWebP($abs_path, $unique_filename);
-
-                        // Convert image to WebP and create thumbnails
-                        require_once 'includes/image_converter.php';
-                        $webpPath = createThumbnailsAndWebP($abs_path, $unique_filename);
-                        // Optionally, update the DB to use the .webp filename for images
-                        if ($webpPath) {
-                            $unique_filename = basename($webpPath); // Save WebP as main image
-                        }
-                        
-                        // Rest of the file handling logic...
-                        if (strpos($file_type, 'video/') === 0) {
-                            // Video thumbnail generation...
-                            try {
-                                generateVideoThumbnail(
-                                    $abs_path,
-                                    $thumbnail_dir . pathinfo($unique_filename, PATHINFO_FILENAME) . '.jpg'
-                                );
-                            } catch (Exception $e) {
-                                error_log("Thumbnail generation error: " . $e->getMessage());
-                            }
-                        }
-
-                        // Insert into media table using the relative path for database
+                        // Insert media record first - use original file initially 
                         $media_id = insertMediaFile($conn, $_SESSION['user_id'], $unique_filename, $file_type);
-                        
+
+                        // Only then start the thumbnail generation (after main file is saved)
+                        if (!strpos($file_type, 'video/') === 0) {
+                            // Queue image processing with lower priority
+                            require_once 'includes/image_converter.php';
+                            $webpPath = createThumbnailsAndWebP($abs_path, $unique_filename, 75); // Lower quality, faster
+                        }
+
                         // Insert into portfolio_media
                         $stmt = $conn->prepare("
                             INSERT INTO portfolio_media (media_id, portfolio_id)
@@ -137,6 +126,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $conn->commit();
         error_log("Portfolio saved successfully with ID: $portfolio_id");
+        ob_clean(); // Clean any previous output
+        header('Content-Type: application/json');
         echo json_encode(['success' => true, 'message' => 'Portfolio item added successfully!']);
         exit();
     } catch(Exception $e) {
@@ -160,10 +151,116 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/video_thumbnail.css">
     <link rel="stylesheet" href="css/media_upload_button.css">
     <link rel="stylesheet" href="css/tools_input.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
     <script src="js/portfolio_upload.js" defer></script>
     <script src="js/tools_input.js" defer></script>
+    <style>
+    /* Floating action button */
+    .add-options {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 100;
+    }
+
+    .btn-add {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 28px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: var(--font-primary);
+        font-size: 16px;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+    }
+
+    .btn-add:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.18);
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.9);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s, visibility 0.3s;
+    }
+
+    .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+
+    .loading-text {
+        font-size: 18px;
+        color: var(--text-primary);
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Page header styles */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 15px;
+        transition: color 0.2s;
+    }
+
+    .back-button:hover {
+        color: var(--primary-color);
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+    }
+    </style>
 </head>
 <body>
     <?php 
@@ -175,7 +272,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ?>
     
     <div class="main-content">
-        <h2>Add Portfolio Item</h2>
+        <div class="page-header">
+            <a href="portfolio.php" class="back-button">← Back to Portfolio</a>
+            <h2>Add Portfolio Item</h2>
+        </div>
         
         <form id="addPortfolioForm" action="add_portfolio.php" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles(event)">
             <div class="form-header">
@@ -225,9 +325,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div id="selectedFiles" class="selected-files"></div>
                 <div id="previewArea" class="preview-area"></div>
             </div>
-
-            <button type="submit" class="submit-button">Add to Portfolio</button>
         </form>
+        
+        <!-- Floating action button -->
+        <div class="add-options">
+            <button type="submit" class="btn-add" form="addPortfolioForm">
+                <i class="fi fi-rr-check"></i> Add Portfolio
+            </button>
+        </div>
+        
+        <!-- Loading overlay -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Uploading portfolio...</div>
+        </div>
+        
         <div class="progress">
             <div class="progress-bar" style="width: 0%"></div>
         </div>

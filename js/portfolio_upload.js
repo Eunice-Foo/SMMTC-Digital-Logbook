@@ -116,35 +116,109 @@ function removeFile(button) {
 function uploadFiles(event) {
     event.preventDefault();
     
+    // Validate form
+    const form = document.getElementById('addPortfolioForm');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
     // Validate that files are selected
     if (selectedFiles.length === 0) {
-        showErrorToast('Please select at least one media file to upload', 'No Files Selected', 'OK');
+        if (typeof showErrorToast === 'function') {
+            showErrorToast('Please select at least one media file to upload', 'No Files Selected');
+        } else {
+            alert('Please select at least one media file to upload');
+        }
         return;
     }
 
     // Show loading overlay
     const loadingOverlay = document.getElementById('loadingOverlay');
-    loadingOverlay.classList.add('active');
+    if (loadingOverlay) {
+        loadingOverlay.classList.add('active');
+    }
     
-    const form = document.getElementById('addPortfolioForm');
-    const formData = new FormData(form);
+    // Add client-side image resizing for better upload performance
+    const optimizedFormData = new FormData(form);
+    const imageOptimizationPromises = [];
     
-    // Show progress bar
+    // Clear existing media[] entries
+    optimizedFormData.delete('media[]');
+    
+    // Optimize images before upload
+    for (const file of selectedFiles) {
+        if (file.type.startsWith('image/') && file.size > 1024 * 1024) {
+            // Only optimize images larger than 1MB
+            imageOptimizationPromises.push(
+                resizeImageFile(file).then(optimizedFile => {
+                    optimizedFormData.append('media[]', optimizedFile);
+                })
+            );
+        } else {
+            // Don't optimize videos or small images
+            optimizedFormData.append('media[]', file);
+        }
+    }
+    
+    // Wait for all image optimizations to complete
+    Promise.all(imageOptimizationPromises).then(() => {
+        // Use the optimized form data for upload
+        performUpload(optimizedFormData);
+    });
+}
+
+// Add this new function for client-side image resizing
+function resizeImageFile(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                // Calculate new dimensions (max 1920px width/height)
+                let width = img.width;
+                let height = img.height;
+                const maxDimension = 1920;
+                
+                if (width > height && width > maxDimension) {
+                    height = Math.round(height * (maxDimension / width));
+                    width = maxDimension;
+                } else if (height > maxDimension) {
+                    width = Math.round(width * (maxDimension / height));
+                    height = maxDimension;
+                }
+                
+                // Resize image
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Convert to blob with good quality (0.85)
+                canvas.toBlob((blob) => {
+                    const optimizedFile = new File([blob], file.name, {
+                        type: file.type,
+                        lastModified: file.lastModified
+                    });
+                    resolve(optimizedFile);
+                }, file.type, 0.85);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// Move the actual upload code to a separate function
+function performUpload(formData) {
     const progressBar = $('.progress-bar');
     const progressContainer = $('.progress');
     progressBar.width('0%').text('0%');
     progressContainer.show();
     
-    // Clear any existing media[] entries to prevent duplicates
-    formData.delete('media[]');
-    
-    // Add files to formData
-    selectedFiles.forEach(file => {
-        formData.append('media[]', file);
-    });
-    
     $.ajax({
-        url: form.action,
+        url: document.getElementById('addPortfolioForm').action,
         type: 'POST',
         data: formData,
         processData: false,
@@ -162,8 +236,14 @@ function uploadFiles(event) {
             return xhr;
         },
         success: function(response) {
+            // Log raw response from server
+            console.log('Raw response from server:', response);
+            
             // Hide loading overlay
-            loadingOverlay.classList.remove('active');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.classList.remove('active');
+            }
             
             try {
                 // Parse response if it's a string
@@ -171,15 +251,25 @@ function uploadFiles(event) {
                 if (typeof response === 'object') {
                     result = response;
                 } else {
-                    result = JSON.parse(response);
+                    // Add proper error handling for parsing
+                    try {
+                        result = JSON.parse(response);
+                    } catch(parseError) {
+                        console.error('Failed to parse server response:', response);
+                        throw new Error('Invalid JSON response from server');
+                    }
                 }
                 
                 if (result.success) {
                     // Show success toast
-                    showSuccessToast(result.message || 'Portfolio item added successfully!', 'Success');
+                    if (typeof showSuccessToast === 'function') {
+                        showSuccessToast(result.message || 'Portfolio item added successfully!', 'Success');
+                    } else {
+                        alert(result.message || 'Portfolio item added successfully!');
+                    }
                     
                     // Reset the form and preview area
-                    form.reset();
+                    document.getElementById('addPortfolioForm').reset();
                     selectedFiles = [];
                     document.getElementById('previewArea').innerHTML = '';
                     document.getElementById('selectedTools').innerHTML = '';
@@ -190,10 +280,20 @@ function uploadFiles(event) {
                     }, 2000);
                 } else {
                     // Show error toast
-                    showErrorToast(result.message || 'Unknown error occurred', 'Upload Failed', 'OK');
+                    if (typeof showErrorToast === 'function') {
+                        showErrorToast(result.message || 'Unknown error occurred', 'Upload Failed');
+                    } else {
+                        alert(result.message || 'Unknown error occurred');
+                    }
                 }
             } catch (e) {
-                showErrorToast('There was a problem processing the server response', 'Error', 'OK');
+                console.error('Error processing response:', e);
+                console.error('Raw response:', response);
+                if (typeof showErrorToast === 'function') {
+                    showErrorToast('There was a problem processing the server response', 'Error');
+                } else {
+                    alert('There was a problem processing the server response');
+                }
             }
             
             // Hide progress bar
@@ -201,7 +301,10 @@ function uploadFiles(event) {
         },
         error: function(xhr, status, error) {
             // Hide loading overlay
-            loadingOverlay.classList.remove('active');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.classList.remove('active');
+            }
             
             // Show specific error message based on HTTP status
             let errorMessage = 'Upload failed';
@@ -214,7 +317,11 @@ function uploadFiles(event) {
             }
             
             // Show error toast notification
-            showErrorToast(errorMessage, 'Connection Error', 'Try Again');
+            if (typeof showErrorToast === 'function') {
+                showErrorToast(errorMessage, 'Connection Error');
+            } else {
+                alert('Error: ' + errorMessage);
+            }
             
             // Hide progress bar
             progressContainer.hide();
