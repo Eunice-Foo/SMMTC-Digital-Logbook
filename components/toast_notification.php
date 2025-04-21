@@ -259,6 +259,43 @@ function initializeToast() {
     <script>
     // Toast notification JavaScript functions
     let toastIdCounter = 0; // Counter to create unique IDs for each toast
+    let soundEnabled = true; // By default, sounds are enabled
+    
+    // Preload sounds
+    const sounds = {
+        success: new Audio('audio/notifications/success.mp3'),
+        error: new Audio('audio/notifications/error.mp3'),
+        warning: new Audio('audio/notifications/warning.mp3')
+    };
+    
+    // Configure audio files
+    Object.values(sounds).forEach(sound => {
+        sound.volume = 0.5; // Set volume to 50%
+        sound.preload = 'auto';
+    });
+    
+    // Function to play notification sound
+    function playSound(type) {
+        if (soundEnabled && sounds[type]) {
+            // Stop any currently playing sounds
+            Object.values(sounds).forEach(sound => {
+                sound.pause();
+                sound.currentTime = 0;
+            });
+            
+            // Play the appropriate sound
+            sounds[type].play().catch(e => {
+                console.log('Sound play prevented:', e);
+                // This is normal on some browsers that require user interaction first
+            });
+        }
+    }
+    
+    // Toggle sound on/off
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        return soundEnabled;
+    }
 
     function showToast(type, title, message, buttonText = 'Close', autoHide = true) {
         const toastContainer = document.getElementById('toastContainer');
@@ -270,6 +307,9 @@ function initializeToast() {
         const toast = document.createElement('div');
         toast.id = toastId;
         toast.className = 'toast ' + type;
+        
+        // Play notification sound based on type
+        playSound(type);
         
         // For success toasts, don't include the button
         if (type === 'success') {
