@@ -17,6 +17,8 @@ try {
             le.entry_date,
             le.entry_time,
             GROUP_CONCAT(m.file_name) as media_files,
+            GROUP_CONCAT(m.file_type) as media_types,
+            GROUP_CONCAT(m.media_id) as media_ids,
             f.remarks,
             f.signature_date,
             f.signature_time
@@ -32,6 +34,22 @@ try {
     $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
     $stmt->execute();
     $entry = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Prepare media files array for the slideshow gallery
+    $mediaFiles = [];
+    if (!empty($entry['media_files'])) {
+        $fileNames = explode(',', $entry['media_files']);
+        $fileTypes = !empty($entry['media_types']) ? explode(',', $entry['media_types']) : [];
+        $mediaIds = !empty($entry['media_ids']) ? explode(',', $entry['media_ids']) : [];
+        
+        foreach ($fileNames as $index => $fileName) {
+            $mediaFiles[] = [
+                'file_name' => $fileName,
+                'file_type' => isset($fileTypes[$index]) ? $fileTypes[$index] : '',
+                'media_id' => isset($mediaIds[$index]) ? $mediaIds[$index] : 0
+            ];
+        }
+    }
 
     if (!$entry) {
         header("Location: logbook.php");
@@ -51,78 +69,8 @@ try {
     <title>View Log Entry</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/log_entry.css">
-    <link rel="stylesheet" href="css/media_viewer.css">
-    <link rel="stylesheet" href="css/video_thumbnail.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <style>
-        .media-viewer-section {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            background: var(--bg-secondary);
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .media-display {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            background: #f8f9fa;
-        }
-
-        .media-display img,
-        .media-display video {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .media-thumbnails {
-            height: 100px;
-            background: #f1f3f5;
-            padding: 10px;
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .thumbnail {
-            width: 80px;
-            height: 80px;
-            flex-shrink: 0;
-            cursor: pointer;
-            border: 2px solid transparent;
-            overflow: hidden;
-            border-radius: 4px;
-        }
-
-        .thumbnail.active {
-            border-color: var(--primary-color);
-        }
-
-        .nav-button {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            padding: 20px;
-            cursor: pointer;
-            font-size: 24px;
-            z-index: 2;
-        }
-
-        .prev-button { left: 20px; }
-        .next-button { right: 20px; }
-
         /* Log entry styles matching logbook */
         .log-entry-grid {
             display: grid;
@@ -131,7 +79,8 @@ try {
             background: white;
             padding: 25px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
 
         .log-content {
@@ -140,37 +89,41 @@ try {
             gap: 15px;
         }
 
-        .media-viewer-section { background: none; }
+        /* Slideshow-specific adjustments for log view */
+        .slideshow-gallery-compact {
+            margin: 20px auto;
+            max-width: 1000px;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .slideshow-gallery-compact .slide-media {
+            max-height: 400px;
+        }
+
+        .slideshow-gallery-compact .video-container {
+            height: 400px;
+        }
+
+        @media (max-width: 768px) {
+            .slideshow-gallery-compact {
+                padding: 10px;
+            }
+            
+            .slideshow-gallery-compact .slide-media,
+            .slideshow-gallery-compact .video-container {
+                max-height: 300px;
+                height: 300px;
+            }
+        }
     </style>
 </head>
 <body>
     <?php include 'components/side_menu.php'; ?>
     <div class="main-content">
         <div class="log-entry">
-            <?php if (!empty($entry['media_files'])): ?>
-                <div class="media-viewer-section">
-                    <div class="media-display"></div>
-                    <?php if (count(explode(',', $entry['media_files'])) > 1): ?>
-                        <button class="nav-button prev-button" onclick="navigateMedia(-1)">❮</button>
-                        <button class="nav-button next-button" onclick="navigateMedia(1)">❯</button>
-                    <?php endif; ?>
-                    <div class="media-thumbnails">
-                        <?php foreach (explode(',', $entry['media_files']) as $index => $media): ?>
-                            <div class="thumbnail" onclick="showMedia(<?php echo $index; ?>)">
-                                <?php if (strpos($media, '.mp4') !== false || strpos($media, '.mov') !== false): ?>
-                                    <?php 
-                                    require_once 'components/video_thumbnail.php';
-                                    renderVideoThumbnail($media, true);
-                                    ?>
-                                <?php else: ?>
-                                    <img src="uploads/<?php echo htmlspecialchars($media); ?>" alt="Media Thumbnail">
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            <?php endif; ?>
-
             <div class="log-entry-grid">
                 <div class="log-content">
                     <div class="log-header">
@@ -209,65 +162,28 @@ try {
                     <?php endif; ?>
                 </div>
             </div>
-        </div>
 
-        <div class="action-buttons">
-            <?php if ($entry['entry_status'] !== 'reviewed'): ?>
-                <button class="btn btn-edit" onclick="window.location.href='edit_log.php?id=<?php echo $entry['entry_id']; ?>'">
-                    Edit
-                </button>
+            <!-- Media section with slideshow gallery -->
+            <?php if (!empty($mediaFiles)): ?>
+                <?php 
+                require_once 'components/media_slideshow_gallery.php';
+                renderMediaSlideshowGallery($mediaFiles, true); // Pass true for compact view
+                ?>
             <?php endif; ?>
-            <button class="btn btn-delete" onclick="confirmDelete(<?php echo $entry['entry_id']; ?>)">
-                Delete
-            </button>
-            <a href="logbook.php" class="btn">Back to Logbook</a>
+
+            <div class="action-buttons">
+                <?php if ($entry['entry_status'] !== 'reviewed'): ?>
+                    <button class="btn btn-edit" onclick="window.location.href='edit_log.php?id=<?php echo $entry['entry_id']; ?>'">
+                        Edit
+                    </button>
+                <?php endif; ?>
+                <button class="btn btn-delete" onclick="confirmDelete(<?php echo $entry['entry_id']; ?>)">
+                    Delete
+                </button>
+                <a href="logbook.php" class="btn">Back to Logbook</a>
+            </div>
         </div>
     </div>
-
-    <script>
-        let currentMediaIndex = 0;
-        const mediaFiles = <?php echo json_encode(explode(',', $entry['media_files'])); ?>;
-
-        function showMedia(index) {
-            if (index < 0 || index >= mediaFiles.length) return;
-            
-            currentMediaIndex = index;
-            const mediaDisplay = document.querySelector('.media-display');
-            const file = mediaFiles[index];
-            
-            // Update thumbnails active state
-            document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
-                thumb.classList.toggle('active', i === index);
-            });
-            
-            // Clear previous content
-            mediaDisplay.innerHTML = '';
-            
-            if (file.endsWith('.mp4') || file.endsWith('.mov')) {
-                const video = document.createElement('video');
-                video.controls = true;
-                video.autoplay = true;
-                video.src = `uploads/${file}`;
-                mediaDisplay.appendChild(video);
-            } else {
-                const img = document.createElement('img');
-                img.src = `uploads/${file}`;
-                mediaDisplay.appendChild(img);
-            }
-        }
-
-        function navigateMedia(direction) {
-            showMedia(currentMediaIndex + direction);
-        }
-
-        // Initialize first media
-        document.addEventListener('DOMContentLoaded', function() {
-            generateVideoThumbnails();
-            if (mediaFiles.length > 0) {
-                showMedia(0);
-            }
-        });
-    </script>
     <script src="js/view_log.js"></script>
 </body>
 </html>
