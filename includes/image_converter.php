@@ -140,3 +140,88 @@ function renderOptimizedImage($image_path, $alt = '', $class = '', $attributes =
     
     return $picture_html;
 }
+
+/**
+ * Create thumbnails and WebP versions for an image with improved quality
+ * 
+ * @param string $srcPath Path to the source image
+ * @param string $filename Name of the source image file
+ * @return string|bool Path to the main WebP file or false on failure
+ */
+function createThumbnailsAndWebP($srcPath, $filename) {
+    $thumbDir = "uploads/thumbnails/";
+    if (!file_exists($thumbDir)) mkdir($thumbDir, 0755, true);
+
+    $sizes = [
+        'sm' => 350,  // Increased from 200px to 350px for grid thumbnails
+        'md' => 600,  // Increased from 400px to 600px for detail view
+        'lqip' => 24  // Slightly increased from 16px to 24px for better blur-up effect
+    ];
+
+    $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+    if (!in_array($ext, ['jpg', 'jpeg', 'png'])) return false;
+
+    // Create image resource with appropriate function based on image type
+    if ($ext === 'png') {
+        $img = imagecreatefrompng($srcPath);
+        // For PNGs, preserve transparency
+        imagealphablending($img, false);
+        imagesavealpha($img, true);
+    } else {
+        $img = imagecreatefromjpeg($srcPath);
+    }
+
+    // Get original dimensions
+    $orig_width = imagesx($img);
+    $orig_height = imagesy($img);
+    
+    // Generate thumbnails at each size
+    foreach ($sizes as $suffix => $target_width) {
+        // Calculate height maintaining aspect ratio
+        $ratio = $target_width / $orig_width;
+        $target_height = intval($orig_height * $ratio);
+        
+        // Create thumbnail canvas
+        $thumb = imagecreatetruecolor($target_width, $target_height);
+        
+        // Preserve transparency for PNGs
+        if ($ext === 'png') {
+            imagealphablending($thumb, false);
+            imagesavealpha($thumb, true);
+        }
+        
+        // Use high quality resampling
+        imagecopyresampled(
+            $thumb, $img, 
+            0, 0, 0, 0, 
+            $target_width, $target_height, 
+            $orig_width, $orig_height
+        );
+        
+        // Path for the thumbnail
+        $thumbPath = $thumbDir . pathinfo($filename, PATHINFO_FILENAME) . "_$suffix.webp";
+        
+        // Quality settings: higher for regular thumbnails, lower for LQIP
+        $quality = ($suffix === 'lqip') ? 40 : 90; // Increased from 80 to 90 for better quality
+        
+        // Save as WebP
+        imagewebp($thumb, $thumbPath, $quality);
+        imagedestroy($thumb);
+
+        // For LQIP, also save as base64 for inline blur-up
+        if ($suffix === 'lqip') {
+            ob_start();
+            imagewebp($img, null, 40); // Slightly higher quality for LQIP
+            $lqipData = ob_get_clean();
+            file_put_contents($thumbDir . pathinfo($filename, PATHINFO_FILENAME) . "_lqip.b64", base64_encode($lqipData));
+        }
+    }
+
+    // Save main WebP version with high quality
+    $webpPath = "uploads/" . pathinfo($filename, PATHINFO_FILENAME) . ".webp";
+    imagewebp($img, $webpPath, 92); // Even higher quality for the main version
+
+    imagedestroy($img);
+    return $webpPath;
+}
+?>

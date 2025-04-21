@@ -132,6 +132,7 @@ try {
     initCategoryFilter();
     </script>
     <script src="js/delete_confirmation.js"></script>
+    <script src="js/lazy_blur.js"></script>
     <?php
     require_once 'components/toast_notification.php';
     initializeToast();

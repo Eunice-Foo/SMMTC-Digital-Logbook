@@ -234,8 +234,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
         document.addEventListener('DOMContentLoaded', function() {
             // Set up category tabs
             setupCategoryTabs();
+            
+            // Initialize lazy loading for images
+            initializeLazyLoading();
         });
     </script>
     <script src="js/category_tabs.js" defer></script>
+    <script src="js/lazy_blur.js"></script>
 </body>
 </html>

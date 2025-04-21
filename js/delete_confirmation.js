@@ -8,6 +8,9 @@ function confirmDelete(itemId, itemType = 'log') {
         ? 'Are you sure you want to delete this portfolio item?' 
         : 'Are you sure you want to delete this log entry?';
     
+    // Play warning sound when modal appears
+    playDeleteWarningSound();
+    
     // Create modal overlay
     const modal = document.createElement('div');
     modal.className = 'delete-modal';
@@ -37,6 +40,34 @@ function confirmDelete(itemId, itemType = 'log') {
     setTimeout(() => {
         modal.classList.add('active');
     }, 10);
+}
+
+/**
+ * Plays a warning sound when the delete confirmation modal appears
+ * Integrates with the existing toast notification sound system if available
+ */
+function playDeleteWarningSound() {
+    // Check if toast notification sound system is available
+    if (typeof playSound === 'function' && typeof sounds !== 'undefined' && sounds.warning) {
+        // Use existing toast sound system
+        playSound('warning');
+        return;
+    }
+    
+    // Fallback: Use our own implementation
+    try {
+        // Try to create audio element
+        const warningSound = new Audio('audio/notifications/warning.mp3');
+        warningSound.volume = 0.5; // Set volume to 50%
+        
+        // Play the sound (wrapped in try-catch to handle browser autoplay restrictions)
+        warningSound.play().catch(e => {
+            console.log('Delete warning sound prevented by browser:', e);
+            // This is normal on some browsers that require user interaction first
+        });
+    } catch (e) {
+        console.error('Error playing delete warning sound:', e);
+    }
 }
 
 function closeDeleteModal() {

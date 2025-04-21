@@ -84,6 +84,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             throw new Exception("Failed to move uploaded file: " . 
                                                (isset($error['message']) ? $error['message'] : 'Unknown error'));
                         }
+
+                        // After move_uploaded_file() succeeds
+                        require_once 'includes/image_converter.php';
+                        createThumbnailsAndWebP($abs_path, $unique_filename);
+
+                        // Convert image to WebP and create thumbnails
+                        require_once 'includes/image_converter.php';
+                        $webpPath = createThumbnailsAndWebP($abs_path, $unique_filename);
+                        // Optionally, update the DB to use the .webp filename for images
+                        if ($webpPath) {
+                            $unique_filename = basename($webpPath); // Save WebP as main image
+                        }
                         
                         // Rest of the file handling logic...
                         if (strpos($file_type, 'video/') === 0) {

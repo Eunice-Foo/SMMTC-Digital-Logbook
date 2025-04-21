@@ -173,8 +173,17 @@ try {
                             }
                         } else {
                             // Move the uploaded file
-                            if (!move_uploaded_file($tmp_name, "uploads/" . $unique_filename)) {
+                            $destPath = "uploads/" . $unique_filename;
+                            if (!move_uploaded_file($tmp_name, $destPath)) {
                                 throw new Exception("Failed to move uploaded file");
+                            }
+                            
+                            // Convert image to WebP and create thumbnails
+                            require_once 'includes/image_converter.php';
+                            $webpPath = createThumbnailsAndWebP($destPath, $unique_filename);
+                            // Optionally, update the DB to use the .webp filename for images
+                            if ($webpPath) {
+                                $unique_filename = basename($webpPath); // Save WebP as main image
                             }
                         }
                         
