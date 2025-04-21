@@ -146,15 +146,17 @@ function renderOptimizedImage($image_path, $alt = '', $class = '', $attributes =
  * 
  * @param string $srcPath Path to the source image
  * @param string $filename Name of the source image file
+ * @param int $quality WebP quality (0-100)
  * @return string|bool Path to the main WebP file or false on failure
  */
-function createThumbnailsAndWebP($srcPath, $filename) {
+function createThumbnailsAndWebP($srcPath, $filename, $quality = 90) {
     $thumbDir = "uploads/thumbnails/";
     if (!file_exists($thumbDir)) mkdir($thumbDir, 0755, true);
 
     $sizes = [
-        'thumb' => 500,  // Single thumbnail size at 500px width
-        'lqip' => 24     // Keep the low-quality image placeholder for blur-up effect
+        'sm' => 350,    // Grid thumbnail - CHANGE 'thumb' TO 'sm' for consistency
+        'md' => 600,    // Medium size for detail views
+        'lqip' => 24    // Low-quality image placeholder for blur-up effect
     ];
 
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -201,16 +203,16 @@ function createThumbnailsAndWebP($srcPath, $filename) {
         $thumbPath = $thumbDir . pathinfo($filename, PATHINFO_FILENAME) . "_$suffix.webp";
         
         // Quality settings: higher for regular thumbnails, lower for LQIP
-        $quality = ($suffix === 'lqip') ? 40 : 90;
+        $thumbQuality = ($suffix === 'lqip') ? 40 : $quality; 
         
         // Save as WebP
-        imagewebp($thumb, $thumbPath, $quality);
+        imagewebp($thumb, $thumbPath, $thumbQuality);
         imagedestroy($thumb);
 
         // For LQIP, also save as base64 for inline blur-up
         if ($suffix === 'lqip') {
             ob_start();
-            imagewebp($img, null, 40);
+            imagewebp($thumb, null, 40);
             $lqipData = ob_get_clean();
             file_put_contents($thumbDir . pathinfo($filename, PATHINFO_FILENAME) . "_lqip.b64", base64_encode($lqipData));
         }
@@ -218,7 +220,7 @@ function createThumbnailsAndWebP($srcPath, $filename) {
 
     // Save main WebP version with high quality
     $webpPath = "uploads/" . pathinfo($filename, PATHINFO_FILENAME) . ".webp";
-    imagewebp($img, $webpPath, 92); // Even higher quality for the main version
+    imagewebp($img, $webpPath, min(95, $quality + 5));
 
     imagedestroy($img);
     return $webpPath;

@@ -17,36 +17,42 @@ function renderMediaGalleryPreview($mediaFiles, $maxDisplay = 4) {
         ?>
             <div class="media-preview">
                 <?php if ($isVideo): ?>
-                    <div class="video-placeholder">
-                        <span>🎬</span>
+                    <div class="video-thumbnail-container">
+                        <?php
+                        // Use appropriate video thumbnail path
+                        $videoThumb = "uploads/thumbnails/{$filename}.jpg";
+                        if (file_exists($videoThumb)):
+                        ?>
+                            <img src="<?php echo $videoThumb; ?>" alt="Video thumbnail" class="thumbnail-image">
+                            <div class="play-indicator">▶</div>
+                        <?php else: ?>
+                            <div class="video-placeholder">
+                                <span>🎬</span>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 <?php else: ?>
-                    <!-- Low-quality image placeholder (LQIP) with lazy loaded thumbnail -->
                     <?php
-                        // Check if base64 encoded LQIP exists
-                        $lqipBase64 = '';
-                        $lqipPath = "uploads/thumbnails/{$filename}_lqip.b64";
-                        if (file_exists($lqipPath)) {
-                            $lqipBase64 = file_get_contents($lqipPath);
-                        }
+                    // For images, prioritize thumbnails with fallbacks
+                    $smThumb = "uploads/thumbnails/{$filename}_sm.webp";
+                    $mdThumb = "uploads/thumbnails/{$filename}_md.webp";
+                    $thumbWebP = "uploads/{$filename}.webp";
+                    $fallbackOriginal = "uploads/{$media}";
                     ?>
-                    <?php if (!empty($lqipBase64)): ?>
+                    
                     <img 
-                        src="data:image/webp;base64,<?php echo $lqipBase64; ?>"
-                        data-src="uploads/thumbnails/<?php echo $filename; ?>_sm.webp"
-                        class="lazy-image"
-                        loading="lazy" 
-                        alt="Media Preview"
-                        style="filter: blur(10px); transition: filter 0.3s ease-out;">
-                    <?php else: ?>
-                    <!-- Fallback for images without thumbnails -->
-                    <img 
-                        src="uploads/thumbnails/<?php echo $filename; ?>_sm.webp"
-                        onerror="this.onerror=null; this.src='uploads/<?php echo htmlspecialchars($media); ?>'"
-                        class="media-image"
-                        loading="lazy" 
-                        alt="Media Preview">
-                    <?php endif; ?>
+                        <?php if (file_exists($smThumb)): ?>
+                            src="<?php echo $smThumb; ?>"
+                        <?php elseif (file_exists($mdThumb)): ?>
+                            src="<?php echo $mdThumb; ?>"
+                        <?php elseif (file_exists($thumbWebP)): ?>
+                            src="<?php echo $thumbWebP; ?>"
+                        <?php else: ?>
+                            src="<?php echo $fallbackOriginal; ?>"
+                        <?php endif; ?>
+                        alt="Media thumbnail" 
+                        loading="lazy"
+                        class="thumbnail-image">
                 <?php endif; ?>
             </div>
         <?php endfor; ?>

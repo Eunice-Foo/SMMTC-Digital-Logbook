@@ -96,10 +96,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $media_id = insertMediaFile($conn, $_SESSION['user_id'], $unique_filename, $file_type);
 
                         // Only then start the thumbnail generation (after main file is saved)
-                        if (!strpos($file_type, 'video/') === 0) {
-                            // Queue image processing with lower priority
+                        if (strpos($file_type, 'video/') !== 0) {
+                            // For images, generate thumbnails
                             require_once 'includes/image_converter.php';
-                            $webpPath = createThumbnailsAndWebP($abs_path, $unique_filename, 75); // Lower quality, faster
+                            $webpPath = createThumbnailsAndWebP($abs_path, $unique_filename, 85);
+                            
+                            // If WebP conversion was successful, update filename in DB
+                            if ($webpPath && file_exists($webpPath)) {
+                                $webp_filename = basename($webpPath);
+                                $update_stmt = $conn->prepare("UPDATE media SET file_name = :webp_name WHERE media_id = :media_id");
+                                $update_stmt->execute([
+                                    ':webp_name' => $webp_filename,
+                                    ':media_id' => $media_id
+                                ]);
+                            }
+                        } else {
+                            // For videos, create a poster thumbnail
+                            $thumbnail_dir = "uploads/thumbnails/";
+                            if (!file_exists($thumbnail_dir)) {
+                                mkdir($thumbnail_dir, 0755, true);
+                            }
+                            
+                            $thumbnail_path = $thumbnail_dir . pathinfo($unique_filename, PATHINFO_FILENAME) . ".jpg";
+                            
+                            // We'll rely on client-side thumbnail generation now, but this is where
+                            // server-side video thumbnail generation would happen if needed
                         }
 
                         // Insert into portfolio_media
