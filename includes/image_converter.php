@@ -153,9 +153,8 @@ function createThumbnailsAndWebP($srcPath, $filename) {
     if (!file_exists($thumbDir)) mkdir($thumbDir, 0755, true);
 
     $sizes = [
-        'sm' => 350,  // Increased from 200px to 350px for grid thumbnails
-        'md' => 600,  // Increased from 400px to 600px for detail view
-        'lqip' => 24  // Slightly increased from 16px to 24px for better blur-up effect
+        'thumb' => 500,  // Single thumbnail size at 500px width
+        'lqip' => 24     // Keep the low-quality image placeholder for blur-up effect
     ];
 
     $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -202,7 +201,7 @@ function createThumbnailsAndWebP($srcPath, $filename) {
         $thumbPath = $thumbDir . pathinfo($filename, PATHINFO_FILENAME) . "_$suffix.webp";
         
         // Quality settings: higher for regular thumbnails, lower for LQIP
-        $quality = ($suffix === 'lqip') ? 40 : 90; // Increased from 80 to 90 for better quality
+        $quality = ($suffix === 'lqip') ? 40 : 90;
         
         // Save as WebP
         imagewebp($thumb, $thumbPath, $quality);
@@ -211,7 +210,7 @@ function createThumbnailsAndWebP($srcPath, $filename) {
         // For LQIP, also save as base64 for inline blur-up
         if ($suffix === 'lqip') {
             ob_start();
-            imagewebp($img, null, 40); // Slightly higher quality for LQIP
+            imagewebp($img, null, 40);
             $lqipData = ob_get_clean();
             file_put_contents($thumbDir . pathinfo($filename, PATHINFO_FILENAME) . "_lqip.b64", base64_encode($lqipData));
         }

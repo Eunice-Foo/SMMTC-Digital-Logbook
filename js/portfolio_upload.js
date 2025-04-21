@@ -121,6 +121,10 @@ function uploadFiles(event) {
         showErrorToast('Please select at least one media file to upload', 'No Files Selected', 'OK');
         return;
     }
+
+    // Show loading overlay
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    loadingOverlay.classList.add('active');
     
     const form = document.getElementById('addPortfolioForm');
     const formData = new FormData(form);
@@ -158,38 +162,34 @@ function uploadFiles(event) {
             return xhr;
         },
         success: function(response) {
+            // Hide loading overlay
+            loadingOverlay.classList.remove('active');
+            
             try {
-                // Try to parse the response as JSON
+                // Parse response if it's a string
                 let result;
                 if (typeof response === 'object') {
                     result = response;
                 } else {
-                    // Handle possible HTML in response
-                    const jsonStart = response.indexOf('{');
-                    if (jsonStart >= 0) {
-                        const jsonStr = response.substring(jsonStart);
-                        result = JSON.parse(jsonStr);
-                    } else {
-                        result = JSON.parse(response);
-                    }
+                    result = JSON.parse(response);
                 }
                 
                 if (result.success) {
-                    // Use success toast notification
-                    showSuccessToast(result.message, 'Success!');
+                    // Show success toast
+                    showSuccessToast(result.message || 'Portfolio item added successfully!', 'Success');
                     
-                    // Reset form after successful upload
-                    setTimeout(function() {
-                        form.reset();
-                        selectedFiles = [];
-                        document.getElementById('previewArea').innerHTML = '';
-                        document.getElementById('selectedTools').innerHTML = '';
-                        
-                        // Redirect to portfolio page
+                    // Reset the form and preview area
+                    form.reset();
+                    selectedFiles = [];
+                    document.getElementById('previewArea').innerHTML = '';
+                    document.getElementById('selectedTools').innerHTML = '';
+                    
+                    // Redirect to portfolio page after delay
+                    setTimeout(() => {
                         window.location.href = 'portfolio.php';
                     }, 2000);
                 } else {
-                    // Use error toast notification
+                    // Show error toast
                     showErrorToast(result.message || 'Unknown error occurred', 'Upload Failed', 'OK');
                 }
             } catch (e) {
@@ -200,6 +200,9 @@ function uploadFiles(event) {
             progressContainer.hide();
         },
         error: function(xhr, status, error) {
+            // Hide loading overlay
+            loadingOverlay.classList.remove('active');
+            
             // Show specific error message based on HTTP status
             let errorMessage = 'Upload failed';
             if (xhr.status === 413) {
@@ -210,7 +213,7 @@ function uploadFiles(event) {
                 errorMessage = `${error} (Status: ${xhr.status})`;
             }
             
-            // Show error toast for AJAX errors
+            // Show error toast notification
             showErrorToast(errorMessage, 'Connection Error', 'Try Again');
             
             // Hide progress bar
