@@ -2,12 +2,13 @@
 
 :root {
     /* Color palette */
-    --primary-color: #4CAF50;
-    --primary-hover: #45a049;
+    --primary-color: #9955bb; /* Changed to #9955bb (a softer purple) */
+    --primary-hover: #7d43a0; /* Darker shade of primary for hover */
+    --primary-light: #f3ebf9; /* Lighter shade for backgrounds/highlights */
     --secondary-color: #2196F3;
     --danger-color: #f44336;
     --warning-color: #ff9800;
-    --success-color: #4CAF50;
+    --success-color: #4CAF50; /* Keeping success color green */
     --info-color: #2196F3;
     
     /* Background colors */
@@ -118,7 +119,7 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+    box-shadow: 0 0 0 2px rgba(153, 85, 187, 0.2); /* Updated rgba value to match new #9955bb color */
 }
 
 /* Tables */
@@ -131,7 +132,7 @@ table {
 /* Table headers */
 th {
     background-color: var(--bg-tertiary);
-    color: var (--text-primary);
+    color: var(--text-primary);
     font-family: var(--font-primary);
     font-weight: 500;
 }
@@ -149,11 +150,11 @@ th {
 }
 
 .status-inactive {
-    color: var (--danger-color);
+    color: var(--danger-color);
 }
 
 .pending-logs {
-    color: var(--warning-color);
+    color: #dc3545; /* Keeping red color for pending logs */
 }
 
 /* Navigation */

@@ -32,7 +32,13 @@ if (!isset($user_profile_picture) && isset($_SESSION['user_id'])) {
     <div class="user-section">
         <div class="user-profile">
             <a href="view_profile.php" class="profile-avatar">
-                <img src="<?php echo getProfileImagePath($user_profile_picture); ?>" alt="Profile Picture">
+                <?php if (!empty($user_profile_picture)): ?>
+                    <img src="<?php echo getProfileImagePath($user_profile_picture); ?>" alt="Profile Picture">
+                <?php else: ?>
+                    <div class="profile-placeholder">
+                        <i class="fi fi-rr-user"></i>
+                    </div>
+                <?php endif; ?>
             </a>
             <div class="user-info">
                 <div class="full-name"><?php echo htmlspecialchars($user_full_name); ?></div>
@@ -73,12 +79,6 @@ if (!isset($user_profile_picture) && isset($_SESSION['user_id'])) {
                     <a href="sv_main.php">
                         <i class="fi fi-rr-users"></i>
                         Interns
-                    </a>
-                </li>
-                <li>
-                    <a href="sv_add_student.php">
-                        <i class="fi fi-rr-user-add"></i>
-                        Add Interns
                     </a>
                 </li>
                 <li>
@@ -195,6 +195,20 @@ if (!isset($user_profile_picture) && isset($_SESSION['user_id'])) {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.profile-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+}
+
+.profile-placeholder i {
+    font-size: 28px;
+    color: #999;
 }
 
 .user-info {

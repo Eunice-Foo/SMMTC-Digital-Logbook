@@ -38,15 +38,22 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Student</title>
+    <title>Add Interns</title>
     <link rel="stylesheet" href="css/theme.css">
-    <link rel="stylesheet" href="css/log_form.css">
+    <link rel="stylesheet" href="css/supervisor_tables.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
 </head>
 <body>
     <?php include 'components/side_menu.php'; ?>
     
-    <div class="container">
-        <h2>Add New Student</h2>
+    <div class="main-content">
+        <div class="top-section">
+            <h2>Add Interns</h2>
+            <a href="sv_main.php" class="btn">
+                Cancel
+            </a>
+        </div>
+        
         <table class="student-table">
             <thead>
                 <tr>
@@ -58,18 +65,25 @@ try {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($available_students as $student): ?>
+                <?php if (empty($available_students)): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($student['full_name']); ?></td>
-                        <td><?php echo htmlspecialchars($student['email']); ?></td>
-                        <td><?php echo htmlspecialchars($student['phone_number']); ?></td>
-                        <td><?php echo htmlspecialchars($student['institution']); ?></td>
-                        <td>
-                            <button onclick="addStudent(<?php echo $student['user_id']; ?>)" 
-                                    class="btn btn-add">Add Student</button>
-                        </td>
+                        <td colspan="5" class="empty-message">No available students to add</td>
                     </tr>
-                <?php endforeach; ?>
+                <?php else: ?>
+                    <?php foreach ($available_students as $student): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($student['full_name']); ?></td>
+                            <td><?php echo htmlspecialchars($student['email']); ?></td>
+                            <td><?php echo htmlspecialchars($student['phone_number']); ?></td>
+                            <td><?php echo htmlspecialchars($student['institution']); ?></td>
+                            <td>
+                                <button onclick="addStudent(<?php echo $student['user_id']; ?>)" class="btn btn-add">
+                                    <i class="fi fi-rr-user-add"></i> Add
+                                </button>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -87,7 +101,7 @@ try {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.href = 'sv_main.php'; // Changed from sv_students.php
+                    window.location.href = 'sv_main.php';
                 } else {
                     alert('Error adding student: ' + data.message);
                 }
