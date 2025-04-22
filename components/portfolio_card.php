@@ -2,6 +2,7 @@
 // filepath: c:\xampp\htdocs\log\components\portfolio_card.php
 require_once 'includes/image_converter.php';
 require_once 'components/media_gallery_preview.php';
+require_once 'includes/profile_functions.php';
 
 function renderPortfolioCard($item) {
     global $conn; // Make sure database connection is available
@@ -20,6 +21,17 @@ function renderPortfolioCard($item) {
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $mediaFiles[] = $row['file_name'];
     }
+    
+    // Get user's profile picture
+    $stmt = $conn->prepare("
+        SELECT 
+            u.profile_picture
+        FROM user u
+        WHERE u.user_id = :user_id
+    ");
+    $stmt->execute([':user_id' => $item['user_id']]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $profilePicture = $user['profile_picture'] ?? null;
     ?>
     
     <div class="portfolio-card" data-category="<?php echo htmlspecialchars($item['category']); ?>" 
@@ -32,12 +44,16 @@ function renderPortfolioCard($item) {
                 <h3><?php echo htmlspecialchars($item['portfolio_title']); ?></h3>
             </div>
             <div class="card-meta">
-                <a href="user_portfolio_profile.php?id=<?php echo $item['user_id']; ?>" class="author" onclick="event.stopPropagation();">
-                    <?php echo htmlspecialchars(!empty($item['full_name']) ? $item['full_name'] : $item['username']); ?>
+                <a href="user_portfolio_profile.php?id=<?php echo $item['user_id']; ?>" class="author-info" onclick="event.stopPropagation();">
+                    <div class="author-avatar">
+                        <img src="<?php echo getProfileImagePath($profilePicture, 'sm'); ?>" alt="Author profile picture">
+                    </div>
+                    <span class="author-name">
+                        <?php echo htmlspecialchars(!empty($item['full_name']) ? $item['full_name'] : $item['username']); ?>
+                    </span>
                 </a>
-                <div class="timestamp">
-                    <?php echo date('M d, Y', strtotime($item['portfolio_date'])); ?>
-                </div>
+                
+                <!-- Date removed as requested -->
             </div>
         </div>
     </div>
