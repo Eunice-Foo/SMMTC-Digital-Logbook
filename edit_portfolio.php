@@ -252,6 +252,7 @@ try {
     <link rel="stylesheet" href="css/video_thumbnail.css">
     <link rel="stylesheet" href="css/media_upload_button.css">
     <link rel="stylesheet" href="css/tools_input.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
     <script src="js/portfolio_edit.js" defer></script>
@@ -268,7 +269,6 @@ try {
     
     <div class="main-content">
         <div class="page-header">
-            <a href="view_portfolio.php?id=<?php echo $portfolio_id; ?>" class="back-button">← Back to Portfolio</a>
             <h2>Edit Portfolio</h2>
         </div>
         
@@ -343,8 +343,10 @@ try {
             </div>
 
             <div class="form-actions">
-                <a href="view_portfolio.php?id=<?php echo $portfolio_id; ?>" class="cancel-btn">Cancel</a>
-                <button type="submit" class="submit-btn">Update Portfolio</button>
+                <a href="view_portfolio.php?id=<?php echo $portfolio_id; ?>" class="btn">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fi fi-rr-floppy-disk-pen"></i> Save Changes
+                </button>
             </div>
         </form>
         <div class="progress">
