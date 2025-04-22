@@ -224,4 +224,93 @@ function createThumbnailsAndWebP($srcPath, $filename, $quality = 90) {
     imagedestroy($img);
     return $webpPath;
 }
+
+/**
+ * Create a square profile thumbnail optimized for the UI
+ * 
+ * @param string $srcPath Source image path
+ * @param string $filename Base filename
+ * @return bool Success status
+ */
+function createProfileThumbnail($srcPath, $filename) {
+    $thumbDir = "uploads/profile/thumbnails/";
+    
+    // Create thumbnail directory if it doesn't exist
+    if (!file_exists($thumbDir)) {
+        mkdir($thumbDir, 0755, true);
+    }
+    
+    // Get image info
+    $imageInfo = getimagesize($srcPath);
+    if (!$imageInfo) {
+        return false;
+    }
+    
+    list($width, $height, $type) = $imageInfo;
+    
+    // Create source image based on type
+    switch ($type) {
+        case IMAGETYPE_JPEG:
+            $img = imagecreatefromjpeg($srcPath);
+            break;
+        case IMAGETYPE_PNG:
+            $img = imagecreatefrompng($srcPath);
+            break;
+        case IMAGETYPE_GIF:
+            $img = imagecreatefromgif($srcPath);
+            break;
+        case IMAGETYPE_WEBP:
+            $img = imagecreatefromwebp($srcPath);
+            break;
+        default:
+            return false;
+    }
+    
+    if (!$img) {
+        return false;
+    }
+    
+    // Create thumbnails at different sizes
+    $sizes = [
+        'sm' => 48,     // Small icon
+        'md' => 120,    // Medium for some UI elements
+        'profile' => 200 // Default profile size
+    ];
+    
+    foreach ($sizes as $suffix => $size) {
+        // Create square thumbnail
+        $thumb = imagecreatetruecolor($size, $size);
+        
+        // Preserve transparency for PNGs
+        imagealphablending($thumb, false);
+        imagesavealpha($thumb, true);
+        
+        // Calculate crop dimensions to make it square
+        if ($width > $height) {
+            $src_x = ($width - $height) / 2;
+            $src_y = 0;
+            $src_size = $height;
+        } else {
+            $src_x = 0;
+            $src_y = ($height - $width) / 2;
+            $src_size = $width;
+        }
+        
+        // Crop and resize
+        imagecopyresampled(
+            $thumb, $img,
+            0, 0, $src_x, $src_y,
+            $size, $size, $src_size, $src_size
+        );
+        
+        // Save as WebP with high quality
+        $thumbPath = $thumbDir . pathinfo($filename, PATHINFO_FILENAME) . "_$suffix.webp";
+        imagewebp($thumb, $thumbPath, 90);
+        
+        imagedestroy($thumb);
+    }
+    
+    imagedestroy($img);
+    return true;
+}
 ?>

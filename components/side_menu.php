@@ -1,22 +1,46 @@
 <?php
 require_once 'includes/session_check.php';
+require_once 'includes/profile_functions.php';
+
+// Fetch user profile picture and full name if needed
+if (!isset($user_profile_picture) && isset($_SESSION['user_id'])) {
+    $stmt = $conn->prepare("
+        SELECT 
+            u.profile_picture, 
+            CASE 
+                WHEN u.role = 1 THEN s.full_name
+                WHEN u.role = 2 THEN sv.supervisor_name
+                ELSE u.user_name
+            END as full_name
+        FROM user u
+        LEFT JOIN student s ON u.user_id = s.student_id AND u.role = 1
+        LEFT JOIN supervisor sv ON u.user_id = sv.supervisor_id AND u.role = 2
+        WHERE u.user_id = :user_id
+    ");
+    $stmt->execute([':user_id' => $_SESSION['user_id']]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $user_profile_picture = $result['profile_picture'] ?? null;
+    $user_full_name = $result['full_name'] ?? $_SESSION['username'];
+}
 ?>
+
 <!-- Add the Flaticon CSS link -->
-<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
 <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-straight/css/uicons-regular-straight.css'>
 
 <div class="sidenav">
-    <div class="user-info">
-        <a href="view_profile.php" class="profile-link">
-            <div class="profile-picture">
-                <i class="fi fi-rr-user"></i>
+    <div class="user-section">
+        <div class="user-profile">
+            <a href="view_profile.php" class="profile-avatar">
+                <img src="<?php echo getProfileImagePath($user_profile_picture); ?>" alt="Profile Picture">
+            </a>
+            <div class="user-info">
+                <div class="full-name"><?php echo htmlspecialchars($user_full_name); ?></div>
+                <div class="role"><?php echo $_SESSION['role'] == ROLE_STUDENT ? 'Student' : 'Supervisor'; ?></div>
             </div>
-        </a>
-        <span>Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
-        <?php if (isset($_SESSION['needs_profile_completion'])): ?>
-            <div class="profile-alert">Please complete your profile</div>
-        <?php endif; ?>
+        </div>
     </div>
+    
     <nav>
         <ul>
             <?php if ($_SESSION['role'] == ROLE_STUDENT): ?>
@@ -66,6 +90,7 @@ require_once 'includes/session_check.php';
             <?php endif; ?>
         </ul>
     </nav>
+    
     <div class="logout-container">
         <a href="javascript:void(0)" class="logout-btn" onclick="handleLogout()">
             <i class="fi fi-rr-sign-out-alt"></i>
@@ -82,7 +107,7 @@ require_once 'includes/session_check.php';
     z-index: 1;
     top: 0;
     left: 0;
-    background-color: var(--bg-primary); /* Changed to white */
+    background-color: var(--bg-primary); /* Make sure this is using the primary background color */
     overflow-x: hidden;
     padding-top: 20px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
@@ -138,42 +163,59 @@ require_once 'includes/session_check.php';
     color: var(--primary-color);
 }
 
-.sidenav .user-info {
-    padding: 15px;
-    border-bottom: 1px solid #dee2e6;
-    margin-bottom: 20px;
+.user-section {
+    padding: 20px 15px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 15px;
+}
+
+.user-profile {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
+    gap: 15px;
 }
 
-.profile-link {
-    display: inline-block;
-    text-decoration: none;
-    margin-bottom: 10px;
-}
-
-.profile-picture {
-    width: 70px;
-    height: 70px;
+.profile-avatar {
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    background-color: #e9ecef;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
+    display: block;
     transition: all 0.3s ease;
-    border: 3px solid transparent;
+    border: 3px solid var(--border-color); /* Changed from rgba(255,255,255,0.2) to border-color */
+    flex-shrink: 0;
 }
 
-.profile-picture:hover {
-    background-color: #dee2e6;
+.profile-avatar:hover {
+    transform: scale(1.05);
     border-color: var(--primary-color);
 }
 
-.profile-picture i {
-    font-size: 32px;
-    color: #6c757d;
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-info {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.full-name {
+    font-weight: 500;
+    color: var(--text-primary); /* Changed from white to text-primary */
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+    font-size: 16px;
+}
+
+.role {
+    color: var(--text-secondary); /* Changed from rgba(255,255,255,0.7) to text-secondary */
+    font-size: 14px;
 }
 
 .sidenav nav {
@@ -237,16 +279,6 @@ require_once 'includes/session_check.php';
         margin-left: 0;
         width: 100%;
     }
-}
-
-.profile-alert {
-    background-color: #ffeeba;
-    color: #856404;
-    padding: 5px 10px;
-    border-radius: 4px;
-    margin: 10px 0;
-    font-size: 12px;
-    text-align: center;
 }
 </style>
 

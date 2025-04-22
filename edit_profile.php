@@ -2,6 +2,9 @@
 // filepath: c:\xampp\htdocs\log\edit_profile.php
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
+require_once 'includes/file_naming.php';
+require_once 'includes/image_converter.php';
+require_once 'components/toast_notification.php';
 
 $success_message = '';
 $error_message = '';
@@ -13,7 +16,8 @@ try {
             SELECT 
                 s.*,
                 u.user_name,
-                u.email
+                u.email,
+                u.profile_picture
             FROM student s
             INNER JOIN user u ON s.student_id = u.user_id
             WHERE s.student_id = :user_id
@@ -23,7 +27,8 @@ try {
             SELECT 
                 sv.*,
                 u.user_name,
-                u.email
+                u.email,
+                u.profile_picture
             FROM supervisor sv
             INNER JOIN user u ON sv.supervisor_id = u.user_id
             WHERE sv.supervisor_id = :user_id
@@ -64,6 +69,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':email' => $_POST['email'],
             ':user_id' => $_SESSION['user_id']
         ]);
+        
+        // Handle profile picture upload
+        if (!empty($_FILES['profile_picture']['name'])) {
+            $tmp_name = $_FILES['profile_picture']['tmp_name'];
+            $original_filename = $_FILES['profile_picture']['name'];
+            $file_type = $_FILES['profile_picture']['type'];
+            $file_error = $_FILES['profile_picture']['error'];
+            
+            // Check for upload errors
+            if ($file_error !== UPLOAD_ERR_OK) {
+                $error_message = "Upload error: " . 
+                    ($file_error === UPLOAD_ERR_INI_SIZE ? "File too large (exceeds server limit)" : "Unknown error");
+            } 
+            // Validate file is an image
+            elseif (!in_array($file_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp'])) {
+                $error_message = "Profile picture must be an image (JPG, PNG, GIF, or WebP)";
+            } else {
+                // Create directories if they don't exist
+                $profile_dir = "uploads/profile/";
+                $thumbs_dir = "uploads/profile/thumbnails/";
+                
+                if (!file_exists($profile_dir)) {
+                    mkdir($profile_dir, 0755, true);
+                }
+                if (!file_exists($thumbs_dir)) {
+                    mkdir($thumbs_dir, 0755, true);
+                }
+                
+                // Generate unique filename
+                $unique_filename = generateUniqueFilename($original_filename, $_SESSION['user_id'] . '_profile');
+                $upload_path = $profile_dir . $unique_filename;
+                
+                // Move uploaded file
+                if (move_uploaded_file($tmp_name, $upload_path)) {
+                    // Create WebP version and thumbnails
+                    $webp_path = null;
+                    
+                    try {
+                        if ($file_type !== 'image/webp') {
+                            $webp_path = convertToWebP($upload_path);
+                        }
+                        
+                        // Create profile thumbnails
+                        createProfileThumbnail($upload_path, $unique_filename);
+                        
+                        // Update database with new profile picture
+                        $profile_pic_filename = $webp_path ? basename($webp_path) : $unique_filename;
+                        
+                        $stmt = $conn->prepare("
+                            UPDATE user
+                            SET profile_picture = :profile_picture
+                            WHERE user_id = :user_id
+                        ");
+                        
+                        $stmt->execute([
+                            ':profile_picture' => $profile_pic_filename,
+                            ':user_id' => $_SESSION['user_id']
+                        ]);
+                        
+                        // Update the session variable to reflect change immediately
+                        $user_profile_picture = $profile_pic_filename;
+                    } catch (Exception $e) {
+                        $error_message = "Image processing error: " . $e->getMessage();
+                    }
+                } else {
+                    $error_message = "Failed to upload profile picture. Please check file permissions.";
+                }
+            }
+        }
         
         // Update role-specific table
         if ($_SESSION['role'] == ROLE_STUDENT) {
@@ -162,7 +236,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 SELECT 
                     s.*,
                     u.user_name,
-                    u.email
+                    u.email,
+                    u.profile_picture
                 FROM student s
                 INNER JOIN user u ON s.student_id = u.user_id
                 WHERE s.student_id = :user_id
@@ -172,7 +247,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 SELECT 
                     sv.*,
                     u.user_name,
-                    u.email
+                    u.email,
+                    u.profile_picture
                 FROM supervisor sv
                 INNER JOIN user u ON sv.supervisor_id = u.user_id
                 WHERE sv.supervisor_id = :user_id
@@ -187,7 +263,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "Error updating profile: " . $e->getMessage();
     }
 }
-?>
+
+// Initialize toast notifications
+initializeToast();
+
+// Show notifications if needed
+if ($success_message): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            showSuccessToast('<?php echo $success_message; ?>', 'Profile Updated');
+        });
+    </script>
+<?php endif; ?>
+
+<?php if ($error_message): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            showErrorToast('<?php echo $error_message; ?>', 'Error');
+        });
+    </script>
+<?php endif; ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -197,127 +292,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Edit Profile</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/auth_form.css">
-    <style>
-        .main-content {
-            max-width: 800px;
-            padding: 20px;
-            margin: 0 auto;
-        }
-        
-        .form-container {
-            background-color: #fff;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: var(--box-shadow);
-        }
-        
-        .form-section {
-            margin-bottom: 30px;
-        }
-        
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            border-bottom: 1px solid #e5e5e5;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .full-width {
-            grid-column: 1 / -1;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        
-        .form-group textarea {
-            min-height: 100px;
-        }
-        
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-        
-        .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-        
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 30px;
-        }
-        
-        .update-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-weight: 500;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        
-        .update-btn:hover {
-            background-color: var(--primary-hover);
-        }
-        
-        .profile-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .back-btn {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--primary-color);
-            font-weight: 500;
-        }
-        
-        .back-btn i {
-            margin-right: 8px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/edit_profile.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
 </head>
 <body>
     <?php include 'components/side_menu.php'; ?>
@@ -331,19 +307,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </a>
         </div>
         
-        <?php if ($success_message): ?>
-            <div class="success-message">
-                <?php echo $success_message; ?>
-            </div>
-        <?php endif; ?>
-        
-        <?php if ($error_message): ?>
-            <div class="error-message">
-                <?php echo $error_message; ?>
-            </div>
-        <?php endif; ?>
-        
-        <form action="edit_profile.php" method="post" class="form-container">
+        <form action="edit_profile.php" method="post" class="form-container" enctype="multipart/form-data">
             <!-- Account Information -->
             <div class="form-section">
                 <h3 class="section-title">Account Information</h3>
@@ -356,6 +320,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group">
                         <label for="email">Email Address</label>
                         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($profile['email']); ?>" required>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Picture Upload -->
+            <div class="form-section">
+                <h3 class="section-title">Profile Picture</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="profile-upload-container">
+                            <div class="current-profile-picture">
+                                <?php if (!empty($profile['profile_picture'])): ?>
+                                    <img src="<?php echo getProfileImagePath($profile['profile_picture'], 'md'); ?>" alt="Current profile picture">
+                                <?php else: ?>
+                                    <div class="profile-placeholder">
+                                        <i class="fi fi-rr-user"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="profile-upload">
+                                <label for="profile_picture" class="profile-upload-label">
+                                    <i class="fi fi-rr-camera"></i>
+                                    <span>Upload new picture</span>
+                                </label>
+                                <input type="file" id="profile_picture" name="profile_picture" accept="image/*" class="profile-upload-input">
+                                <small class="upload-hint">Recommended size: Square image at least 150x150px</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -487,30 +479,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
 
-    <script>
-        // Password confirmation validation
-        document.getElementById('confirm_password').addEventListener('input', function() {
-            const newPassword = document.getElementById('new_password').value;
-            const confirmPassword = this.value;
-            
-            if (newPassword !== confirmPassword) {
-                this.setCustomValidity('Passwords do not match');
-            } else {
-                this.setCustomValidity('');
-            }
-        });
-        
-        // Validate practicum dates
-        document.getElementById('practicum_end_date')?.addEventListener('input', function() {
-            const startDate = document.getElementById('practicum_start_date').value;
-            const endDate = this.value;
-            
-            if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-                this.setCustomValidity('End date must be after start date');
-            } else {
-                this.setCustomValidity('');
-            }
-        });
-    </script>
+    <!-- Include JavaScript file -->
+    <script src="js/edit_profile.js"></script>
 </body>
 </html>
