@@ -14,7 +14,7 @@
     background-color: #f0f0f0;
     overflow: hidden;
     flex-shrink: 0;
-    border: 2px solid rgba(255,255,255,0.2);
+    border: 2px solid var(--border-color);
 }
 
 .profile-avatar img {
@@ -30,7 +30,7 @@
 
 .username {
     font-weight: 500;
-    color: white;
+    color: var(--text-primary);
     line-height: 1.2;
     white-space: nowrap;
     overflow: hidden;
@@ -38,6 +38,24 @@
 }
 
 .role {
-    color: rgba(255,255,255,0.7);
+    color: var(--text-secondary);
     font-size: 12px;
+}
+
+/* Add active button styles for side menu */
+.sidenav nav ul li a.active {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.sidenav nav ul li a.active i {
+    color: var(--primary-color);
+}
+
+.sidenav nav ul li a:hover {
+    color: var(--primary-color);
+}
+
+.sidenav nav ul li a:hover i {
+    color: var(--primary-color);
 }

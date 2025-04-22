@@ -155,7 +155,7 @@ if (!isset($user_profile_picture) && isset($_SESSION['user_id'])) {
 
 /* Active link style */
 .sidenav nav ul li a.active {
-    background-color: rgba(76, 175, 80, 0.1);
+    background-color:rgb(153, 85, 187, 0.1);
     color: var(--primary-color);
 }
 

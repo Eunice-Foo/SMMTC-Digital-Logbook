@@ -25,8 +25,9 @@
 }
 
 .category-tab.active {
-    background-color: var(--primary-color);
-    color: white;
+    background-color: var(--primary-light); /* Changed from var(--primary-color) to var(--primary-light) */
+    color: var(--primary-color); /* Changed from white to primary color for better contrast */
+    border: 1px solid var(--primary-color); /* Added subtle border to define the active tab */
 }
 
 /* Responsive styles */
