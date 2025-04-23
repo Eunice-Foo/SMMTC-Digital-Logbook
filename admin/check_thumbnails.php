@@ -134,7 +134,7 @@ if (isset($_POST['regenerate'])) {
     </style>
 </head>
 <body>
-    <?php include '../components/side_menu.php'; ?>
+    <?php include '../components/topnav.php'; ?>
     
     <div class="main-content">
         <h1>Thumbnail Status Check</h1>

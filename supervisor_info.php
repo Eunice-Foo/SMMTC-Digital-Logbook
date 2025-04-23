@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/auth_form.css">
 </head>
 <body>
-    <?php include 'components/side_menu.php'; ?>
+    <?php include 'components/topnav.php'; ?>
     
     <div class="container">
         <h2>Complete Your Company Profile</h2>

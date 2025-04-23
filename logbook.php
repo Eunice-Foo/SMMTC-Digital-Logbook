@@ -73,7 +73,7 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
 </head>
 <body data-user-id="<?php echo $_SESSION['user_id']; ?>">
     <?php 
-    include 'components/side_menu.php'; 
+    include 'components/topnav.php'; 
     initializeToast(); // Initialize toast inside the body
     ?>
     <!-- Move the media viewer component call after the side menu -->

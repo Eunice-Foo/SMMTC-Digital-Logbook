@@ -124,7 +124,7 @@ try {
     </style>
 </head>
 <body>
-    <?php include 'components/side_menu.php'; ?>
+    <?php include 'components/topnav.php'; ?>
     <div class="main-content">
         <div class="log-entry">
             <div class="log-entry-grid">

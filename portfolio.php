@@ -58,7 +58,7 @@ try {
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
 </head>
 <body data-user-id="<?php echo $_SESSION['user_id']; ?>">
-    <?php include 'components/side_menu.php'; ?>
+    <?php include 'components/topnav.php'; ?>
     
     <div class="main-content">
         <!-- Update the header section to have a bottom border -->

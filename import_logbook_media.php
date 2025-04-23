@@ -181,7 +181,7 @@ $logbook_media = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </style>
 </head>
 <body>
-    <?php include 'components/side_menu.php'; ?>
+    <?php include 'components/topnav.php'; ?>
     
     <div class="main-content">
         <h2>Import Media from Logbook</h2>

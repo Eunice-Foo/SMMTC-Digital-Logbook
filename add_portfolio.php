@@ -285,7 +285,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <?php 
-    include 'components/side_menu.php'; 
+    include 'components/topnav.php'; 
     
     // Include and initialize toast notification component
     require_once 'components/toast_notification.php';

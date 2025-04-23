@@ -33,7 +33,7 @@ if (!isset($user_profile_picture) && isset($_SESSION['user_id'])) {
     <div class="topnav-brand">
         <a href="<?php echo $_SESSION['role'] == ROLE_STUDENT ? 'main_menu.php' : 'sv_main.php'; ?>">
             <!-- Replace text with logo image -->
-            <img src="assets/images/logo.png" alt="Logbook Logo" class="logo-image">
+            <img src="images/logo.png" alt="Logbook Logo" class="logo-image">
         </a>
     </div>
 

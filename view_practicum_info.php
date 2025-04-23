@@ -99,7 +99,7 @@ try {
     </style>
 </head>
 <body>
-    <?php include 'components/side_menu.php'; ?>
+    <?php include 'components/topnav.php'; ?>
     
     <div class="main-content">
         <?php if ($_SESSION['role'] == ROLE_STUDENT): ?>

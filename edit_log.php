@@ -224,7 +224,7 @@ try {
     <script src="js/file_upload.js" defer></script>
 </head>
 <body>
-    <?php include 'components/side_menu.php'; ?>
+    <?php include 'components/topnav.php'; ?>
     
     <?php 
     // Include and initialize toast notification component
