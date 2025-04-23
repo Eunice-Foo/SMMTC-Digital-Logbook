@@ -190,7 +190,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
     </style>
 </head>
 <body>
-    <?php include 'components/side_menu.php'; ?>
+    <?php include 'components/topnav.php'; ?>
     
     <div class="main-content">
         <div class="search-section">
