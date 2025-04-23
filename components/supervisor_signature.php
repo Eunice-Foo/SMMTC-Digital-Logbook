@@ -1,5 +1,6 @@
 <?php
 function getSupervisorInfo($conn, $user_id) {
+    // First try to get the supervisor assigned to this student
     $stmt = $conn->prepare("
         SELECT 
             sv.supervisor_name,
@@ -10,7 +11,22 @@ function getSupervisorInfo($conn, $user_id) {
         WHERE s.student_id = :user_id
     ");
     $stmt->execute([':user_id' => $user_id]);
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    // If no result (student with no supervisor) and user is a supervisor, get their own info
+    if (!$result && $_SESSION['role'] == ROLE_SUPERVISOR) {
+        $stmt = $conn->prepare("
+            SELECT 
+                supervisor_name,
+                signature_image 
+            FROM supervisor 
+            WHERE supervisor_id = :user_id
+        ");
+        $stmt->execute([':user_id' => $user_id]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    return $result;
 }
 
 function renderSupervisorSignature($conn, $user_id) {
@@ -58,8 +74,9 @@ function renderSupervisorSignature($conn, $user_id) {
 }
 
 .signature-image {
-    width: 150px;
-    height: 60px;
+    width: 200px;
+    height: auto;
+    max-height: 80px;
     object-fit: contain;
 }
 
@@ -84,3 +101,46 @@ function renderSupervisorSignature($conn, $user_id) {
     }
 }
 </style>
+
+<script>
+// Add this to js/edit_profile.js to preview the signature before submission
+function initSignaturePreview() {
+    const signatureInput = document.getElementById('signature_image');
+    const previewContainer = document.querySelector('.current-signature');
+    
+    if (signatureInput && previewContainer) {
+        signatureInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const placeholder = previewContainer.querySelector('.signature-placeholder');
+                    if (placeholder) {
+                        previewContainer.removeChild(placeholder);
+                    }
+                    
+                    const existingImg = previewContainer.querySelector('img');
+                    if (existingImg) {
+                        previewContainer.removeChild(existingImg);
+                    }
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'Signature preview';
+                    previewContainer.appendChild(img);
+                };
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    }
+}
+
+// Modify the existing DOMContentLoaded event to include signature preview
+document.addEventListener('DOMContentLoaded', function() {
+    // Existing code...
+    
+    // Initialize signature picture preview
+    initSignaturePreview();
+});
+</script>

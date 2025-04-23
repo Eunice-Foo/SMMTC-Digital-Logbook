@@ -139,6 +139,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         
+        // Handle signature image upload (for supervisors only)
+        if ($_SESSION['role'] == ROLE_SUPERVISOR && !empty($_FILES['signature_image']['name'])) {
+            $tmp_name = $_FILES['signature_image']['tmp_name'];
+            $original_filename = $_FILES['signature_image']['name'];
+            $file_type = $_FILES['signature_image']['type'];
+            $file_error = $_FILES['signature_image']['error'];
+            
+            // Check for upload errors
+            if ($file_error !== UPLOAD_ERR_OK) {
+                $error_message = "Signature upload error: " . 
+                    ($file_error === UPLOAD_ERR_INI_SIZE ? "File too large (exceeds server limit)" : "Unknown error");
+            } 
+            // Validate file is an image
+            elseif (!in_array($file_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp'])) {
+                $error_message = "Signature must be an image (JPG, PNG, GIF, or WebP)";
+            } else {
+                // Create directory if it doesn't exist
+                $signature_dir = "uploads/signatures/";
+                
+                if (!file_exists($signature_dir)) {
+                    mkdir($signature_dir, 0755, true);
+                }
+                
+                // Generate unique filename
+                $unique_filename = generateUniqueFilename($original_filename, $_SESSION['user_id'] . '_signature');
+                $upload_path = $signature_dir . $unique_filename;
+                
+                // Move uploaded file
+                if (move_uploaded_file($tmp_name, $upload_path)) {
+                    // Update database with new signature image
+                    $stmt = $conn->prepare("
+                        UPDATE supervisor
+                        SET signature_image = :signature_image
+                        WHERE supervisor_id = :user_id
+                    ");
+                    
+                    $stmt->execute([
+                        ':signature_image' => $unique_filename,
+                        ':user_id' => $_SESSION['user_id']
+                    ]);
+                } else {
+                    $error_message = "Failed to upload signature. Please check file permissions.";
+                }
+            }
+        }
+        
         // Update role-specific table
         if ($_SESSION['role'] == ROLE_STUDENT) {
             $stmt = $conn->prepare("
@@ -288,12 +334,55 @@ if ($success_message): ?>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" width="device-width, initial-scale=1.0">
     <title>Edit Profile</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/auth_form.css">
     <link rel="stylesheet" href="css/edit_profile.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <style>
+        /* Add this to your CSS in edit_profile.css */
+        .signature-upload-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .current-signature {
+            width: 250px;
+            height: 100px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #f9f9f9;
+        }
+
+        .current-signature img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .signature-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            color: #999;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .signature-upload {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+    </style>
 </head>
 <body>
     <?php include 'components/topnav.php'; ?>
@@ -467,6 +556,34 @@ if ($success_message): ?>
                     <div class="form-group full-width">
                         <label for="company_address">Company Address</label>
                         <textarea id="company_address" name="company_address" required><?php echo htmlspecialchars($profile['company_address']); ?></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signature Upload -->
+            <div class="form-section">
+                <h3 class="section-title">Signature</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="signature-upload-container">
+                            <div class="current-signature">
+                                <?php if (!empty($profile['signature_image'])): ?>
+                                    <img src="uploads/signatures/<?php echo htmlspecialchars($profile['signature_image']); ?>" alt="Current signature">
+                                <?php else: ?>
+                                    <div class="signature-placeholder">
+                                        <span>No signature uploaded</span>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="signature-upload">
+                                <label for="signature_image" class="profile-upload-label">
+                                    <i class="fi fi-rr-edit-alt"></i>
+                                    <span>Upload signature</span>
+                                </label>
+                                <input type="file" id="signature_image" name="signature_image" accept="image/*" class="profile-upload-input">
+                                <small class="upload-hint">Upload a clear image of your signature (PNG or JPEG)</small>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize profile picture preview
     initProfilePicturePreview();
+    
+    // Initialize signature preview
+    initSignaturePreview();
 });
 
 /**
@@ -54,6 +57,45 @@ function initProfilePicturePreview() {
                     img.src = e.target.result;
                     img.alt = 'Profile preview';
                     previewContainer.appendChild(img);
+                };
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    }
+}
+
+/**
+ * Initialize signature preview functionality
+ */
+function initSignaturePreview() {
+    const signatureInput = document.getElementById('signature_image');
+    const previewContainer = document.querySelector('.current-signature');
+    
+    if (signatureInput && previewContainer) {
+        signatureInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const placeholder = previewContainer.querySelector('.signature-placeholder');
+                    if (placeholder) {
+                        placeholder.style.display = 'none';
+                    }
+                    
+                    const existingImg = previewContainer.querySelector('img');
+                    if (existingImg) {
+                        // Update the existing image instead of removing it
+                        existingImg.src = e.target.result;
+                    } else {
+                        // Create a new image if none exists
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.alt = 'Signature preview';
+                        img.style.maxWidth = '100%';
+                        img.style.maxHeight = '100%';
+                        previewContainer.appendChild(img);
+                    }
                 };
                 
                 reader.readAsDataURL(this.files[0]);
