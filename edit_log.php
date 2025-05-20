@@ -222,6 +222,7 @@ try {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
     <script src="js/file_upload.js" defer></script>
+    <script src="js/cancel_confirmation.js" defer></script>
 </head>
 <body>
     <?php include 'components/topnav.php'; ?>
@@ -295,6 +296,22 @@ try {
             
             // These will be handled by file_upload.js initializeExistingMediaPreviews function
             // No need to manually set grid properties here
+        });
+        
+        // Add this to the end of the DOMContentLoaded event handler
+        // Modified cancel button handler to show confirmation dialog
+        document.querySelector('.cancel-btn').addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            // Get the entry ID from the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const entryId = urlParams.get('id');
+            
+            // Set the return URL to view the current entry
+            const returnUrl = `view_log.php?id=${entryId}`;
+            
+            // Show the cancel confirmation dialog
+            confirmCancel(returnUrl);
         });
     </script>
 </body>

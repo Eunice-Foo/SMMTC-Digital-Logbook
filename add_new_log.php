@@ -105,11 +105,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/file_preview.css">
     <link rel="stylesheet" href="css/video_thumbnail.css">
     <link rel="stylesheet" href="css/media_upload_button.css">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/delete_modal.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/file_upload.js" defer></script>
     <script src="js/video_thumbnail.js" defer></script>
     <script src="js/media_preview.js" defer></script>
+    <script src="js/cancel_confirmation.js" defer></script>
 </head>
 <body>
     <?php 
@@ -152,9 +154,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 generateVideoThumbnails();
             }
             
-            // Add event handler for the cancel button
-            document.querySelector('.cancel-btn').addEventListener('click', function() {
-                window.location.href = 'logbook.php';
+            // Modified cancel button handler to show confirmation dialog
+            document.querySelector('.cancel-btn').addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent default navigation
+                confirmCancel('logbook.php'); // Show the cancel confirmation dialog
             });
             
             // IMPORTANT: Add this event handler for form submission
