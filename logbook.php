@@ -1,8 +1,8 @@
 <?php
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
-require_once 'components/month_bar.php'; // Add this line
-require_once 'components/toast_notification.php'; // Include and initialize toast notification component
+require_once 'components/month_bar.php';
+require_once 'components/toast_notification.php';
 
 // Use the function from session_check.php
 checkUserLogin();
@@ -74,9 +74,9 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
 <body data-user-id="<?php echo $_SESSION['user_id']; ?>">
     <?php 
     include 'components/topnav.php'; 
-    initializeToast(); // Initialize toast inside the body
+    initializeToast();
     ?>
-    <!-- Move the media viewer component call after the side menu -->
+    
     <div id="mediaViewer" class="media-viewer">
         <div class="media-viewer-content">
             <button class="nav-button prev-button" onclick="navigateMedia(-1)">❮</button>
@@ -97,45 +97,49 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
         </div>
 
         <div class="logbook-content">
-            <?php renderMonthBar($log_entries, $practicum_info['practicum_start_date'], $practicum_info['practicum_duration']); ?>
-            
-            <div class="button-container" style="display: flex; justify-content: flex-end; gap: 10px; padding: 20px;">
-                <!-- Regular buttons -->
-                <div id="regularButtons">
-                    <button class="btn btn-export" onclick="toggleExportMode()">
-                        <i class="fi fi-rr-file-export"></i> Export
-                    </button>
-                    <button class="btn btn-add" onclick="window.location.href='add_new_log.php'">
-                        <i class="fi fi-rr-square-plus"></i> Add New
-                    </button>
-                </div>
-
-                <!-- Export controls -->
-                <div id="exportControls" style="display: none;">
-                    <!-- Left side -->
-                    <div class="export-left">
-                        <div class="selected-count">
-                            <span id="selectedCount">0</span> selected
-                        </div>
-                        <label class="select-all">
-                            <input type="checkbox" onchange="selectAllEntries(this.checked)">
-                            Select All
-                        </label>
-                    </div>
-                    <!-- Right side -->
-                    <div class="export-buttons">
-                        <button id="downloadButton" class="btn btn-export" onclick="downloadExport()" disabled>
+            <!-- Create a fixed header section that contains all elements that should remain visible -->
+            <div class="logbook-fixed-header">
+                <?php renderMonthBar($log_entries, $practicum_info['practicum_start_date'], $practicum_info['practicum_duration']); ?>
+                
+                <div class="button-container">
+                    <!-- Regular buttons -->
+                    <div id="regularButtons">
+                        <button class="btn btn-export" onclick="toggleExportMode()">
                             <i class="fi fi-rr-file-export"></i> Export
                         </button>
-                        <button class="btn btn-secondary" onclick="toggleExportMode()">
-                            Cancel
+                        <button class="btn btn-add" onclick="window.location.href='add_new_log.php'">
+                            <i class="fi fi-rr-square-plus"></i> Add New
                         </button>
                     </div>
-                </div>
-            </div>
 
-            <div id="previewArea" style="display: none;"></div>
+                    <!-- Export controls -->
+                    <div id="exportControls" style="display: none;">
+                        <!-- Left side -->
+                        <div class="export-left">
+                            <div class="selected-count">
+                                <span id="selectedCount">0</span> selected
+                            </div>
+                            <label class="select-all">
+                                <input type="checkbox" onchange="selectAllEntries(this.checked)">
+                                Select All
+                            </label>
+                        </div>
+                        <!-- Right side -->
+                        <div class="export-buttons">
+                            <button id="downloadButton" class="btn btn-export" onclick="downloadExport()" disabled>
+                                <i class="fi fi-rr-file-export"></i> Export
+                            </button>
+                            <button class="btn btn-secondary" onclick="toggleExportMode()">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="previewArea" style="display: none;"></div>
+            </div>
             
+            <!-- This is the only part that will scroll -->
             <div class="logbook-entries">
                 <?php 
                 require_once 'components/log_entry.php';
@@ -146,24 +150,5 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
             </div>
         </div>
     </div>
-    
-    <script src="js/video_thumbnail.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOM loaded');
-        const exportButton = document.querySelector('.btn-export');
-        console.log('Export button found:', !!exportButton);
-        
-        if (exportButton) {
-            exportButton.addEventListener('click', function() {
-                console.log('Export button clicked');
-            });
-        }
-        
-        // Test if toggleExportMode is available
-        console.log('toggleExportMode function available:', typeof toggleExportMode === 'function');
-    });
-    </script>
-    <script src="js/delete_confirmation.js"></script> <!-- Include the delete confirmation script at the end of the body -->
 </body>
 </html>

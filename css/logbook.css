@@ -107,6 +107,42 @@ body {
     font-size: 16px;
 }
 
+/* Add fixed header styles */
+.logbook-fixed-header {
+    position: sticky;
+    top: 64px; /* Height of the topnav */
+    z-index: 90;
+    background-color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+}
+
+/* Ensure the entries section is scrollable */
+.logbook-entries {
+    overflow-y: auto;
+    padding-top: 15px;
+}
+
+/* Clean up button container styles */
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 15px 0;
+}
+
+/* Eliminate extra padding */
+.logbook-content {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+/* Make export controls full width */
+#exportControls {
+    width: 100%;
+}
+
 /* Responsive adjustments */
 @media screen and (max-width: 768px) {    
     .btn {
