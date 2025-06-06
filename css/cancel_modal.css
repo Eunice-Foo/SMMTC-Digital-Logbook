@@ -81,14 +81,8 @@
     font-family: inherit;
 }
 
-/* Keep editing button */
-.cancel-modal-buttons .keep-btn {
-    background-color: #6c757d; /* Gray for "Keep Editing" */
-    color: white;
-}
-
 .cancel-modal-buttons .keep-btn:hover {
-    background-color: #5a6268; /* Darker gray on hover */
+    background-color: #e2e6ea; /* Darker gray on hover */
 }
 
 /* Discard button - use warning/orange color instead of red */
