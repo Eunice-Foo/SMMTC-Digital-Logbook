@@ -219,7 +219,6 @@ try {
     <link rel="stylesheet" href="css/video_thumbnail.css">
     <link rel="stylesheet" href="css/media_upload_button.css">
     <link rel="stylesheet" href="css/cancel_modal.css">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
     <script src="js/file_upload.js" defer></script>
@@ -266,7 +265,7 @@ try {
             <input type="hidden" name="status" value="<?php echo htmlspecialchars($entry['entry_status']); ?>">
             
             <div class="form-buttons">
-                <button type="button" class="cancel-btn" onclick="window.location.href='view_log.php?id=<?php echo $_GET['id']; ?>'">Cancel</button>
+                <button type="button" class="cancel-btn">Cancel</button>
                 <button type="submit" class="submit-btn">Save Changes</button>
             </div>
         </form>

@@ -86,3 +86,37 @@ function discardEntry(returnUrl) {
     // Navigate back to the return URL
     window.location.href = returnUrl;
 }
+
+/**
+ * More robust function to find cancel buttons
+ */
+function setupCancelConfirmations(defaultReturnUrl = 'logbook.php') {
+    // Better selector that includes buttons/links with text containing "Cancel"
+    const cancelButtons = document.querySelectorAll('.cancel-btn, .btn.cancel-btn, button:contains("Cancel"), a:contains("Cancel")');
+    
+    cancelButtons.forEach(button => {
+        // Check if this button already has a cancel handler
+        if (!button.getAttribute('data-cancel-handler')) {
+            button.setAttribute('data-cancel-handler', 'true');
+            
+            // Try to get return URL from data attribute, href, or use default
+            let returnUrl = button.dataset.returnUrl;
+            
+            if (!returnUrl && button.hasAttribute('href') && button.getAttribute('href') !== '#' && button.getAttribute('href') !== 'javascript:void(0)') {
+                returnUrl = button.getAttribute('href');
+            }
+            
+            returnUrl = returnUrl || defaultReturnUrl;
+            
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                confirmCancel(returnUrl);
+            });
+        }
+    });
+}
+
+// Auto-setup all cancel confirmations when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    setupCancelConfirmations();
+});

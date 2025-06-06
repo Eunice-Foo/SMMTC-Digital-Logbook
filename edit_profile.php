@@ -339,6 +339,7 @@ if ($success_message): ?>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/auth_form.css">
     <link rel="stylesheet" href="css/edit_profile.css">
+    <link rel="stylesheet" href="css/cancel_modal.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <style>
         /* Add this to your CSS in edit_profile.css */
@@ -590,7 +591,7 @@ if ($success_message): ?>
             <?php endif; ?>
             
             <div class="button-container">
-                <a href="<?php echo $_SESSION['role'] == ROLE_STUDENT ? 'main_menu.php' : 'sv_main.php'; ?>" class="btn">Cancel</a>
+                <a href="javascript:void(0)" class="btn cancel-btn">Cancel</a>
                 <button type="submit" class="update-btn">Update Profile</button>
             </div>
         </form>
@@ -598,5 +599,18 @@ if ($success_message): ?>
 
     <!-- Include JavaScript file -->
     <script src="js/edit_profile.js"></script>
+    <script src="js/cancel_confirmation.js" defer></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add cancel confirmation for the Cancel button
+        const cancelBtn = document.querySelector('.cancel-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                confirmCancel('view_profile.php');
+            });
+        }
+    });
+    </script>
 </body>
 </html>

@@ -49,9 +49,7 @@ try {
     <div class="main-content">
         <div class="top-section">
             <h2>Add Interns</h2>
-            <a href="sv_main.php" class="btn">
-                Cancel
-            </a>
+            <a href="javascript:void(0)" class="btn cancel-btn">Cancel</a>
         </div>
         
         <table class="student-table">
@@ -112,7 +110,18 @@ try {
             });
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const cancelBtn = document.querySelector('.cancel-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                confirmCancel('sv_main.php');
+            });
+        }
+    });
     </script>
+    <script src="js/cancel_confirmation.js" defer></script>
 </body>
 </html>
 <?php

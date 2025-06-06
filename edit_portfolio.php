@@ -345,7 +345,8 @@ try {
             </div>
 
             <div class="form-actions">
-                <a href="view_portfolio.php?id=<?php echo $portfolio_id; ?>" class="btn">Cancel</a>
+                <a href="javascript:void(0)" class="btn cancel-btn">Cancel</a>
+                
                 <button type="submit" class="btn btn-primary">
                     <i class="fi fi-rr-floppy-disk-pen"></i> Save Changes
                 </button>
@@ -358,6 +359,27 @@ try {
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Make sure we're using the correct selector for the cancel button
+            const cancelBtn = document.querySelector('.cancel-btn, .btn:not(.btn-primary)');
+            
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    
+                    // Get the portfolio ID from the URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const portfolioId = urlParams.get('id');
+                    
+                    // Set the return URL to view the current portfolio
+                    const returnUrl = `view_portfolio.php?id=${portfolioId}`;
+                    
+                    // Show the cancel confirmation dialog
+                    confirmCancel(returnUrl);
+                });
+            } else {
+                console.error('Cancel button not found in edit_portfolio.php');
+            }
+            
             // Initialize existing media files for tracking
             window.existingMediaData = <?php echo json_encode($media); ?>;
             console.log('Existing media data loaded', window.existingMediaData);
@@ -373,23 +395,6 @@ try {
             
             // Initialize video thumbnails
             generateVideoThumbnails();
-        });
-        
-        // Modified cancel button handler to show confirmation dialog
-        document.querySelector('.btn').addEventListener('click', function(event) {
-            if (this.textContent.trim() === 'Cancel') {
-                event.preventDefault();
-                
-                // Get the portfolio ID from the URL
-                const urlParams = new URLSearchParams(window.location.search);
-                const portfolioId = urlParams.get('id');
-                
-                // Set the return URL to view the current portfolio
-                const returnUrl = `view_portfolio.php?id=${portfolioId}`;
-                
-                // Show the cancel confirmation dialog
-                confirmCancel(returnUrl);
-            }
         });
     </script>
 </body>

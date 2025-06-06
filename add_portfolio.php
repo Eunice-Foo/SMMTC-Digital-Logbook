@@ -370,9 +370,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script>
     // Modified cancel button handler to show confirmation dialog
-    document.querySelector('.cancel-btn').addEventListener('click', function(event) {
-        event.preventDefault();
-        confirmCancel('portfolio.php');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Existing code...
+        
+        // Add cancel confirmation
+        document.querySelector('.cancel-btn').addEventListener('click', function(event) {
+            event.preventDefault();
+            confirmCancel('portfolio.php');
+        });
     });
     </script>
 </body>
