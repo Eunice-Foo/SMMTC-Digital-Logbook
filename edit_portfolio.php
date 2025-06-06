@@ -252,11 +252,13 @@ try {
     <link rel="stylesheet" href="css/video_thumbnail.css">
     <link rel="stylesheet" href="css/media_upload_button.css">
     <link rel="stylesheet" href="css/tools_input.css">
+    <link rel="stylesheet" href="css/cancel_modal.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
     <script src="js/portfolio_edit.js" defer></script>
     <script src="js/tools_input.js" defer></script>
+    <script src="js/cancel_confirmation.js" defer></script>
 </head>
 <body>
     <?php include 'components/topnav.php'; ?>
@@ -371,6 +373,23 @@ try {
             
             // Initialize video thumbnails
             generateVideoThumbnails();
+        });
+        
+        // Modified cancel button handler to show confirmation dialog
+        document.querySelector('.btn').addEventListener('click', function(event) {
+            if (this.textContent.trim() === 'Cancel') {
+                event.preventDefault();
+                
+                // Get the portfolio ID from the URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const portfolioId = urlParams.get('id');
+                
+                // Set the return URL to view the current portfolio
+                const returnUrl = `view_portfolio.php?id=${portfolioId}`;
+                
+                // Show the cancel confirmation dialog
+                confirmCancel(returnUrl);
+            }
         });
     </script>
 </body>

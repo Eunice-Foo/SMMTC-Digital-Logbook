@@ -1,43 +1,30 @@
-// Add styles for cancel confirmation
-(function() {
-    const style = document.createElement('style');
-    style.innerHTML = `
-        /* Additional styles for cancel confirmation */
-        .warning-icon {
-            background-color: #ff9800; /* Warning color */
-        }
-
-        .warning-icon i {
-            color: white;
-        }
-    `;
-    document.head.appendChild(style);
-})();
-
 /**
  * Cancel Confirmation
- * Shows a confirmation dialog when a user attempts to cancel a form
+ * Shows a confirmation dialog when a user attempts to cancel a form 
  * with unsaved changes
  */
 
 function confirmCancel(returnUrl = 'logbook.php') {
     // Remove any existing modals first
-    const existingModals = document.querySelectorAll('.cancel-modal, .delete-modal');
+    const existingModals = document.querySelectorAll('.cancel-modal');
     existingModals.forEach(modal => modal.remove());
+    
+    // Play warning sound when modal appears
+    playCancelWarningSound();
     
     // Create modal overlay
     const modal = document.createElement('div');
-    modal.className = 'delete-modal cancel-modal'; // Use existing delete-modal class + our new class
+    modal.className = 'cancel-modal';
     modal.innerHTML = `
-        <div class="delete-modal-content">
-            <div class="delete-modal-icon warning-icon">
+        <div class="cancel-modal-content">
+            <div class="cancel-modal-icon">
                 <i class="fi fi-rr-exclamation"></i>
             </div>
             <h3>Are you sure you want to cancel?</h3>
             <p>All your changes will be lost.</p>
-            <div class="delete-modal-buttons">
+            <div class="cancel-modal-buttons">
                 <button class="keep-btn" onclick="closeCancelModal()">Keep Editing</button>
-                <button class="discard-btn" onclick="discardEntry('${returnUrl}')">Discard Entry</button>
+                <button class="discard-btn" onclick="discardEntry('${returnUrl}')">Discard</button>
             </div>
         </div>
     `;
@@ -52,10 +39,33 @@ function confirmCancel(returnUrl = 'logbook.php') {
     setTimeout(() => {
         modal.classList.add('active');
     }, 10);
-    
-    // Play warning sound if available
+}
+
+/**
+ * Plays a warning sound when the cancel confirmation modal appears
+ * Integrates with the existing toast notification sound system if available
+ */
+function playCancelWarningSound() {
+    // Check if toast notification sound system is available
     if (typeof playSound === 'function' && typeof sounds !== 'undefined' && sounds.warning) {
+        // Use existing toast sound system
         playSound('warning');
+        return;
+    }
+    
+    // Fallback: Use our own implementation
+    try {
+        // Try to create audio element
+        const warningSound = new Audio('audio/notifications/warning.mp3');
+        warningSound.volume = 0.5; // Set volume to 50%
+        
+        // Play the sound (wrapped in try-catch to handle browser autoplay restrictions)
+        warningSound.play().catch(e => {
+            console.log('Cancel warning sound prevented by browser:', e);
+            // This is normal on some browsers that require user interaction first
+        });
+    } catch (e) {
+        console.error('Error playing cancel warning sound:', e);
     }
 }
 

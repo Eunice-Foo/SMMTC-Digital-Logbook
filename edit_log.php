@@ -218,6 +218,7 @@ try {
     <link rel="stylesheet" href="css/file_preview.css">
     <link rel="stylesheet" href="css/video_thumbnail.css">
     <link rel="stylesheet" href="css/media_upload_button.css">
+    <link rel="stylesheet" href="css/cancel_modal.css">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
@@ -287,31 +288,21 @@ try {
                     }
                 });
             }
-            
-            // Initialize selected files array
-            window.selectedFiles = [];
-            
-            // Initialize deleted media IDs array
-            window.deletedMediaIds = [];
-            
-            // These will be handled by file_upload.js initializeExistingMediaPreviews function
-            // No need to manually set grid properties here
-        });
-        
-        // Add this to the end of the DOMContentLoaded event handler
-        // Modified cancel button handler to show confirmation dialog
-        document.querySelector('.cancel-btn').addEventListener('click', function(event) {
-            event.preventDefault();
-            
-            // Get the entry ID from the URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const entryId = urlParams.get('id');
-            
-            // Set the return URL to view the current entry
-            const returnUrl = `view_log.php?id=${entryId}`;
-            
-            // Show the cancel confirmation dialog
-            confirmCancel(returnUrl);
+
+            // Modified cancel button handler to show confirmation dialog
+            document.querySelector('.cancel-btn').addEventListener('click', function(event) {
+                event.preventDefault();
+                
+                // Get the entry ID from the URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const entryId = urlParams.get('id');
+                
+                // Set the return URL to view the current entry
+                const returnUrl = `view_log.php?id=${entryId}`;
+                
+                // Show the cancel confirmation dialog
+                confirmCancel(returnUrl);
+            });
         });
     </script>
 </body>

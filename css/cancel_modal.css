@@ -1,4 +1,5 @@
-.delete-modal {
+/* Inherits styles from delete_modal.css but with orange coloring */
+.cancel-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -14,31 +15,31 @@
     transition: all 0.3s ease;
 }
 
-.delete-modal.active {
+.cancel-modal.active {
     opacity: 1;
     visibility: visible;
 }
 
-.delete-modal-content {
+.cancel-modal-content {
     background-color: white;
     border-radius: 8px;
     padding: 24px;
     width: 100%;  /* Added width 100% */
-    max-width: 450px;
+    max-width: 350px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     text-align: center;
     transform: translateY(20px);
     transition: transform 0.3s ease;
 }
 
-.delete-modal.active .delete-modal-content {
+.cancel-modal.active .cancel-modal-content {
     transform: translateY(0);
 }
 
-.delete-modal-icon {
+.cancel-modal-icon {
     width: 50px;
     height: 50px;
-    background-color: #ffebee;
+    background-color: #fff3e0; /* Light orange background instead of light red */
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -47,22 +48,22 @@
     line-height: 1;
 }
 
-.delete-modal-icon i {
+.cancel-modal-icon i {
     font-size: 24px;
-    color: #dc3545;
-    display: block; /* Fix icon spacing */
-    line-height: 1; /* Ensure icon has no extra space */
+    color: #ff9800; /* Orange instead of red */
+    display: block;
+    line-height: 1;
 }
 
-.delete-modal h3 {
-    margin: 0; /* Remove all margins */
+.cancel-modal h3 {
+    margin: 0;
     color: #333;
     font-size: 16px;
     font-family: inherit;
-    line-height: 1.5; /* Add proper line height */
+    line-height: 1.5;
 }
 
-.delete-modal p {
+.cancel-modal p {
     margin: 0;  /* Reset all margins */
     margin-bottom: 24px;  /* Add specific bottom margin */
     color: #666;
@@ -70,28 +71,32 @@
     font-family: inherit;
 }
 
-.delete-modal-buttons {
+.cancel-modal-buttons {
     display: flex;
     justify-content: center;
     gap: 15px;
 }
 
-/* Remove specific button styles to inherit from theme */
-.delete-modal-buttons button {
+.cancel-modal-buttons button {
     font-family: inherit;
 }
 
-/* Style delete button specifically */
-.delete-modal-buttons .delete-btn {
-    background-color: #dc3545;
+/* Keep editing button */
+.cancel-modal-buttons .keep-btn {
+    background-color: #6c757d; /* Gray for "Keep Editing" */
     color: white;
 }
 
-.delete-modal-buttons .delete-btn:hover {
-    background-color: #bb2d3b; /* Darker red on hover */
+.cancel-modal-buttons .keep-btn:hover {
+    background-color: #5a6268; /* Darker gray on hover */
 }
 
-/* Add hover effect for cancel button */
-.delete-modal-buttons .cancel-btn:hover {
-    background-color: #e2e6ea;
+/* Discard button - use warning/orange color instead of red */
+.cancel-modal-buttons .discard-btn {
+    background-color: #ff9800; /* Orange instead of red */
+    color: white;
+}
+
+.cancel-modal-buttons .discard-btn:hover {
+    background-color: #e68a00; /* Darker orange on hover */
 }

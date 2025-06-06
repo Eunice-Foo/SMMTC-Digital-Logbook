@@ -172,11 +172,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/video_thumbnail.css">
     <link rel="stylesheet" href="css/media_upload_button.css">
     <link rel="stylesheet" href="css/tools_input.css">
+    <link rel="stylesheet" href="css/cancel_modal.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
     <script src="js/portfolio_upload.js" defer></script>
     <script src="js/tools_input.js" defer></script>
+    <script src="js/cancel_confirmation.js" defer></script>
     <style>
     /* Floating action button */
     .add-options {
@@ -365,5 +367,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="progress-bar" style="width: 0%"></div>
         </div>
     </div>
+
+    <script>
+    // Modified cancel button handler to show confirmation dialog
+    document.querySelector('.cancel-btn').addEventListener('click', function(event) {
+        event.preventDefault();
+        confirmCancel('portfolio.php');
+    });
+    </script>
 </body>
 </html>
