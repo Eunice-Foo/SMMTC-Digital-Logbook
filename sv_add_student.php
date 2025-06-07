@@ -81,7 +81,7 @@ try {
     
     <div class="main-content">
         <div class="top-section">
-            <h2>Add Interns</h2>
+            <h1>Add Interns</h1>
             <a href="javascript:void(0)" class="btn cancel-btn">Cancel</a>
         </div>
         

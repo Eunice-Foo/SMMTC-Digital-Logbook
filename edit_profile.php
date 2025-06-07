@@ -390,7 +390,7 @@ if ($success_message): ?>
     
     <div class="main-content">
         <div class="profile-header">
-            <h2>Edit Profile</h2>
+            <h1>Edit Profile</h1>
             <a href="view_profile.php" class="back-btn">
                 <i class="fi fi-rr-arrow-left"></i>
                 Back to Profile

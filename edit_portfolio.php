@@ -271,7 +271,7 @@ try {
     
     <div class="main-content">
         <div class="page-header">
-            <h2>Edit Portfolio</h2>
+            <h1>Edit Portfolio</h1>
         </div>
         
         <form id="editPortfolioForm" action="edit_portfolio.php?id=<?php echo $portfolio_id; ?>" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles(event)">

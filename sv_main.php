@@ -50,7 +50,7 @@ try {
     
     <div class="main-content">
         <div class="top-section">
-            <h2>Interns</h2>
+            <h1>Interns</h1>
             <button onclick="window.location.href='sv_add_student.php'" class="btn-add">
                 <i class="fi fi-rr-user-add"></i> Add Interns
             </button>

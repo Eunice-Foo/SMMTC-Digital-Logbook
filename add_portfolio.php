@@ -297,7 +297,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="main-content">
         <div class="page-header">
             <a href="portfolio.php" class="back-button">← Back to Portfolio</a>
-            <h2>Add Portfolio Item</h2>
+            <h1>Add Portfolio Item</h1>
         </div>
         
         <form id="addPortfolioForm" action="add_portfolio.php" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles(event)">

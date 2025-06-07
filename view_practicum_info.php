@@ -106,7 +106,7 @@ try {
             <!-- Student Information Section -->
             <div class="info-section">
                 <div class="info-header">
-                    <h2>Student Information</h2>
+                    <h1>Student Information</h1>
                 </div>
                 <div class="info-grid">
                     <div class="info-item">
@@ -156,7 +156,7 @@ try {
             <!-- Supervisor Information Section -->
             <div class="info-section">
                 <div class="info-header">
-                    <h2>Company Supervisor Information</h2>
+                    <h1>Company Supervisor Information</h1>
                 </div>
                 <div class="info-grid">
                     <div class="info-item">

@@ -63,7 +63,7 @@ try {
     <div class="main-content">
         <!-- Update the header section to have a bottom border -->
         <div class="page-header">
-            <h2>My Portfolio</h2>
+            <h1>My Portfolio</h1>
             <div class="add-options">
                 <button class="btn-add" onclick="toggleDropdown(event)">
                     <i class="fi fi-rr-square-plus"></i> Add New

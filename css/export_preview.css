@@ -250,12 +250,6 @@
 }
 
 /* Headings typography */
-.document-header h1 {
-    font-size: 14pt;
-    font-weight: bold;
-    font-family: "Times New Roman", Times, serif;
-}
-
 .document-header h3,
 .log-entry h3,
 .entry-header h3,

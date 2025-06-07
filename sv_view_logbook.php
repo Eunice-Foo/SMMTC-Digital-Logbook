@@ -184,7 +184,7 @@ try {
     <div class="main-content">
         <!-- Student Information -->
         <div class="student-info">
-            <h2>Student Information</h2>
+            <h1>Student Information</h1>
             <table class="student-table">
                 <tr>
                     <th>Full Name</th>

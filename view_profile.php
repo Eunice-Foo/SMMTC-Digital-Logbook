@@ -62,7 +62,7 @@ try {
     
     <div class="main-content">
         <div class="profile-header">
-            <h2>My Profile</h2>
+            <h1>My Profile</h1>
             <a href="edit_profile.php" class="edit-profile-btn">
                 <i class="fi fi-rr-edit"></i>
                 Edit Profile
