@@ -136,6 +136,11 @@ try {
             align-items: center;
             gap: 20px;
         }
+        .section-header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+        }
         .modal {
             position: fixed;
             top: 0;
@@ -207,7 +212,7 @@ try {
 
         <!-- Pending Logs Section -->
         <div class="section-header">
-            <h3>Pending Review</h3>
+            <h2>Pending Review</h2>
             <span>(<?php echo $pending_count; ?> log entries)</span>
         </div>
         
@@ -223,7 +228,7 @@ try {
 
         <!-- Reviewed Logs Section -->
         <div class="section-header">
-            <h3>Reviewed and Signed</h3>
+            <h2>Reviewed and Signed</h2>
             <span>(<?php echo $reviewed_count; ?> log entries)</span>
         </div>
         
