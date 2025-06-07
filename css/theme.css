@@ -162,6 +162,7 @@ th {
     font-family: var(--font-primary);
 }
 
+/* Main content container - KEEP THIS AS THE SINGLE SOURCE OF TRUTH */
 .main-content {
     flex: 1;
     margin-left: 250px;
@@ -170,4 +171,29 @@ th {
     box-sizing: border-box;
     position: relative;
     top: 0;
+    background-color: var(--bg-primary);
+}
+
+/* Add this for topnav layout adjustments */
+body.has-topnav .main-content {
+    margin-top: 84px;
+    margin-left: 0;
+    width: 100%;
+}
+
+/* Responsive adjustments for main content */
+@media screen and (max-width: 768px) {
+    .main-content {
+        padding: 30px 20px;
+        margin-left: 200px;
+        width: calc(100% - 200px);
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .main-content {
+        padding: 20px 16px;
+        margin-left: 0;
+        width: 100%;
+    }
 }

@@ -288,11 +288,6 @@ if (!isset($user_profile_picture) && isset($_SESSION['user_id'])) {
         position: relative;
         padding: 15px;
     }
-    
-    .main-content {
-        margin-left: 0;
-        width: 100%;
-    }
 }
 </style>
 

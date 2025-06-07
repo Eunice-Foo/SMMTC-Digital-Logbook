@@ -4,12 +4,6 @@ body {
     font-family: var(--font-primary);
 }
 
-/* Main content container */
-.main-content {
-    max-width: 100%;
-    padding: 30px 20px;
-}
-
 /* Search section - centered */
 .search-section {
     display: flex;

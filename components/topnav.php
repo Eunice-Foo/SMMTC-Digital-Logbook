@@ -292,13 +292,6 @@ if (!isset($user_profile_picture) && isset($_SESSION['user_id'])) {
     background-color: rgba(220, 53, 69, 0.1) !important;
 }
 
-/* Main Content Adjustment */
-body.has-topnav .main-content {
-    margin-top: 84px;
-    margin-left: 0;
-    width: 100%;
-}
-
 /* Responsive Design */
 @media screen and (max-width: 768px) {
     .topnav-menu span {
