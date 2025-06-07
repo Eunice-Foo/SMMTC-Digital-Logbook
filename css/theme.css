@@ -37,6 +37,19 @@ body {
     color: var(--text-primary);
     background-color: var(--bg-primary);
     line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Add to theme.css - Layout helpers */
+body.flex-layout {
+    display: flex;
+}
+
+body.export-preview {
+    background: #f5f5f5;
 }
 
 /* Headings */

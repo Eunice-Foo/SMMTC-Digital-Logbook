@@ -1,9 +1,3 @@
-/* Base styles */
-body {
-    background-color: #f7f8fa;
-    font-family: var(--font-primary);
-}
-
 /* Search section - centered */
 .search-section {
     display: flex;
@@ -13,9 +7,9 @@ body {
     position: sticky;
     top: 0;
     z-index: 10;
-    background-color: #f7f8fa;
+    background-color: var(--bg-primary); /* Changed from hardcoded #f7f8fa to variable */
     padding: 20px 0;
-    border-bottom: 1px solid #eaedf2;
+    border-bottom: 1px solid var(--border-color); /* Changed from #eaedf2 to variable */
     width: 100%;
 }
 
