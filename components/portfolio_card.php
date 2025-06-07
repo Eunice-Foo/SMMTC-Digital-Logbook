@@ -3,6 +3,7 @@
 require_once 'includes/image_converter.php';
 require_once 'components/media_gallery_preview.php';
 require_once 'includes/profile_functions.php';
+require_once 'components/media_count_label.php';
 
 function renderPortfolioCard($item) {
     global $conn; // Make sure database connection is available
@@ -37,7 +38,14 @@ function renderPortfolioCard($item) {
     <div class="portfolio-card" data-category="<?php echo htmlspecialchars($item['category']); ?>" 
          onclick="window.location.href='view_portfolio.php?id=<?php echo $item['portfolio_id']; ?>'">
         <div class="card-media">
-            <?php renderMediaGalleryPreview($mediaFiles, 4); ?>
+            <?php 
+            renderMediaGalleryPreview($mediaFiles, 4);
+            
+            // Check if we need to show the media count
+            if (isset($item['media_count']) && $item['media_count'] > 4) {
+                renderMediaCountLabel($item['media_count'], 4);
+            }
+            ?>
         </div>
         <div class="card-content">
             <div class="card-header">

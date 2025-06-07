@@ -60,11 +60,11 @@ function renderMediaGalleryPreview($mediaFiles, $maxDisplay = 4) {
             </div>
         <?php endfor; ?>
         
-        <?php if (count($media_array) > $maxDisplay): ?>
-            <div class="media-preview more-indicator">
-                <span>+<?php echo count($media_array) - $maxDisplay; ?> more</span>
-            </div>
-        <?php endif; ?>
+        <?php 
+        // Replace the current media indicator with the same component from logbook
+        require_once 'components/media_count_label.php';
+        renderMediaCountLabel(count($media_array), $maxDisplay);
+        ?>
     </div>
     <?php
 }
