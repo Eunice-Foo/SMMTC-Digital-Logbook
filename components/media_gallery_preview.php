@@ -1,6 +1,8 @@
 <?php
 // filepath: c:\xampp\htdocs\log\components\media_gallery_preview.php
-function renderMediaGalleryPreview($mediaFiles, $maxDisplay = 4) {
+require_once 'components/media_count_label.php';
+
+function renderMediaGalleryPreview($mediaFiles, $maxDisplay = 4, $totalCount = null) {
     if (empty($mediaFiles)) return;
     $media_array = is_array($mediaFiles) ? $mediaFiles : explode(',', $mediaFiles);
     $displayCount = min(count($media_array), $maxDisplay);
@@ -61,9 +63,11 @@ function renderMediaGalleryPreview($mediaFiles, $maxDisplay = 4) {
         <?php endfor; ?>
         
         <?php 
-        // Replace the current media indicator with the same component from logbook
-        require_once 'components/media_count_label.php';
-        renderMediaCountLabel(count($media_array), $maxDisplay);
+        // Use the total count if provided, otherwise use the actual array length
+        $actualCount = $totalCount ?? count($media_array);
+        if ($actualCount > $maxDisplay) {
+            renderMediaCountLabel($actualCount, $maxDisplay);
+        }
         ?>
     </div>
     <?php
