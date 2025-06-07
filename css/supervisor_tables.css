@@ -1,14 +1,15 @@
 /* Supervisor table styles */
-.main-content {
-    padding: 20px;
-}
+/* REMOVED: main-content style as it should only be in theme.css */
 
+/* Common supervisor page styles */
 .top-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
+
+/* REMOVED: Any h1 styles that might have been here */
 
 /* Student/Intern table styles */
 .student-table {
@@ -19,18 +20,18 @@
     background: white;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: var(--box-shadow);
 }
 
 .student-table th,
 .student-table td {
     padding: 15px;
     text-align: left;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .student-table th {
-    background-color: #f8f9fa;
+    background-color: var(--bg-tertiary);
     font-weight: 600;
     color: var(--text-primary);
 }
@@ -65,7 +66,7 @@
 
 .pending-logs {
     font-weight: 600;
-    color: #dc3545;
+    color: var(--danger-color);
 }
 
 /* Button styles */
@@ -78,14 +79,7 @@
     background-color: var(--primary-hover);
 }
 
-.btn {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.btn:hover {
-    background-color: var(--primary-hover);
-}
+/* REMOVED: Duplicate .btn styles - should inherit from theme.css */
 
 /* Empty state message */
 .empty-message {
