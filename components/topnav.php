@@ -28,6 +28,8 @@ if (!isset($user_profile_picture) && isset($_SESSION['user_id'])) {
 <!-- Add the Flaticon CSS link -->
 <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
 <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-straight/css/uicons-regular-straight.css'>
+<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+
 
 <div class="topnav">
     <div class="topnav-brand">
