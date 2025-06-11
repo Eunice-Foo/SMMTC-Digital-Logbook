@@ -32,10 +32,10 @@
     box-sizing: border-box;
 }
 
-/* Controls container - rearranged for horizontal layout */
+/* Controls container - increased gap to 50px */
 .controls-container {
     display: flex;
-    gap: 20px;
+    gap: 50px;
     align-items: center;
     flex: 1;
     justify-content: center;
@@ -65,24 +65,14 @@
     margin-bottom: 0;
 }
 
-/* Print button - repositioned for top ribbon */
+/* Print button - set color to white */
 .print-button {
-    margin-left: 20px;
     background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px; /* Larger padding for taller button */
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
-    height: 40px; /* Match control group height */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: white; /* Added white color */
+    /* All other styles will be inherited from .btn in theme.css */
 }
 
-/* Control labels */
+/* Control labels - updated text */
 .font-label {
     font-size: 14px;
     color: #666;
@@ -90,7 +80,7 @@
 }
 
 .control-label {
-    font-size: 14px; /* Larger font size */
+    font-size: 14px;
     color: #666;
     white-space: nowrap;
     margin-right: 5px;

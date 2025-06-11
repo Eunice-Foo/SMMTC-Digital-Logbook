@@ -8,6 +8,11 @@ body {
     padding: 0;
 }
 
+/* Add this top margin specifically for export preview */
+body.export-preview {
+    margin-top: 20px;
+}
+
 .preview-section {
     display: flex;
     flex-direction: column;

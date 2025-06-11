@@ -60,11 +60,12 @@ try {
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/export_preview.css">
     <link rel="stylesheet" href="css/export_preview_control.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <script src="js/export_preview.js" defer></script>
     <script src="js/export_preview_control.js" defer></script>
     <script src="js/logbook_profile_page.js" defer></script>
 </head>
-<body>
+<body class="export-preview">
     <!-- Profile Page -->
     <div class="preview-container profile-page">
         <?php renderLogbookProfile($conn, $_SESSION['user_id']); ?>
