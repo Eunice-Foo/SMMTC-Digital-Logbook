@@ -74,7 +74,7 @@ function renderSupervisorSignature($conn, $user_id) {
 }
 
 .signature-image {
-    width: 200px;
+    width: auto;
     height: auto;
     max-height: 80px;
     object-fit: contain;
