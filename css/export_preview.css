@@ -5,6 +5,7 @@
 .preview-section {
     display: flex;
     flex-direction: column;
+    padding-top: 60px; /* Add space for the fixed top ribbon */
 }
 
 /* A4 container base styles */

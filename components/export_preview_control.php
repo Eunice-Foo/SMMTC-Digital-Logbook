@@ -9,7 +9,7 @@
     
     <div class="controls-container">
         <div class="control-section">
-            <span class="control-label">Text Size</span>
+            <span class="control-label">Text:</span>
             <div class="control-group">
                 <button onclick="adjustFontSize('decrease')" class="font-button">−</button>
                 <span id="currentFontSize">11pt</span>
@@ -18,7 +18,7 @@
         </div>
         
         <div class="control-section">
-            <span class="control-label">Heading Size</span>
+            <span class="control-label">Heading:</span>
             <div class="control-group">
                 <button onclick="adjustHeadingSize('decrease')" class="font-button">−</button>
                 <span id="currentHeadingSize">14pt</span>
@@ -27,7 +27,7 @@
         </div>
         
         <div class="control-section">
-            <span class="control-label">Media Size</span>
+            <span class="control-label">Media:</span>
             <div class="control-group">
                 <button onclick="adjustMediaSize('decrease')" class="font-button">−</button>
                 <span id="currentMediaSize">150px</span>
