@@ -1,7 +1,6 @@
 console.log('export_logbook.js loaded');
 
-// Test function acce
-// ssibility
+// Test function accessibility
 window.testExportFunction = function() {
     console.log('Test function called');
     toggleExportMode();
@@ -197,62 +196,3 @@ function resetSelectAllCheckbox() {
         selectAllCheckbox.checked = false;
     }
 }
-
-// This updates the CSS in the DOMContentLoaded event at the bottom of the file
-document.addEventListener('DOMContentLoaded', function() {
-    const styleElement = document.createElement('style');
-    styleElement.textContent = `
-        .export-instructions {
-            display: none;
-            align-items: center;
-            background-color: #e3f2fd;
-            border-left: 4px solid #2196F3;
-            padding: 12px 24px;
-            margin-right: 15px;
-            border-radius: 4px;
-            font-size: 14px;
-            max-width: fit-content;
-            flex-shrink: 1;
-        }
-        
-        .instruction-icon {
-            margin-right: 8px;
-            color: #2196F3;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-        
-        .instruction-text {
-            color: #555;
-            white-space: nowrap;
-        }
-        
-        /* Fix Select All label to take full width */
-        .select-all {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            user-select: none;
-            white-space: nowrap;
-        }
-        
-        /* Make sure export left side takes proper space */
-        .export-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-grow: 1;
-            flex-wrap: nowrap;
-        }
-        
-        /* Ensure the selected count doesn't shrink too much */
-        .selected-count {
-            font-weight: 500;
-            color: var(--text-primary);
-            white-space: nowrap;
-            min-width: max-content;
-        }
-    `;
-    document.head.appendChild(styleElement);
-});
