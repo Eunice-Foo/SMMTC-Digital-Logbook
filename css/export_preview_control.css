@@ -13,7 +13,7 @@
     z-index: 1000;
 }
 
-/* Remove floating control styles and replace with top ribbon */
+/* Taller ribbon with improved styling */
 .floating-controls {
     position: fixed;
     top: 0;
@@ -21,13 +21,15 @@
     right: 0;
     width: 100%;
     background: white;
-    padding: 10px 20px;
+    padding: 15px 25px; /* Increased padding for more height */
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 1000;
     border-bottom: 1px solid var(--border-color);
+    height: 70px; /* Set a specific height */
+    box-sizing: border-box;
 }
 
 /* Controls container - rearranged for horizontal layout */
@@ -37,6 +39,7 @@
     align-items: center;
     flex: 1;
     justify-content: center;
+    height: 100%;
 }
 
 /* Control section - adapted for horizontal layout */
@@ -44,6 +47,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    height: 100%;
 }
 
 /* Control group - adjusted for horizontal layout */
@@ -54,18 +58,11 @@
     background: #f5f5f5;
     border-radius: 6px;
     align-items: center;
+    height: 40px; /* Taller control group */
 }
 
 .control-group:last-child {
     margin-bottom: 0;
-}
-
-/* Control buttons container */
-.control-buttons {
-    display: grid;
-    grid-template-columns: auto auto auto;
-    align-items: center;
-    gap: 10px;
 }
 
 /* Print button - repositioned for top ribbon */
@@ -75,10 +72,14 @@
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 8px 16px;
+    padding: 10px 20px; /* Larger padding for taller button */
     cursor: pointer;
     font-weight: 500;
     transition: all 0.2s;
+    height: 40px; /* Match control group height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Control labels */
@@ -89,17 +90,18 @@
 }
 
 .control-label {
-    font-size: 12px;
+    font-size: 14px; /* Larger font size */
     color: #666;
     white-space: nowrap;
-    text-align: center;
+    margin-right: 5px;
+    font-weight: 500;
 }
 
 /* Arrow buttons */
 .font-button {
     width: 100%;
     height: 100%;
-    min-height: 32px;
+    min-height: 36px; /* Taller buttons */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -107,7 +109,7 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px; /* Larger font size */
     color: #666;
     padding: 0;
 }
@@ -122,7 +124,9 @@
 #currentMediaSize {
     text-align: center;
     color: #333;
-    font-size: 0.8em;
+    font-size: 14px; /* Larger font size */
+    font-weight: 500;
+    min-width: 50px;
 }
 
 .print-button:hover {
@@ -135,6 +139,7 @@
     align-items: center;
     white-space: nowrap;
     margin-right: 20px;
+    height: 40px; /* Match control group height */
 }
 
 .profile-checkbox {
@@ -143,11 +148,12 @@
     gap: 8px;
     cursor: pointer;
     user-select: none;
+    height: 100%;
 }
 
 .profile-checkbox input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
+    width: 18px; /* Slightly larger checkbox */
+    height: 18px;
     cursor: pointer;
 }
 

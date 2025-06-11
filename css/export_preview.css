@@ -2,10 +2,18 @@
     text-align: justify;
 }
 
+body {
+    background-color: var(--bg-secondary); /* Use theme variable for background */
+    margin: 0;
+    padding: 0;
+}
+
 .preview-section {
     display: flex;
     flex-direction: column;
-    padding-top: 60px; /* Add space for the fixed top ribbon */
+    padding-top: 90px; /* Increased padding to accommodate taller ribbon */
+    max-width: 210mm;
+    margin: 0 auto;
 }
 
 /* A4 container base styles */
