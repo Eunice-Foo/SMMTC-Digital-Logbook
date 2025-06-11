@@ -8,6 +8,7 @@ window.testExportFunction = function() {
 };
 
 let exportMode = false;
+let exportInstructions = null;
 
 function toggleExportMode() {
     console.log('toggleExportMode called');
@@ -17,6 +18,16 @@ function toggleExportMode() {
     const exportControls = document.getElementById('exportControls');
     const regularButtons = document.getElementById('regularButtons');
     const actionButtons = document.querySelectorAll('.log-actions');
+    
+    // Create instructions element if it doesn't exist
+    if (!exportInstructions) {
+        exportInstructions = document.createElement('div');
+        exportInstructions.className = 'export-instructions';
+        exportInstructions.innerHTML = `
+            <div class="instruction-icon"><i class="fi fi-rc-info"></i></div>
+            <div class="instruction-text">Please select at least one log entry to export.</div>
+        `;
+    }
     
     console.log('Elements found:', {
         exportControls: !!exportControls,
@@ -34,6 +45,13 @@ function toggleExportMode() {
         exportControls.style.display = 'flex';
         regularButtons.style.display = 'none';
         
+        // Add instructions to the export-left div as first element
+        const exportLeft = exportControls.querySelector('.export-left');
+        if (exportLeft && !exportLeft.querySelector('.export-instructions')) {
+            exportLeft.insertBefore(exportInstructions, exportLeft.firstChild);
+            exportInstructions.style.display = 'flex';
+        }
+        
         console.log('Replacing action buttons with checkboxes');
         actionButtons.forEach(actions => {
             const entryId = actions.dataset.entryId;
@@ -50,9 +68,14 @@ function toggleExportMode() {
             actions.replaceWith(checkbox);
         });
     } else {
-        // Reset export mode
+        // Hide export controls
         exportControls.style.display = 'none';
         regularButtons.style.display = 'flex';
+        
+        // Remove instructions from current parent
+        if (exportInstructions.parentNode) {
+            exportInstructions.parentNode.removeChild(exportInstructions);
+        }
         
         // Reset checkboxes and restore action buttons
         document.querySelectorAll('.entry-checkbox').forEach(cb => cb.checked = false);
@@ -87,6 +110,8 @@ function updateExportCount() {
     const count = document.querySelectorAll('.entry-checkbox:checked').length;
     document.getElementById('selectedCount').textContent = count;
     document.getElementById('downloadButton').disabled = count === 0;
+    
+    // No need to modify the text since we already changed it in the HTML
 }
 
 function updateSelectAllCheckbox() {
@@ -172,3 +197,62 @@ function resetSelectAllCheckbox() {
         selectAllCheckbox.checked = false;
     }
 }
+
+// This updates the CSS in the DOMContentLoaded event at the bottom of the file
+document.addEventListener('DOMContentLoaded', function() {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+        .export-instructions {
+            display: none;
+            align-items: center;
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 12px 24px;
+            margin-right: 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            max-width: fit-content;
+            flex-shrink: 1;
+        }
+        
+        .instruction-icon {
+            margin-right: 8px;
+            color: #2196F3;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .instruction-text {
+            color: #555;
+            white-space: nowrap;
+        }
+        
+        /* Fix Select All label to take full width */
+        .select-all {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        
+        /* Make sure export left side takes proper space */
+        .export-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-grow: 1;
+            flex-wrap: nowrap;
+        }
+        
+        /* Ensure the selected count doesn't shrink too much */
+        .selected-count {
+            font-weight: 500;
+            color: var(--text-primary);
+            white-space: nowrap;
+            min-width: max-content;
+        }
+    `;
+    document.head.appendChild(styleElement);
+});

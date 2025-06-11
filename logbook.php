@@ -64,6 +64,7 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="css/log_actions.css">
     <link rel="stylesheet" href="css/delete_modal.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-chubby/css/uicons-regular-chubby.css'>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/logbook.js"></script>
     <script src="js/media_viewer.js"></script>
@@ -117,11 +118,11 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
                         <!-- Left side -->
                         <div class="export-left">
                             <div class="selected-count">
-                                <span id="selectedCount">0</span> selected
+                                <span id="selectedCount">0</span> Selected
                             </div>
                             <label class="select-all">
                                 <input type="checkbox" onchange="selectAllEntries(this.checked)">
-                                Select All
+                                Select all logs in this month
                             </label>
                         </div>
                         <!-- Right side -->

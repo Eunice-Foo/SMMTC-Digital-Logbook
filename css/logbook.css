@@ -123,10 +123,6 @@
     padding: 0;
 }
 
-/* Make export controls full width */
-#exportControls {
-    width: 100%;
-}
 
 /* Responsive adjustments */
 @media screen and (max-width: 768px) {    
