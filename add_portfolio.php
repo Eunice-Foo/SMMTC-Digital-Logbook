@@ -173,6 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/media_upload_button.css">
     <link rel="stylesheet" href="css/tools_input.css">
     <link rel="stylesheet" href="css/cancel_modal.css">
+    <link rel="stylesheet" href="css/form_indicators.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
@@ -270,20 +271,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             gap: 10px;
         }
     }
-
-    /* Required and optional field indicators */
-    .required-indicator {
-        color: #dc3545; /* Red color for required fields */
-        margin-left: 3px;
-    }
-
-    .optional-label {
-        color: #6c757d; /* Grey color for optional fields */
-        font-size: 14px;
-        font-weight: normal;
-        margin-left: 5px;
-        font-style: italic; /* Add this line to make the text italic */
-    }
     </style>
 </head>
 <body>
@@ -332,7 +319,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="tools-input-container">
                         <input type="text" id="toolInput" placeholder="Type a tool name and press Enter">
                         <div id="toolSuggestions" class="tool-suggestions"></div>
-                        <small class="hint">Type tool names (e.g., Photoshop, Blender) and press Enter to add them</small>
+                        <small class="hint">Type any tool names (e.g., Photoshop, Blender) and press Enter to add them</small>
                         <div id="selectedTools" class="selected-tools"></div>
                         <input type="hidden" name="tools" id="toolsHidden">
                     </div>
