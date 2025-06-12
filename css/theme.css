@@ -87,6 +87,7 @@ button, .btn {
 
 .btn-primary:hover {
     background-color: var(--primary-hover);
+    color: var(--text-light); /* Add this line to keep text white on hover */
 }
 
 .btn:hover {
