@@ -51,7 +51,28 @@
 
 .file-info-text {
     display: block;
-    margin-top: 8px;
     color: var(--text-secondary);
     font-size: 0.875rem;
+    margin: 0; /* Remove any margin */
+}
+
+/* Update the media upload section to flex column */
+.media-upload-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Create a new container for the row layout */
+.upload-preview-row {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+/* Keep existing styles for other elements */
+.media-preview-section {
+    flex: 1;
+    min-height: 150px;
 }
