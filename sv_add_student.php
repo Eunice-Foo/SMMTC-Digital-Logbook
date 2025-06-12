@@ -18,7 +18,8 @@ try {
     
     // Add search condition if search term exists
     if (!empty($search)) {
-        $searchCondition = "AND (s.full_name LIKE :search OR u.email LIKE :search OR s.matric_no LIKE :search)";
+        // Update search condition - Remove email search
+        $searchCondition = "AND (s.full_name LIKE :search OR s.matric_no LIKE :search)";
         $params[':search'] = "%$search%";
     }
     
@@ -91,7 +92,7 @@ try {
                 <input 
                     type="text" 
                     name="search" 
-                    placeholder="Search students by name or email..." 
+                    placeholder="Search by matric number or name..." 
                     class="search-input"
                     value="<?php echo isset($_POST['search']) ? htmlspecialchars($_POST['search']) : ''; ?>"
                 >
@@ -109,9 +110,11 @@ try {
             <?php endif; ?>
         </div>
         
+        <!-- Table headers modification -->
         <table class="student-table">
             <thead>
                 <tr>
+                    <th>Matric Number</th>
                     <th>Full Name</th>
                     <th>Email</th>
                     <th>Phone Number</th>
@@ -122,13 +125,14 @@ try {
             <tbody>
                 <?php if (empty($available_students)): ?>
                     <tr>
-                        <td colspan="5" class="empty-message">
+                        <td colspan="6" class="empty-message">
                             <?php echo !empty($search) ? "No students found matching \"" . htmlspecialchars($search) . "\"" : "No available students to add"; ?>
                         </td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($available_students as $student): ?>
                         <tr>
+                            <td><?php echo htmlspecialchars($student['matric_no']); ?></td>
                             <td><?php echo htmlspecialchars($student['full_name']); ?></td>
                             <td><?php echo htmlspecialchars($student['email']); ?></td>
                             <td><?php echo htmlspecialchars($student['phone_number']); ?></td>
