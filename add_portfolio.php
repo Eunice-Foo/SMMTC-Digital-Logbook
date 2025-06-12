@@ -263,19 +263,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         flex-wrap: wrap;
     }
 
-    .back-button {
-        display: inline-flex;
-        align-items: center;
-        color: var(--text-secondary);
-        text-decoration: none;
-        font-size: 15px;
-        transition: color 0.2s;
-    }
-
-    .back-button:hover {
-        color: var(--primary-color);
-    }
-
     @media (max-width: 768px) {
         .page-header {
             flex-direction: column;
@@ -296,7 +283,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     <div class="main-content">
         <div class="page-header">
-            <a href="portfolio.php" class="back-button">← Back to Portfolio</a>
             <h1>Add Portfolio Item</h1>
         </div>
         
