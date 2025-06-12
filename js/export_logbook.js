@@ -40,6 +40,9 @@ function toggleExportMode() {
     }
     
     if (exportMode) {
+        // Add export-mode class to the body
+        document.body.classList.add('export-mode');
+        
         // Show export controls
         exportControls.style.display = 'flex';
         regularButtons.style.display = 'none';
@@ -67,6 +70,9 @@ function toggleExportMode() {
             actions.replaceWith(checkbox);
         });
     } else {
+        // Remove export-mode class from the body
+        document.body.classList.remove('export-mode');
+        
         // Hide export controls
         exportControls.style.display = 'none';
         regularButtons.style.display = 'flex';
@@ -88,9 +94,6 @@ function toggleExportMode() {
             actionButtons.dataset.entryId = entryId;
             
             actionButtons.innerHTML = `
-                <button class="btn btn-view" onclick="window.location.href='view_log.php?id=${entryId}'">
-                    View
-                </button>
                 ${!checkbox.closest('.log-entry').querySelector('.log-status.reviewed') ? 
                     `<button class="btn btn-edit" onclick="window.location.href='edit_log.php?id=${entryId}'">
                         Edit

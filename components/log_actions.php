@@ -1,7 +1,9 @@
 <?php
 function renderLogActions($entryId, $entryStatus, $userRole) {
+    // Add a class to the div if the entry is signed
+    $signedClass = ($entryStatus === 'Signed') ? 'signed-entry-actions' : '';
     ?>
-    <div class="log-actions" data-entry-id="<?php echo $entryId; ?>">
+    <div class="log-actions <?php echo $signedClass; ?>" data-entry-id="<?php echo $entryId; ?>">
         <?php if ($userRole == ROLE_SUPERVISOR): ?>
             <?php if ($entryStatus !== 'Signed'): ?>
                 <button class="btn btn-sign" onclick="directSign(<?php echo $entryId; ?>)">
@@ -12,9 +14,6 @@ function renderLogActions($entryId, $entryStatus, $userRole) {
                 </button>
             <?php endif; ?>
         <?php else: // ROLE_STUDENT ?>
-            <button class="btn btn-view" onclick="window.location.href='view_log.php?id=<?php echo $entryId; ?>'">
-                View
-            </button>
             <?php if ($entryStatus !== 'Signed'): ?>
                 <button class="btn btn-edit" onclick="window.location.href='edit_log.php?id=<?php echo $entryId; ?>'">
                     Edit
@@ -40,9 +39,14 @@ function renderLogActions($entryId, $entryStatus, $userRole) {
     position: static;
 }
 
-.btn-view {
-    background-color: #007bff;
-    color: white;
+/* Hide the actions div for signed entries */
+.signed-entry-actions {
+    display: none;
+}
+
+/* Show signed actions in export mode */
+body.export-mode .signed-entry-actions {
+    display: flex;
 }
 
 .btn-edit {
@@ -56,9 +60,9 @@ function renderLogActions($entryId, $entryStatus, $userRole) {
 }
 
 .btn-sign {
-        background-color: #28a745;
-        color: white;
-    }
+    background-color: #28a745;
+    color: white;
+}
 
 .btn-remark {
     background-color: #17a2b8;
