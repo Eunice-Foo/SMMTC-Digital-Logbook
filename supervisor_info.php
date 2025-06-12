@@ -58,45 +58,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Complete Your Profile</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/auth_form.css">
+    <link rel="stylesheet" href="css/form_indicators.css">
+    <style>
+        /* Hide horizontal overflow for this page only */
+        body {
+            overflow-y: hidden;
+        }
+    </style>
 </head>
 <body>
     <?php include 'components/topnav.php'; ?>
     
-    <div class="container">
-        <h2>Complete Your Company Profile</h2>
+    <div class="main-content student-info-container">
+        <h1>Please Complete Your Profile</h1>
         <p>Please provide the following information to complete your registration.</p>
+        
         <form action="supervisor_info.php" method="post">
+            <!-- Full Name by itself -->
             <div class="form-group">
-                <label for="company_name">Company Name:</label>
-                <input type="text" id="company_name" name="company_name" required>
-            </div>
-
-            <div class="form-group">
-                <label for="company_address">Company Address:</label>
-                <textarea id="company_address" name="company_address" required></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="supervisor_name">Supervisor Name:</label>
+                <label for="supervisor_name">Full Name<span class="required-indicator">*</span></label>
                 <input type="text" id="supervisor_name" name="supervisor_name" required>
             </div>
+            
+            <!-- Work Email Address and Contact Number in same row -->
+            <div class="form-row equal-cols">
+                <div class="form-group">
+                    <label for="supervisor_email">Work Email Address<span class="required-indicator">*</span></label>
+                    <input type="email" id="supervisor_email" name="supervisor_email" required>
+                </div>
 
-            <div class="form-group">
-                <label for="designation">Designation:</label>
-                <input type="text" id="designation" name="designation" required>
+                <div class="form-group">
+                    <label for="contact_number">Phone Number<span class="required-indicator">*</span></label>
+                    <input type="tel" id="contact_number" name="contact_number" required>
+                </div>
             </div>
+            
+            <!-- Company Name and Designation moved down, with equal width -->
+            <div class="form-row equal-cols">
+                <div class="form-group">
+                    <label for="company_name">Company Name<span class="required-indicator">*</span></label>
+                    <input type="text" id="company_name" name="company_name" required>
+                </div>
 
-            <div class="form-group">
-                <label for="contact_number">Contact Number:</label>
-                <input type="tel" id="contact_number" name="contact_number" required>
+                <div class="form-group">
+                    <label for="designation">Designation<span class="required-indicator">*</span></label>
+                    <input type="text" id="designation" name="designation" required>
+                </div>
             </div>
-
+            
+            <!-- Company Address by itself -->
             <div class="form-group">
-                <label for="supervisor_email">Email Address:</label>
-                <input type="email" id="supervisor_email" name="supervisor_email" required>
+                <label for="company_address">Company Address<span class="required-indicator">*</span></label>
+                <textarea id="company_address" name="company_address" required></textarea>
             </div>
-
-            <button type="submit">Submit</button>
+            
+            <button type="submit" class="submit-button">
+                <i class="fi fi-br-check"></i> Submit
+            </button>
         </form>
     </div>
 </body>
