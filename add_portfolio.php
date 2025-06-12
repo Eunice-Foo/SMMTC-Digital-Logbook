@@ -270,6 +270,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             gap: 10px;
         }
     }
+
+    /* Required and optional field indicators */
+    .required-indicator {
+        color: #dc3545; /* Red color for required fields */
+        margin-left: 3px;
+    }
+
+    .optional-label {
+        color: #6c757d; /* Grey color for optional fields */
+        font-size: 14px;
+        font-weight: normal;
+        margin-left: 5px;
+        font-style: italic; /* Add this line to make the text italic */
+    }
     </style>
 </head>
 <body>
@@ -289,19 +303,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form id="addPortfolioForm" action="add_portfolio.php" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles(event)">
             <div class="form-header">
                 <div class="form-group">
-                    <label for="title">Title:</label>
+                    <label for="title">Title<span class="required-indicator">*</span></label>
                     <input type="text" id="title" name="title" placeholder="Enter portfolio title" required>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="description">Description:</label>
+                <label for="description">Description<span class="required-indicator">*</span></label>
                 <textarea id="description" name="description" rows="4" placeholder="Enter portfolio description" required></textarea>
             </div>
 
             <div class="form-row">
                 <div class="form-group category-field">
-                    <label for="category">Category:</label>
+                    <label for="category">Category<span class="required-indicator">*</span></label>
                     <select id="category" name="category" required>
                         <option value="Image">Image</option>
                         <option value="Video">Video</option>
@@ -314,7 +328,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <div class="form-group tools-field">
-                    <label for="tools">Tools Used:</label>
+                    <label for="tools">Tools Used <span class="optional-label">(Optional)</span></label>
                     <div class="tools-input-container">
                         <input type="text" id="toolInput" placeholder="Type a tool name and press Enter">
                         <div id="toolSuggestions" class="tool-suggestions"></div>
@@ -326,7 +340,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <small class="hint">Type tool names (e.g., Photoshop, Blender) and press Enter to add them</small>
 
             <div class="form-group">
-                <label for="media">Upload Media Files:</label>
+                <label for="media">Upload Media Files<span class="required-indicator">*</span></label>
                 <?php 
                 require_once 'components/media_upload_button.php';
                 renderMediaUploadButton();
