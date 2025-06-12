@@ -60,7 +60,8 @@ try {
         <table class="student-table">
             <thead>
                 <tr>
-                    <th>Intern Name</th>
+                    <th>Matric Number</th>
+                    <th>Full Name</th>
                     <th>Email</th>
                     <th>Phone Number</th>
                     <th>Status</th>
@@ -72,11 +73,12 @@ try {
             <tbody>
                 <?php if (empty($students)): ?>
                     <tr>
-                        <td colspan="7" class="empty-message">No interns assigned yet</td>
+                        <td colspan="8" class="empty-message">No interns assigned yet</td>
                     </tr>
                 <?php else: ?>
                     <?php foreach ($students as $student): ?>
                         <tr>
+                            <td><?php echo htmlspecialchars($student['matric_no']); ?></td>
                             <td><?php echo htmlspecialchars($student['full_name']); ?></td>
                             <td><?php echo htmlspecialchars($student['email']); ?></td>
                             <td><?php echo htmlspecialchars($student['phone_number']); ?></td>
@@ -88,8 +90,8 @@ try {
                             <td><?php echo $student['total_logs']; ?></td>
                             <td class="pending-logs"><?php echo $student['pending_logs']; ?></td>
                             <td>
-                                <a href="sv_view_logbook.php?student_id=<?php echo $student['user_id']; ?>" class="btn">
-                                    View Logbook
+                                <a href="sv_view_logbook.php?student_id=<?php echo $student['user_id']; ?>" class="view-logbook-link">
+                                    <i class="fi fi-rr-search-alt"></i> View Logbook
                                 </a>
                             </td>
                         </tr>

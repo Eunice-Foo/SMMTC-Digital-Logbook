@@ -87,3 +87,27 @@
     padding: 20px;
     color: var(--text-secondary);
 }
+
+/* Import Flaticon for search icon */
+@import url('https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css');
+
+/* Add view logbook link style */
+.view-logbook-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.view-logbook-link:hover {
+    background-color: rgba(153, 85, 187, 0.08);
+    text-decoration: underline;
+}
+
+.view-logbook-link i {
+    font-size: 16px;
+}
