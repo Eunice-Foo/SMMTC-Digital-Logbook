@@ -2,6 +2,19 @@
 require_once 'includes/session_check.php';
 require_once 'includes/db.php';
 
+// Get user email from the database
+$email = '';
+try {
+    $stmt = $conn->prepare("SELECT email FROM user WHERE user_id = :user_id");
+    $stmt->execute([':user_id' => $_SESSION['user_id']]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($user) {
+        $email = $user['email'];
+    }
+} catch(PDOException $e) {
+    // Silently handle any errors
+}
+
 // Only allow access if user is a supervisor
 if ($_SESSION['role'] != ROLE_SUPERVISOR) {
     header("Location: main_menu.php");
@@ -84,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="form-row equal-cols">
                 <div class="form-group">
                     <label for="supervisor_email">Work Email Address<span class="required-indicator">*</span></label>
-                    <input type="email" id="supervisor_email" name="supervisor_email" required>
+                    <input type="email" id="supervisor_email" name="supervisor_email" value="<?php echo htmlspecialchars($email); ?>" readonly>
                 </div>
 
                 <div class="form-group">
