@@ -240,18 +240,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
 
                     <div class="form-group">
-                        <label for="email">Email<span class="required-indicator">*</span></label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-
-                    <div class="form-group">
                         <label for="password">Password<span class="required-indicator">*</span></label>
                         <input type="password" id="password" name="password" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="confirm_password">Confirm Password<span class="required-indicator">*</span></label>
-                        <input type="password" id="confirm_password" name="confirm_password" required>
                     </div>
 
                     <button type="submit" class="submit-button">Login</button>
