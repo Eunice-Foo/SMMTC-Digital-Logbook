@@ -2,7 +2,7 @@
     position: relative;
     cursor: pointer;
     width: 100%;
-    height: 150px;
+    height: 100%; /* Changed from 150px to 100% */
     background: #000;
     overflow: hidden;
 }
