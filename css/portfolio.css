@@ -63,7 +63,7 @@
     color: var(--text-secondary);
 }
 
-/* Update the page header style to include a bottom border */
+/* Update the page header style */
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -73,23 +73,18 @@
     border-bottom: 1px solid var(--border-color);
 }
 
-.page-header h2 {
+.page-header h1 {
     margin: 0;
 }
 
+/* Simplify add-options, remove positioning */
 .add-options {
-    position: relative;
+    display: flex;
+    align-items: center;
 }
 
-/* Simplify the button styling to inherit from theme.css */
-.btn-add {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.btn-add:hover {
-    background-color: var(--primary-hover);
-}
+/* Remove all specific button styling as it will inherit from theme.css */
+/* The .btn and .btn-primary classes from theme.css will handle styling */
 
 /* Use the same dropdown style as three-dot-menu */
 .menu-dropdown {

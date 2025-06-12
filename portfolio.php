@@ -65,17 +65,10 @@ try {
         <div class="page-header">
             <h1>My Portfolio</h1>
             <div class="add-options">
-                <button class="btn-add" onclick="toggleDropdown(event)">
-                    <i class="fi fi-rr-square-plus"></i> Add New
-                </button>
-                <div id="addOptions" class="menu-dropdown">
-                    <a href="add_portfolio.php" class="menu-item">
-                        <i class="fi fi-rr-cloud-upload-alt"></i> Upload Media
-                    </a>
-                    <a href="import_logbook_media.php" class="menu-item">
-                        <i class="fi fi-rr-file-import"></i> Import from Logbook
-                    </a>
-                </div>
+                <a href="add_portfolio.php" class="btn btn-primary">
+                    <i class="fi fi-rr-cloud-upload-alt"></i> Upload Media
+                </a>
+                <!-- Removed dropdown menu -->
             </div>
         </div>
         
@@ -93,32 +86,6 @@ try {
     <script src="js/category_filter.js"></script>
     <script src="js/lazy_blur.js"></script>
     <script>
-    function toggleDropdown(event) {
-        event.stopPropagation();
-        const dropdown = document.getElementById("addOptions");
-        const isVisible = dropdown.style.display === 'block';
-        
-        // Close any open menus first
-        closeAllMenus();
-        
-        // Toggle this menu
-        if (!isVisible) {
-            dropdown.style.display = 'block';
-        }
-    }
-
-    function closeAllMenus() {
-        const menus = document.querySelectorAll('.menu-dropdown');
-        menus.forEach(menu => {
-            menu.style.display = 'none';
-        });
-    }
-
-    // Close menu when clicking outside
-    document.addEventListener('click', function() {
-        closeAllMenus();
-    });
-    
     // Initialize category filtering and lazy loading
     document.addEventListener('DOMContentLoaded', function() {
         // Pass the correct selector and attribute name
