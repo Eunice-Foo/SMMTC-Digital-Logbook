@@ -258,7 +258,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </form>
                 
                 <div class="auth-footer">
-                    <p>Don't have an account? <a href="signup.php">Sign up here</a></p>
+                    <p>Don't have an account? <a href="index.php">Sign up here</a></p>
                 </div>
             </div>
         </div>
