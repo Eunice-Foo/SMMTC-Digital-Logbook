@@ -363,11 +363,26 @@ function uploadFiles(event) {
                     
                     // Reset form after a short delay
                     setTimeout(function() {
-                        // Redirect to appropriate page
+                        // Redirect to logbook with appropriate parameters
                         if (isEditMode) {
-                            window.location.href = 'view_log.php?id=' + new URLSearchParams(window.location.search).get('id');
+                            // Get entry ID and entry date
+                            const entryId = new URLSearchParams(window.location.search).get('id');
+                            const entryDate = document.getElementById('date').value;
+                            const entryMonth = new Date(entryDate).getMonth();
+                            
+                            // Redirect to logbook with highlight params
+                            window.location.href = `logbook.php?highlight=${entryId}&month=${entryMonth}`;
                         } else {
-                            window.location.href = 'logbook.php';
+                            // For new entries, we don't have the ID yet, so just go to logbook
+                            // The backend should return the new entry ID in the response
+                            if (result.entry_id) {
+                                const entryDate = document.getElementById('date').value;
+                                const entryMonth = new Date(entryDate).getMonth();
+                                
+                                window.location.href = `logbook.php?highlight=${result.entry_id}&month=${entryMonth}`;
+                            } else {
+                                window.location.href = 'logbook.php';
+                            }
                         }
                     }, 2000);
                 } else {

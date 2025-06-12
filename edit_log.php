@@ -145,7 +145,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $conn->commit();
-        echo json_encode(['success' => true, 'message' => 'Log entry updated successfully!']);
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Log entry updated successfully!',
+            'entry_id' => $_GET['id'],
+            'entry_date' => $_POST['date']
+        ]);
         exit();
 
     } catch(PDOException $e) {
@@ -289,7 +294,7 @@ try {
                 });
             }
 
-            // Modified cancel button handler to show confirmation dialog
+            // Modified cancel button handler to redirect to logbook instead of view_log
             document.querySelector('.cancel-btn').addEventListener('click', function(event) {
                 event.preventDefault();
                 
@@ -297,12 +302,42 @@ try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const entryId = urlParams.get('id');
                 
-                // Set the return URL to view the current entry
-                const returnUrl = `view_log.php?id=${entryId}`;
+                // Get the month from the date field
+                const entryDate = document.getElementById('date').value;
+                const entryMonth = new Date(entryDate).getMonth();
+                
+                // Set the return URL to logbook with highlight parameters
+                const returnUrl = `logbook.php?highlight=${entryId}&month=${entryMonth}`;
                 
                 // Show the cancel confirmation dialog
                 confirmCancel(returnUrl);
             });
+
+            // Override the default form submission success handler
+            if (typeof window.handleFormSubmitSuccess !== 'function') {
+                window.handleFormSubmitSuccess = function(response) {
+                    try {
+                        if (response.success) {
+                            showSuccessToast(response.message);
+                            
+                            // Redirect to logbook after a short delay
+                            setTimeout(function() {
+                                const entryId = response.entry_id;
+                                const entryDate = response.entry_date;
+                                const entryMonth = new Date(entryDate).getMonth();
+                                
+                                // Redirect to logbook with highlight parameters
+                                window.location.href = `logbook.php?highlight=${entryId}&month=${entryMonth}`;
+                            }, 2000);
+                        } else {
+                            showErrorToast(response.message || 'Unknown error occurred');
+                        }
+                    } catch (e) {
+                        console.error('Error processing response:', e);
+                        showErrorToast('An unexpected error occurred');
+                    }
+                };
+            }
         });
     </script>
 </body>

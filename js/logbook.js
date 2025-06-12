@@ -1,6 +1,24 @@
 document.addEventListener('DOMContentLoaded', function() {
     initializeMonthFilter();
     generateVideoThumbnails();
+    
+    // Check for entry to highlight from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const highlightEntryId = urlParams.get('highlight');
+    const monthToShow = urlParams.get('month');
+    
+    // If month is specified, activate that month tab
+    if (monthToShow !== null) {
+        const monthBtn = document.querySelector(`.month-btn[data-month="${monthToShow}"]`);
+        if (monthBtn) {
+            filterLogsByMonth(parseInt(monthToShow));
+        }
+    }
+    
+    // If entry ID is specified, scroll to and highlight it
+    if (highlightEntryId) {
+        highlightLogEntry(highlightEntryId);
+    }
 });
 
 function updateDateHeaders() {
@@ -36,5 +54,34 @@ function confirmDelete(entryId) {
 }
 
 function viewLog(entryId) {
-    window.location.href = `view_log.php?id=${entryId}`;
+    // Instead of redirecting to view_log.php, show the entry in logbook
+    const entryElement = document.querySelector(`.log-entry[data-entry-id="${entryId}"]`);
+    if (entryElement) {
+        // Get the month of this entry
+        const entryDate = new Date(entryElement.dataset.date);
+        const month = entryDate.getMonth();
+        
+        // Redirect to logbook with highlight and month parameters
+        window.location.href = `logbook.php?highlight=${entryId}&month=${month}`;
+    } else {
+        // Fallback to traditional view if entry not found in current page
+        window.location.href = `logbook.php`;
+    }
+}
+
+// New function to highlight a specific log entry
+function highlightLogEntry(entryId) {
+    const entry = document.querySelector(`.log-entry[data-entry-id="${entryId}"]`);
+    if (entry) {
+        // Scroll to entry
+        entry.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Add highlight animation class
+        entry.classList.add('highlight-entry');
+        
+        // Remove class after animation completes
+        setTimeout(() => {
+            entry.classList.remove('highlight-entry');
+        }, 3000); // 3 seconds
+    }
 }

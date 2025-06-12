@@ -3,7 +3,7 @@ function renderLogEntry($entry, $showActions = true) {
     require_once 'components/media_count_label.php';
     require_once 'components/supervisor_feedback.php'; // Add this line
     ?>
-    <div class="log-entry" data-date="<?php echo $entry['entry_date']; ?>">
+    <div class="log-entry" data-date="<?php echo $entry['entry_date']; ?>" data-entry-id="<?php echo $entry['entry_id']; ?>">
         <div class="log-entry-grid">
             <?php if (!empty($entry['media_files'])): ?>
                 <div class="log-media-section">

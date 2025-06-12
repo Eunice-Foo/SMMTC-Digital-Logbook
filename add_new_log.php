@@ -83,7 +83,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $conn->commit();
-        echo json_encode(['success' => true, 'message' => 'Log entry added successfully!']);
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Log entry added successfully!',
+            'entry_id' => $entry_id
+        ]);
         exit();
 
     } catch(Exception $e) {
