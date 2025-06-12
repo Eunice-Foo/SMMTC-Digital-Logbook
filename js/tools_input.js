@@ -3,84 +3,46 @@ const commonTools = [
     // Adobe Creative Suite
     'Adobe Photoshop', 'Adobe Illustrator', 'Adobe Premiere Pro', 
     'Adobe After Effects', 'Adobe XD', 'Adobe InDesign', 'Adobe Animate',
-    'Adobe Lightroom', 'Adobe Audition', 'Adobe Dimension',
+    'Adobe Lightroom', 'Adobe Audition',
 
     // 3D Software
-    'Blender', 'Maya', '3ds Max', 'Cinema 4D', 'ZBrush', 'SketchUp', 
-    'Houdini', 'Substance Painter', 'Substance Designer', 'Marvelous Designer',
-    'Daz Studio', 'Modo', 'Rhino 3D', 'V-Ray', 'KeyShot',
+    'Blender', 'Maya', '3ds Max', 'Cinema 4D', 'ZBrush', 'SketchUp',
 
     // Game Development
-    'Unity', 'Unreal Engine', 'Godot', 'RPG Maker MV', 'RPG Maker MZ', 
-    'GameMaker Studio', 'CryEngine', 'Construct', 'Phaser', 'Cocos2d',
-    'Twine', 'Ren\'Py', 'PlayCanvas', 'AppGameKit', 'Amazon Lumberyard',
-    'RPG Maker VX Ace', 'Game Builder Garage', 'Dreams',
+    'Unity', 'Unreal Engine', 'RPG Maker MV', 'RPG Maker MZ', 'Roblox Studio',
 
     // UI/UX Design & No-Code
-    'Figma', 'Sketch', 'InVision', 'FlutterFlow', 'Adalo', 'Bubble',
-    'Webflow', 'Wix', 'WordPress', 'Elementor', 'Framer', 'Proto.io',
-    'Balsamiq', 'Marvel', 'Principle', 'Axure RP', 'Adobe XD',
-    'Thunkable', 'Glide', 'AppSheet', 'Softr', 'Stacker', 'Zapier',
+    'Canva', 'Figma', 'Sketch', 'FlutterFlow', 'Adalo', 'Wix', 'WordPress',
+    'Adobe XD',
 
     // Programming Languages
     'Python', 'JavaScript', 'HTML', 'CSS', 'PHP', 'Java', 'C++', 'C#',
-    'Swift', 'Kotlin', 'Ruby', 'TypeScript', 'SQL', 'MySQL', 'PostgreSQL',
-    'R', 'Go', 'Rust', 'Dart', 'Lua', 'MATLAB', 'Scala', 'Shell Script',
-    'C', 'Objective-C', 'Perl', 'Haskell', 'Assembly', 'Solidity', 'COBOL',
+    'Kotlin', 'TypeScript', 'MySQL', 'Dart', 'Lua', 'C',
     
     // Frameworks & Libraries
-    'React', 'Angular', 'Vue.js', 'Django', 'Flask', 'Laravel',
-    'Node.js', 'Express.js', 'Spring Boot', 'Flutter', 'Bootstrap',
-    'TailwindCSS', 'jQuery', 'Next.js', 'Nuxt.js', 'Svelte',
-    'React Native', 'Electron', 'PyTorch', 'TensorFlow', 'Pandas',
-    'Ruby on Rails', 'ASP.NET', 'Symfony', 'CodeIgniter', 'FastAPI',
-
-    // Database & Storage
-    'MySQL', 'MongoDB', 'PostgreSQL', 'SQLite', 'Redis', 'Oracle',
-    'Microsoft SQL Server', 'Firebase', 'Supabase', 'Amazon DynamoDB',
-    'Cassandra', 'Neo4j', 'MariaDB', 'CouchDB', 'Elasticsearch',
+    'Flutter',
 
     // Version Control & DevOps
-    'Git', 'GitHub', 'GitLab', 'Bitbucket', 'Docker', 'Kubernetes',
-    'Jenkins', 'AWS', 'Azure', 'Google Cloud', 'Heroku', 'Netlify',
-    'Vercel', 'CircleCI', 'Travis CI', 'Terraform', 'Ansible', 'Jira',
+    'GitHub',
 
     // Design, Photo & Image Editing
-    'GIMP', 'Inkscape', 'Affinity Designer', 'Affinity Photo',
-    'Krita', 'CorelDRAW', 'Paint Tool SAI', 'Clip Studio Paint',
-    'Aseprite', 'Pixelmator', 'Procreate', 'PaintShop Pro',
+    'CorelDRAW', 'Procreate',
 
     // Video & Animation
-    'DaVinci Resolve', 'Final Cut Pro', 'Vegas Pro', 'Moho',
-    'Toon Boom Harmony', 'OpenToonz', 'Pencil2D', 'Synfig Studio',
-    'iMovie', 'Lightworks', 'Shotcut', 'Kdenlive', 'Camtasia',
-    'Filmora', 'Hitfilm Express', 'Blender Animation',
+    'DaVinci Resolve', 'Final Cut Pro',
 
     // Audio & Music
-    'Audacity', 'FL Studio', 'Ableton Live', 'Logic Pro X',
-    'Pro Tools', 'GarageBand', 'Reaper', 'Studio One',
-    'Cubase', 'Reason', 'Bitwig Studio', 'Ardour',
-
-    // Project & Task Management
-    'Jira', 'Trello', 'Asana', 'Monday.com', 'Notion', 'ClickUp',
-    'Linear', 'GitHub Projects', 'Basecamp', 'Airtable', 'Todoist',
+    'Audacity',
 
     // AI & Machine Learning
-    'TensorFlow', 'PyTorch', 'Keras', 'Scikit-learn', 'OpenAI API',
-    'Hugging Face', 'NLTK', 'Jupyter Notebook', 'Google Colab',
-    'Midjourney', 'DALL-E', 'Stable Diffusion', 'ChatGPT',
+    'ChatGPT', 'Deepseak',
 
     // Office & Productivity
-    'Microsoft Office', 'Google Workspace', 'LibreOffice', 'Notion',
-    'Confluence', 'Evernote', 'OneNote', 'Obsidian', 'Miro', 'Figma',
+    'Microsoft Word', 'Microsoft Excel', 'Microsoft PowerPoint',
+    'Google Docs', 'Google Sheets', 'Google Slides',
 
-    // CAD & Architecture
-    'AutoCAD', 'Fusion 360', 'SolidWorks', 'Revit', 'Rhino 3D',
-    'ArchiCAD', 'SketchUp', 'CATIA', 'Inventor', 'Onshape',
-
-    // Communication & Collaboration
-    'Slack', 'Discord', 'Microsoft Teams', 'Zoom', 'Google Meet',
-    'Miro', 'Figma', 'Notion', 'Confluence', 'Trello'
+    // Data Visualization
+    'Power BI', 'Tableau', 'Google Looker Studio'
 ];
 
 // Global variables
