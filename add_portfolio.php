@@ -332,13 +332,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="tools-input-container">
                         <input type="text" id="toolInput" placeholder="Type a tool name and press Enter">
                         <div id="toolSuggestions" class="tool-suggestions"></div>
+                        <small class="hint">Type tool names (e.g., Photoshop, Blender) and press Enter to add them</small>
                         <div id="selectedTools" class="selected-tools"></div>
                         <input type="hidden" name="tools" id="toolsHidden">
                     </div>
                 </div>
             </div>
-            <small class="hint">Type tool names (e.g., Photoshop, Blender) and press Enter to add them</small>
-
             <div class="form-group">
                 <label for="media">Upload Media Files<span class="required-indicator">*</span></label>
                 <?php 

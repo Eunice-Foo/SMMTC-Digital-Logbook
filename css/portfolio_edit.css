@@ -44,9 +44,8 @@
 
 .hint {
     color: #666;
-    font-size: 12px;
-    margin-top: -10px;
-    margin-bottom: 20px;
+    font-size: 14px; /* Increased from 12px to 14px */
+    margin: 0; /* Removed all margins */
     display: block;
 }
 

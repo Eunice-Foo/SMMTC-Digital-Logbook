@@ -1,5 +1,8 @@
 .tools-input-container {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 #toolInput {
@@ -38,7 +41,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 10px;
+    margin-top: 0; /* Remove top margin since we're using flex gap */
 }
 
 .tool-tag {
@@ -64,7 +67,7 @@
 
 .hint {
     color: #666;
-    font-size: 12px;
-    margin-top: 4px;
+    font-size: 14px; /* Increased from 12px to 14px */
+    margin: 0; /* Removed all margins */
     display: block;
 }
