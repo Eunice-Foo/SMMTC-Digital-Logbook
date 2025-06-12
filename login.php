@@ -48,6 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Login</title>
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/auth_form.css">
+    <link rel="stylesheet" href="css/form_indicators.css">
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css">
     <style>
         body, html {
@@ -234,13 +235,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 <form action="login.php" method="POST">
                     <div class="form-group">
-                        <label for="username">Username</label>
+                        <label for="username">Username<span class="required-indicator">*</span></label>
                         <input type="text" id="username" name="username" required>
                     </div>
 
                     <div class="form-group">
-                        <label for="password">Password</label>
+                        <label for="email">Email<span class="required-indicator">*</span></label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password<span class="required-indicator">*</span></label>
                         <input type="password" id="password" name="password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm Password<span class="required-indicator">*</span></label>
+                        <input type="password" id="confirm_password" name="confirm_password" required>
                     </div>
 
                     <button type="submit" class="submit-button">Login</button>

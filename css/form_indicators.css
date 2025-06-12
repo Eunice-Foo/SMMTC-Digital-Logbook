@@ -1,0 +1,12 @@
+/* Required and optional field indicators */
+.required-indicator {
+    color: #dc3545; /* Red color for required fields */
+    margin-left: 3px;
+}
+
+.optional-label {
+    color: #6c757d; /* Grey color for optional fields */
+    font-size: 14px;
+    font-weight: normal;
+    margin-left: 5px;
+}

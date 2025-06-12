@@ -219,6 +219,7 @@ try {
     <link rel="stylesheet" href="css/video_thumbnail.css">
     <link rel="stylesheet" href="css/media_upload_button.css">
     <link rel="stylesheet" href="css/cancel_modal.css">
+    <link rel="stylesheet" href="css/form_indicators.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
     <script src="js/file_upload.js" defer></script>
@@ -238,23 +239,23 @@ try {
         <form id="editLogForm" action="edit_log.php?id=<?php echo $_GET['id']; ?>" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles(event)">
             <div class="form-header">
                 <div class="form-group">
-                    <label for="date">Date:</label>
+                    <label for="date">Date<span class="required-indicator">*</span></label>
                     <input type="date" id="date" name="date" value="<?php echo htmlspecialchars($entry['entry_date']); ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="title">Title: (Optional)</label>
+                    <label for="title">Title <span class="optional-label">(Optional)</span></label>
                     <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($entry['entry_title']); ?>" placeholder="Enter log title">
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="description">Description:</label>
+                <label for="description">Description<span class="required-indicator">*</span></label>
                 <textarea id="description" name="description" rows="4" required placeholder="Enter log description"><?php echo htmlspecialchars($entry['entry_description']); ?></textarea>
             </div>
 
             <div class="form-group">
-                <label for="media">Upload Media Files:</label>
+                <label for="media">Upload Media Files <span class="optional-label">(Optional)</span></label>
                 <?php 
                 require_once 'components/media_upload_button.php';
                 renderMediaUploadButton();

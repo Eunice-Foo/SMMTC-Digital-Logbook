@@ -107,6 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/media_upload_button.css">
     <link rel="stylesheet" href="css/delete_modal.css">
     <link rel="stylesheet" href="css/cancel_modal.css">
+    <link rel="stylesheet" href="css/form_indicators.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/file_upload.js" defer></script>
     <script src="js/video_thumbnail.js" defer></script>

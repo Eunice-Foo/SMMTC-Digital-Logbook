@@ -253,6 +253,7 @@ try {
     <link rel="stylesheet" href="css/media_upload_button.css">
     <link rel="stylesheet" href="css/tools_input.css">
     <link rel="stylesheet" href="css/cancel_modal.css">
+    <link rel="stylesheet" href="css/form_indicators.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/video_thumbnail.js" defer></script>
@@ -277,38 +278,36 @@ try {
         <form id="editPortfolioForm" action="edit_portfolio.php?id=<?php echo $portfolio_id; ?>" method="POST" enctype="multipart/form-data" onsubmit="uploadFiles(event)">
             <div class="form-header">
                 <div class="form-group">
-                    <label for="title">Title:</label>
+                    <label for="title">Title<span class="required-indicator">*</span></label>
                     <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($portfolio['portfolio_title']); ?>" required>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="description">Description:</label>
+                <label for="description">Description<span class="required-indicator">*</span></label>
                 <textarea id="description" name="description" rows="4" required><?php echo htmlspecialchars($portfolio['portfolio_description']); ?></textarea>
             </div>
 
-            <div class="form-row">
-                <div class="form-group category-field">
-                    <label for="category">Category:</label>
-                    <select id="category" name="category" required>
-                        <option value="Image" <?php echo ($portfolio['category'] === 'Image') ? 'selected' : ''; ?>>Image</option>
-                        <option value="Video" <?php echo ($portfolio['category'] === 'Video') ? 'selected' : ''; ?>>Video</option>
-                        <option value="Animation" <?php echo ($portfolio['category'] === 'Animation') ? 'selected' : ''; ?>>Animation</option>
-                        <option value="3D Model" <?php echo ($portfolio['category'] === '3D Model') ? 'selected' : ''; ?>>3D Model</option>
-                        <option value="UI/UX" <?php echo ($portfolio['category'] === 'UI/UX') ? 'selected' : ''; ?>>UI/UX</option>
-                        <option value="Graphic Design" <?php echo ($portfolio['category'] === 'Graphic Design') ? 'selected' : ''; ?>>Graphic Design</option>
-                        <option value="Other" <?php echo ($portfolio['category'] === 'Other') ? 'selected' : ''; ?>>Other</option>
-                    </select>
-                </div>
+            <div class="form-group">
+                <label for="category">Category<span class="required-indicator">*</span></label>
+                <select id="category" name="category" required>
+                    <option value="Image" <?php echo ($portfolio['category'] === 'Image') ? 'selected' : ''; ?>>Image</option>
+                    <option value="Video" <?php echo ($portfolio['category'] === 'Video') ? 'selected' : ''; ?>>Video</option>
+                    <option value="Animation" <?php echo ($portfolio['category'] === 'Animation') ? 'selected' : ''; ?>>Animation</option>
+                    <option value="3D Model" <?php echo ($portfolio['category'] === '3D Model') ? 'selected' : ''; ?>>3D Model</option>
+                    <option value="UI/UX" <?php echo ($portfolio['category'] === 'UI/UX') ? 'selected' : ''; ?>>UI/UX</option>
+                    <option value="Graphic Design" <?php echo ($portfolio['category'] === 'Graphic Design') ? 'selected' : ''; ?>>Graphic Design</option>
+                    <option value="Other" <?php echo ($portfolio['category'] === 'Other') ? 'selected' : ''; ?>>Other</option>
+                </select>
+            </div>
 
-                <div class="form-group tools-field">
-                    <label for="tools">Tools Used:</label>
-                    <div class="tools-input-container">
-                        <input type="text" id="toolInput" placeholder="Type a tool name and press Enter">
-                        <div id="toolSuggestions" class="tool-suggestions"></div>
-                        <div id="selectedTools" class="selected-tools"></div>
-                        <input type="hidden" name="tools" id="toolsHidden" value="<?php echo htmlspecialchars($portfolio['tools']); ?>">
-                    </div>
+            <div class="form-group">
+                <label for="tools">Tools Used <span class="optional-label">(Optional)</span></label>
+                <div class="tools-input-container">
+                    <input type="text" id="toolInput" placeholder="Type a tool name and press Enter">
+                    <div id="toolSuggestions" class="tool-suggestions"></div>
+                    <div id="selectedTools" class="selected-tools"></div>
+                    <input type="hidden" name="tools" id="toolsHidden" value="<?php echo htmlspecialchars($portfolio['tools']); ?>">
                 </div>
             </div>
             <small class="hint">Type tool names (e.g., Photoshop, Blender) and press Enter to add them</small>

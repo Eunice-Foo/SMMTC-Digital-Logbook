@@ -23,7 +23,7 @@ function renderLogEntryForm($formData = null) {
     <form id="<?php echo $formId; ?>" action="<?php echo $isEdit ? 'edit_log.php?id=' . $_GET['id'] : 'add_new_log.php'; ?>" method="POST" enctype="multipart/form-data">
         <div class="form-header">
             <div class="form-group">
-                <label for="date">Date</label>
+                <label for="date">Date<span class="required-indicator">*</span></label>
                 <input type="date" 
                        id="date" 
                        name="date" 
@@ -32,7 +32,7 @@ function renderLogEntryForm($formData = null) {
             </div>
 
             <div class="form-group">
-                <label for="title">Title (Optional)</label>
+                <label for="title">Title <span class="optional-label">(Optional)</span></label>
                 <input type="text" 
                        id="title" 
                        name="title" 
@@ -42,7 +42,7 @@ function renderLogEntryForm($formData = null) {
         </div>
 
         <div class="form-group">
-            <label for="description">Description</label>
+            <label for="description">Description<span class="required-indicator">*</span></label>
             <textarea id="description" 
                       name="description" 
                       rows="4" 
@@ -51,7 +51,7 @@ function renderLogEntryForm($formData = null) {
         </div>
 
         <div class="form-group">
-            <label for="media">Upload Media Files</label>
+            <label for="media">Upload Media Files <span class="optional-label">(optional)</span></label>
             <?php 
             require_once 'components/media_upload_button.php';
             renderMediaUploadButton();

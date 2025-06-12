@@ -341,6 +341,7 @@ if ($success_message): ?>
     <link rel="stylesheet" href="css/edit_profile.css">
     <link rel="stylesheet" href="css/cancel_modal.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link rel="stylesheet" href="css/form_indicators.css">
     <style>
         /* Add this to your CSS in edit_profile.css */
         .signature-upload-container {
@@ -464,8 +465,8 @@ if ($success_message): ?>
                 <h3 class="section-title">Personal Information</h3>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="full_name">Full Name</label>
-                        <input type="text" id="full_name" name="full_name" value="<?php echo htmlspecialchars($profile['full_name']); ?>" required>
+                        <label for="full_name">Full Name<span class="required-indicator">*</span></label>
+                        <input type="text" id="full_name" name="full_name" value="<?php echo $user_data['full_name']; ?>" required>
                     </div>
                     
                     <div class="form-group">
