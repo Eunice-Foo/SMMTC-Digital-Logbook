@@ -18,7 +18,7 @@
 .log-entry-grid {
     display: grid;
     grid-template-columns: 300px minmax(0, 1fr) auto;
-    gap: 20px;
+    gap: 0; /* Changed from 20px to 0 */
     align-items: center;
     background: white;
     padding: 25px;

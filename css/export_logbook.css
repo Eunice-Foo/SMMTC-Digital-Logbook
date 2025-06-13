@@ -146,13 +146,6 @@
     align-self: center;
 }
 
-/* Fix for signed entries in export mode */
-.log-entry-grid {
-    display: grid;
-    grid-template-columns: 300px minmax(0, 1fr) auto;
-    gap: 20px;
-}
-
 /* Ensure consistent spacing for signed entries */
 @media screen and (max-width: 768px) {
     .actions-placeholder {

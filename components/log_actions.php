@@ -37,6 +37,7 @@ function renderLogActions($entryId, $entryStatus, $userRole) {
     gap: 10px;
     width: 100px;
     position: static;
+    margin-left: 20px; /* Added this line */
 }
 
 /* Hide the actions div for signed entries */
