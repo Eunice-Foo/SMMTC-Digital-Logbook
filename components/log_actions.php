@@ -16,10 +16,10 @@ function renderLogActions($entryId, $entryStatus, $userRole) {
         <?php else: // ROLE_STUDENT ?>
             <?php if ($entryStatus !== 'Signed'): ?>
                 <button class="btn btn-edit" onclick="window.location.href='edit_log.php?id=<?php echo $entryId; ?>'">
-                    Edit
+                    <i class="fi fi-rr-pen-field"></i> Edit
                 </button>
                 <button class="btn btn-delete" onclick="confirmDelete(<?php echo $entryId; ?>)">
-                    Delete
+                    <i class="fi fi-rr-trash"></i> Delete
                 </button>
             <?php endif; ?>
         <?php endif; ?>
@@ -35,7 +35,7 @@ function renderLogActions($entryId, $entryStatus, $userRole) {
     flex-direction: column;
     align-self: center;
     gap: 10px;
-    width: 100px;
+    width: fit-content;
     position: static;
     margin-left: 20px; /* Added this line */
 }
@@ -51,13 +51,19 @@ body.export-mode .signed-entry-actions {
 }
 
 .btn-edit {
-    background-color: #6c757d;
-    color: white;
+    background-color: #2196F3; /* Changed from white to export button blue */
+    color: white; /* Changed from primary color to white */
+    padding: 12px 18px;
+}
+
+.btn-edit:hover {
+    background-color: #1976D2; /* Changed to darker blue on hover */
 }
 
 .btn-delete {
     background-color: #dc3545;
     color: white;
+    padding: 12px 18px;
 }
 
 .btn-sign {

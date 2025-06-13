@@ -272,7 +272,9 @@ try {
             
             <div class="form-buttons">
                 <button type="button" class="cancel-btn">Cancel</button>
-                <button type="submit" class="submit-btn">Save Changes</button>
+                <button type="submit" class="submit-btn">
+                    <i class="fi fi-rr-floppy-disk-pen"></i> Save Changes
+                </button>
             </div>
         </form>
         <div class="progress">
