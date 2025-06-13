@@ -33,29 +33,26 @@ const PortfolioLoader = {
         
         this.loading = true;
         const loadingIndicator = document.getElementById('loadingIndicator');
-        if (loadingIndicator) loadingIndicator.style.display = 'block';
-        this.currentPage++;
+        if (loadingIndicator) loadingIndicator.textContent = 'Loading...';
         
-        const searchInput = document.querySelector('input[name="search"]');
-        const searchValue = searchInput ? searchInput.value : '';
+        // Add category filter to the fetch URL if needed
+        let fetchUrl = `main_menu.php?page=${this.currentPage + 1}&ajax=1`;
+        if (this.category !== 'all') {
+            fetchUrl += `&category=${encodeURIComponent(this.category)}`;
+        }
         
-        const params = new URLSearchParams({
-            page: this.currentPage,
-            search: searchValue,
-            category: this.category,
-            ajax: true
-        });
-        
-        fetch('main_menu.php', {
+        fetch(fetchUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: params
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
         })
         .then(response => response.json())
         .then(data => this.handleLoadMoreResponse(data))
         .catch(error => {
             console.error('Error loading more items:', error);
-            if (loadingIndicator) loadingIndicator.style.display = 'none';
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            if (loadingIndicator) loadingIndicator.textContent = 'Error loading items';
             this.loading = false;
         });
     },

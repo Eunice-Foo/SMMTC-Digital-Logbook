@@ -266,16 +266,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
         };
     </script>
     <script src="js/main_menu_lazy_load.js"></script>
+    <script src="js/video_thumbnail.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize category filtering
-            if (typeof initCategoryFilter === 'function') {
-                initCategoryFilter('.portfolio-card', 'data-category');
-            }
-            
-            // Initialize infinite scroll only
-            if (typeof PortfolioLoader !== 'undefined') {
-                PortfolioLoader.init();
+            // Initialize video thumbnails
+            if (typeof generateVideoThumbnails === 'function') {
+                generateVideoThumbnails();
             }
         });
     </script>

@@ -5,15 +5,15 @@
     height: 100%; /* Changed from 150px to 100% */
     background: #000;
     overflow: hidden;
+    border-radius: 8px; /* Added to match other thumbnails */
 }
 
 .thumbnail-container {
     width: 100%;
     height: 100%;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block; /* Changed from flex */
+    overflow: hidden; /* Added to prevent overflow */
 }
 
 .thumbnail-container img {
@@ -23,16 +23,15 @@
     display: block;
 }
 
+/* Fix video canvas to cover the entire container */
 .video-canvas {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Changed from contain to cover */
+    position: static; /* Changed from absolute positioning */
+    top: auto;
+    left: auto;
+    transform: none;
 }
 
 .video-placeholder {

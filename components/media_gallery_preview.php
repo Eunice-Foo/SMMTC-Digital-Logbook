@@ -1,6 +1,7 @@
 <?php
 // filepath: c:\xampp\htdocs\log\components\media_gallery_preview.php
 require_once 'components/media_count_label.php';
+require_once 'components/video_thumbnail.php'; // Add this line to include video thumbnail component
 
 function renderMediaGalleryPreview($mediaFiles, $maxDisplay = 4, $totalCount = null) {
     if (empty($mediaFiles)) return;
@@ -19,20 +20,10 @@ function renderMediaGalleryPreview($mediaFiles, $maxDisplay = 4, $totalCount = n
         ?>
             <div class="media-preview">
                 <?php if ($isVideo): ?>
-                    <div class="video-thumbnail-container">
-                        <?php
-                        // Use appropriate video thumbnail path
-                        $videoThumb = "uploads/thumbnails/{$filename}.jpg";
-                        if (file_exists($videoThumb)):
-                        ?>
-                            <img src="<?php echo $videoThumb; ?>" alt="Video thumbnail" class="thumbnail-image">
-                            <div class="play-indicator">▶</div>
-                        <?php else: ?>
-                            <div class="video-placeholder">
-                                <span>🎬</span>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                    <?php 
+                    // Use the same renderVideoThumbnail function as log entries
+                    renderVideoThumbnail($media);
+                    ?>
                 <?php else: ?>
                     <?php
                     // For images, check thumbnail with fallbacks using new naming convention
