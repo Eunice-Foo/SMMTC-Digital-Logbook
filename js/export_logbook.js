@@ -89,20 +89,58 @@ function toggleExportMode() {
         // Replace checkboxes with action buttons
         document.querySelectorAll('.log-checkbox').forEach(checkbox => {
             const entryId = checkbox.querySelector('.entry-checkbox').value;
+            const logEntry = checkbox.closest('.log-entry');
+            const entryStatusElem = logEntry.querySelector('.log-status');
+            const entryStatus = entryStatusElem ? entryStatusElem.textContent.trim() : '';
+
+            // Create a container for log actions
             const actionButtons = document.createElement('div');
             actionButtons.className = 'log-actions';
             actionButtons.dataset.entryId = entryId;
+            actionButtons.dataset.entryStatus = entryStatus;
             
-            actionButtons.innerHTML = `
-                ${!checkbox.closest('.log-entry').querySelector('.log-status.reviewed') ? 
-                    `<button class="btn btn-edit" onclick="window.location.href='edit_log.php?id=${entryId}'">
-                        Edit
-                    </button>` : ''
+            // Set display style based on entry status
+            if (entryStatus === 'Signed') {
+                actionButtons.classList.add('signed-entry-actions');
+                actionButtons.style.display = 'none'; // Hide for signed entries
+            } else {
+                actionButtons.style.display = 'flex'; // Show for unsigned entries
+            }
+            
+            // Debug the user role
+            console.log('User role value:', document.body.dataset.userRole);
+            
+            // Add appropriate buttons based on user role and entry status
+            if (entryStatus !== 'Signed') {
+                // Get the role from the body data attribute or fallback to role in the DOM
+                const userRole = document.querySelector('.logbook-wrapper')?.dataset.userRole || 
+                                document.body.dataset.userRole;
+                                
+                console.log('Detected user role:', userRole);
+                
+                // Check using multiple conditions to ensure it works
+                if (userRole == 1 || userRole === 'student' || userRole === 'ROLE_STUDENT') {
+                    actionButtons.innerHTML = `
+                        <button class="btn btn-edit" onclick="window.location.href='edit_log.php?id=${entryId}'">
+                            Edit
+                        </button>
+                        <button class="btn btn-delete" onclick="confirmDelete(${entryId})">
+                            Delete
+                        </button>
+                    `;
+                } else {
+                    actionButtons.innerHTML = `
+                        <button class="btn btn-sign" onclick="directSign(${entryId})">
+                            Sign
+                        </button>
+                        <button class="btn btn-remark" onclick="signLog(${entryId})">
+                            Remark
+                        </button>
+                    `;
                 }
-                <button class="btn btn-delete" onclick="confirmDelete(${entryId})">
-                    Delete
-                </button>
-            `;
+            }
+            
+            // Replace the checkbox with the action buttons
             checkbox.replaceWith(actionButtons);
         });
     }

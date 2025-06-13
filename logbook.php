@@ -72,7 +72,7 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
     <script src="js/export_logbook.js" defer></script>
     <script src="js/delete_confirmation.js"></script>
 </head>
-<body data-user-id="<?php echo $_SESSION['user_id']; ?>">
+<body data-user-role="<?php echo $_SESSION['role']; ?>" data-user-id="<?php echo $_SESSION['user_id']; ?>">
     <?php 
     include 'components/topnav.php'; 
     initializeToast();

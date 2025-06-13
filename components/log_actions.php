@@ -1,9 +1,9 @@
 <?php
 function renderLogActions($entryId, $entryStatus, $userRole) {
-    // Add a class to the div if the entry is signed
-    $signedClass = ($entryStatus === 'Signed') ? 'signed-entry-actions' : '';
+    // Set display style based on status - all styling in this one place
+    $displayStyle = ($entryStatus === 'Signed') ? 'display:none;' : 'display:flex;';
     ?>
-    <div class="log-actions <?php echo $signedClass; ?>" data-entry-id="<?php echo $entryId; ?>">
+    <div class="log-actions" data-entry-id="<?php echo $entryId; ?>" data-entry-status="<?php echo $entryStatus; ?>" style="<?php echo $displayStyle; ?>">
         <?php if ($userRole == ROLE_SUPERVISOR): ?>
             <?php if ($entryStatus !== 'Signed'): ?>
                 <button class="btn btn-sign" onclick="directSign(<?php echo $entryId; ?>)">
