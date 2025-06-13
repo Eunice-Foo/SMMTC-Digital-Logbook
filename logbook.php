@@ -63,6 +63,7 @@ $practicum_info = $stmt->fetch(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="css/export_logbook.css">
     <link rel="stylesheet" href="css/log_actions.css">
     <link rel="stylesheet" href="css/delete_modal.css">
+    <link rel="stylesheet" href="css/export_modal.css">
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/3.0.0/uicons-regular-chubby/css/uicons-regular-chubby.css'>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

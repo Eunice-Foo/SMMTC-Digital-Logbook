@@ -205,35 +205,131 @@ function selectAllEntries(checked) {
 function downloadExport() {
     const selectedEntries = Array.from(document.querySelectorAll('.entry-checkbox:checked'))
         .map(cb => cb.value);
+    
+    // Show confirmation modal before opening new tab
+    confirmExportPreview(selectedEntries);
+}
 
+function confirmExportPreview(selectedEntries) {
+    // Remove any existing modals first
+    const existingModals = document.querySelectorAll('.export-modal');
+    existingModals.forEach(modal => modal.remove());
+    
+    // Create modal overlay
+    const modal = document.createElement('div');
+    modal.className = 'export-modal';
+    modal.style.position = 'fixed';
+    modal.style.zIndex = '2000';
+    modal.innerHTML = `
+        <div class="export-modal-content">
+            <div class="export-modal-icon">
+                <i class="fi fi-rr-browsers"></i>
+            </div>
+            <h3>You will be redirected to a new tab for export preview.</h3>
+            <p>Do you wish to continue?</p>
+            <div class="export-modal-buttons">
+                <button class="cancel-btn" onclick="closeExportModal()">Cancel</button>
+                <button class="continue-btn" id="proceedExportBtn">Continue</button>
+            </div>
+        </div>
+    `;
+    
+    // Make sure it's added directly to the body
+    document.body.appendChild(modal);
+    
+    // Add event listener to continue button AFTER adding to DOM
+    document.getElementById('proceedExportBtn').addEventListener('click', function() {
+        proceedWithExport(selectedEntries);
+    });
+    
+    // Play alert sound for notification
+    playExportModalSound();
+    
+    // Force reflow to ensure proper CSS application
+    void modal.offsetWidth;
+    
+    // Add fade-in effect
+    setTimeout(() => {
+        modal.classList.add('active');
+    }, 10);
+}
+
+function playExportModalSound() {
+    // Check if toast notification sound system is available
+    if (typeof playSound === 'function' && typeof sounds !== 'undefined' && sounds.warning) {
+        // Use existing toast sound system
+        playSound('warning');
+        return;
+    }
+    
+    // Fallback: Use our own implementation
+    try {
+        // Try to create audio element
+        const warningSound = new Audio('audio/notifications/warning.mp3');
+        warningSound.volume = 0.5; // Set volume to 50%
+        
+        // Play the sound (wrapped in try-catch to handle browser autoplay restrictions)
+        warningSound.play().catch(e => {
+            console.log('Export modal sound prevented by browser:', e);
+            // This is normal on some browsers that require user interaction first
+        });
+    } catch (e) {
+        console.error('Error playing export modal sound:', e);
+    }
+}
+
+function closeExportModal() {
+    const modal = document.querySelector('.export-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.remove();
+        }, 300); // Match transition duration
+    }
+}
+
+function proceedWithExport(selectedEntries) {
+    // Close the modal
+    closeExportModal();
+    
+    console.log('Proceeding with export for entries:', selectedEntries);
+    
+    // Create the form for submission - this should be directly connected to the click event
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = 'export_preview.php';
-    form.target = '_blank';
-
+    form.target = '_blank'; // Open in new tab without pre-creating a window
+    
+    // Add entry IDs
     const entriesInput = document.createElement('input');
     entriesInput.type = 'hidden';
     entriesInput.name = 'entries';
     entriesInput.value = JSON.stringify(selectedEntries);
     form.appendChild(entriesInput);
-
+    
+    // Add media inclusion parameter
     const mediaInput = document.createElement('input');
     mediaInput.type = 'hidden';
     mediaInput.name = 'includeMedia';
-    mediaInput.value = true;
+    mediaInput.value = 'true';
     form.appendChild(mediaInput);
-
+    
+    // Add form to document
     document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-
-    // Exit export mode after submitting
-    toggleExportMode();
-}
-
-function resetSelectAllCheckbox() {
-    const selectAllCheckbox = document.querySelector('.select-all input[type="checkbox"]');
-    if (selectAllCheckbox) {
-        selectAllCheckbox.checked = false;
+    
+    // Submit the form directly - this should be triggered by the user click
+    try {
+        console.log('Submitting export form...');
+        form.submit();
+        console.log('Form submitted successfully');
+        
+        // Clean up and exit export mode after a short delay
+        setTimeout(() => {
+            document.body.removeChild(form);
+            toggleExportMode();
+        }, 1000);
+    } catch (e) {
+        console.error('Error submitting form:', e);
+        alert('There was a problem opening the export preview. Please try again.');
     }
 }
