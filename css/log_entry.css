@@ -2,8 +2,8 @@
 .log-entry {
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin: 15px 0;
+    box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.05); /* Updated shadow with purple tint */
+    margin: 30px 15px; /* Changed from 15px 0 to 30px 15px */
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
@@ -12,7 +12,7 @@
 
 .log-entry:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 0 12px 3px rgba(0, 0, 0, 0.10); /* Keep hover shadow as is */
 }
 
 .log-entry-grid {
