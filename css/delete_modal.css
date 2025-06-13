@@ -88,7 +88,7 @@
 }
 
 .delete-modal-buttons .delete-btn:hover {
-    background-color: #bb2d3b; /* Darker red on hover */
+    background-color: rgb(188, 14, 31); /* Already using correct darker red */
 }
 
 /* Add hover effect for cancel button */

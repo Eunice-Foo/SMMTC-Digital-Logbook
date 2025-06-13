@@ -127,7 +127,7 @@ function renderThreeDotMenu($portfolio_id) {
 }
 
 .delete-item:hover {
-    background-color: rgba(244, 67, 54, 0.1); /* Semi-transparent danger color */
+    background-color: rgba(187, 45, 59, 0.1); /* Changed to darker red with transparency */
 }
 
 .menu-divider {

@@ -66,6 +66,10 @@ body.export-mode .signed-entry-actions {
     padding: 12px 18px;
 }
 
+.btn-delete:hover {
+    background-color:rgb(188, 14, 31); /* Added darker red hover state */
+}
+
 .btn-sign {
     background-color: #28a745;
     color: white;
