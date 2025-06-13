@@ -23,7 +23,7 @@
 
 .modal-content h3 {
     margin: 0 0 20px 0;
-    font-size: 24px;
+    font-size: 16px; /* Already set to 16px */
     color: var(--text-primary);
     font-family: 'Open Sans', sans-serif;
 }
@@ -59,16 +59,7 @@
     margin-top: 25px;
 }
 
-.modal-buttons .btn {
-    min-width: 120px;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-    font-family: 'Open Sans', sans-serif;
-}
+/* Remove .modal-buttons .btn styling entirely to inherit from theme.css */
 
 .modal-buttons .btn-sign {
     background-color: var(--primary-color);
@@ -76,6 +67,15 @@
 }
 
 .modal-buttons .btn-cancel {
-    background-color: var(--text-secondary);
-    color: white;
+    background-color: #e2e6ea; /* Changed to light gray */
+    color: #495057; /* Darker text color for better contrast */
+}
+
+.modal-buttons .btn-cancel:hover {
+    background-color: #d3d9df; /* Slightly darker gray on hover */
+}
+
+/* Add spacing for icon in button */
+.modal-buttons .btn i {
+    margin-right: 5px;
 }

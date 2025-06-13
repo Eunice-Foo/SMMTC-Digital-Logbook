@@ -49,7 +49,6 @@ function signLog(entryId) {
         <div class="modal-content">
             <h3>Add Remarks</h3>
             <div class="form-group">
-                <label for="remarks">Remarks:</label>
                 <textarea 
                     id="remarks" 
                     placeholder="Enter your remarks here..."
@@ -57,8 +56,10 @@ function signLog(entryId) {
                 ></textarea>
             </div>
             <div class="modal-buttons">
-                <button onclick="submitSignature(${entryId})" class="btn btn-sign">Sign with Remarks</button>
                 <button onclick="closeModal()" class="btn btn-cancel">Cancel</button>
+                <button onclick="submitSignature(${entryId})" class="btn btn-sign">
+                    <i class="fi fi-rr-attribution-pen"></i> Sign with Remarks
+                </button>
             </div>
         </div>
     `;

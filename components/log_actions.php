@@ -7,10 +7,10 @@ function renderLogActions($entryId, $entryStatus, $userRole) {
         <?php if ($userRole == ROLE_SUPERVISOR): ?>
             <?php if ($entryStatus !== 'Signed'): ?>
                 <button class="btn btn-sign" onclick="directSign(<?php echo $entryId; ?>)">
-                    Sign
+                    <i class="fi fi-rr-attribution-pen"></i> Sign
                 </button>
                 <button class="btn btn-remark" onclick="signLog(<?php echo $entryId; ?>)">
-                    Remark
+                    <i class="fi fi-rr-comment"></i> Remark
                 </button>
             <?php endif; ?>
         <?php else: // ROLE_STUDENT ?>
@@ -71,13 +71,23 @@ body.export-mode .signed-entry-actions {
 }
 
 .btn-sign {
-    background-color: #28a745;
+    background-color: var(--primary-color); /* Changed to primary color */
     color: white;
+        padding: 12px 18px;
+}
+
+.btn-sign:hover {
+    background-color:rgb(98, 53, 131); /* Darker shade of primary color */
 }
 
 .btn-remark {
-    background-color: #17a2b8;
+    background-color: #2196F3; /* Changed to same blue as Edit button */
     color: white;
+    padding: 12px 18px;
+}
+
+.btn-remark:hover {
+    background-color: #1976D2; /* Same hover color as Edit button */
 }
 
 /* Responsive adjustments */
