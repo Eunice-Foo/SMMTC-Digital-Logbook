@@ -339,6 +339,36 @@ try {
                 height: 300px;
             }
         }
+
+
+        .btn-edit {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background-color: #1976D2;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #bb2d3b;
+        }
+
+        .btn i {
+            font-size: 16px;
+        }
+
+        /* Action button container */
+        .portfolio-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
     </style>
     
     <!-- Defer non-critical JavaScript -->
@@ -356,10 +386,14 @@ try {
                 <span class="category-tag"><?php echo htmlspecialchars($portfolio['category']); ?></span>
                 
                 <?php if ($is_owner): ?>
-                    <?php 
-                    require_once 'components/three_dot_menu.php';
-                    renderThreeDotMenu($portfolio_id); 
-                    ?>
+                    <div class="portfolio-actions">
+                        <button class="btn btn-edit" onclick="window.location.href='edit_portfolio.php?id=<?php echo $portfolio_id; ?>'">
+                            <i class="fi fi-rr-pen-field"></i> Edit
+                        </button>
+                        <button class="btn btn-delete" onclick="confirmDelete(<?php echo $portfolio_id; ?>, 'portfolio')">
+                            <i class="fi fi-rr-trash"></i> Delete
+                        </button>
+                    </div>
                 <?php endif; ?>
             </div>
             
