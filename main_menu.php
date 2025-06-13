@@ -26,11 +26,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
                 u.user_id,
                 u.user_name as username,
                 COALESCE(s.full_name, sv.supervisor_name) as full_name,
-                (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
+                m.file_name as media,
+                COUNT(pm.media_id) as media_count
             FROM portfolio p
             INNER JOIN user u ON p.user_id = u.user_id
             LEFT JOIN student s ON u.user_id = s.student_id
             LEFT JOIN supervisor sv ON u.user_id = sv.supervisor_id
+            LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
+            LEFT JOIN (
+                SELECT portfolio_id, MIN(media_id) as first_media_id
+                FROM portfolio_media
+                GROUP BY portfolio_id
+            ) first_media ON p.portfolio_id = first_media.portfolio_id
+            LEFT JOIN media m ON first_media.first_media_id = m.media_id
             " . ($category_filter !== 'all' ? "WHERE p.category = :category" : "") . "
             GROUP BY p.portfolio_id
             ORDER BY p.portfolio_date DESC, p.portfolio_time DESC
@@ -55,11 +63,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
                 u.user_id,
                 u.user_name as username,
                 COALESCE(s.full_name, sv.supervisor_name) as full_name,
-                (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
+                m.file_name as media,
+                COUNT(pm.media_id) as media_count
             FROM portfolio p
             INNER JOIN user u ON p.user_id = u.user_id
             LEFT JOIN student s ON u.user_id = s.student_id
             LEFT JOIN supervisor sv ON u.user_id = sv.supervisor_id
+            LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
+            LEFT JOIN (
+                SELECT portfolio_id, MIN(media_id) as first_media_id
+                FROM portfolio_media
+                GROUP BY portfolio_id
+            ) first_media ON p.portfolio_id = first_media.portfolio_id
+            LEFT JOIN media m ON first_media.first_media_id = m.media_id
             WHERE (p.portfolio_title LIKE :search OR p.portfolio_description LIKE :search)
             " . ($category_filter !== 'all' ? "AND p.category = :category" : "") . "
             GROUP BY p.portfolio_id
@@ -126,11 +142,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
             u.user_id,
             u.user_name as username,
             COALESCE(s.full_name, sv.supervisor_name) as full_name,
-            (SELECT COUNT(*) FROM portfolio_media pm2 WHERE pm2.portfolio_id = p.portfolio_id) as media_count
+            m.file_name as media,
+            COUNT(pm.media_id) as media_count
         FROM portfolio p
         INNER JOIN user u ON p.user_id = u.user_id
         LEFT JOIN student s ON u.user_id = s.student_id
         LEFT JOIN supervisor sv ON u.user_id = sv.supervisor_id
+        LEFT JOIN portfolio_media pm ON p.portfolio_id = pm.portfolio_id
+        LEFT JOIN (
+            SELECT portfolio_id, MIN(media_id) as first_media_id
+            FROM portfolio_media
+            GROUP BY portfolio_id
+        ) first_media ON p.portfolio_id = first_media.portfolio_id
+        LEFT JOIN media m ON first_media.first_media_id = m.media_id
         " . ($category_filter !== 'all' ? "WHERE p.category = :category" : "") . "
         GROUP BY p.portfolio_id
         ORDER BY p.portfolio_date DESC, p.portfolio_time DESC
@@ -226,22 +250,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['search'])) {
                 <?php endforeach; ?>
             <?php endif; ?>
             
-            <div class="loading-indicator" id="loadingIndicator">
+            <div class="loading-indicator" id="loadingIndicator" style="display: block;">
                 Loading more items...
             </div>
         </div>
     </div>
 
     <script>
+        // Pass necessary data to JavaScript
+        window.portfolioData = {
+            currentPage: <?php echo $page; ?>,
+            hasMore: <?php echo ($total_results > $page * $items_per_page) ? 'true' : 'false'; ?>,
+            category: "<?php echo $category_filter; ?>",
+            itemsPerPage: <?php echo $items_per_page; ?>
+        };
+    </script>
+    <script src="js/main_menu_lazy_load.js"></script>
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize category filter functionality
-            initCategoryFilter('.portfolio-card', 'data-category');
+            // Initialize category filtering
+            if (typeof initCategoryFilter === 'function') {
+                initCategoryFilter('.portfolio-card', 'data-category');
+            }
             
-            // Initialize lazy loading for images
-            initializeLazyLoading();
+            // Initialize infinite scroll only
+            if (typeof PortfolioLoader !== 'undefined') {
+                PortfolioLoader.init();
+            }
         });
     </script>
-    <script src="js/category_filter.js"></script>
-    <script src="js/lazy_blur.js"></script>
 </body>
 </html>
