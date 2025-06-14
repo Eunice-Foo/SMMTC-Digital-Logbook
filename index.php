@@ -102,27 +102,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             max-width: 400px;
         }
         
-        .auth-header {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        .auth-header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-        }
-        
-        .auth-header p {
-            color: var(--text-secondary);
-            font-size: 16px;
-        }
-        
-        .form-group {
-            margin-bottom: 24px;
-        }
-        
         .form-group label {
             display: block;
             font-size: 14px;

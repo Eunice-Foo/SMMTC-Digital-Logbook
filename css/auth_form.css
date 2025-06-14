@@ -1,8 +1,9 @@
 /* Import Flaticon Bold Rounded icons */
 @import url('https://cdn-uicons.flaticon.com/3.0.0/uicons-bold-rounded/css/uicons-bold-rounded.css');
 
+/* Basic form group spacing */
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 8px; /* Changed from 15px to 8px */
     text-align: left; /* Left-align form elements while keeping container centered */
 }
 
@@ -24,6 +25,25 @@ textarea {
     border: 1px solid #ddd;
     border-radius: 8px;
     min-height: 100px;
+}
+
+/* Auth header section spacing */
+.auth-header {
+    margin-bottom: 36px; /* Changed from 30px to 36px */
+    text-align: center;
+}
+
+.auth-header h1 {
+    margin-bottom: 8px; /* Changed from 12px to 8px */
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.auth-header p {
+    margin: 0; /* Changed from having bottom margin to no margin */
+    color: var(--text-secondary);
+    font-size: 16px;
 }
 
 /* Student Info specific styling */
@@ -71,14 +91,15 @@ textarea {
     flex: 1;
 }
 
-/* Button styling - simplified to inherit from theme.css */
+/* Submit button spacing */
 .submit-button {
     background-color: var(--primary-color);
     color: white;
     text-align: center;
     width: auto; /* Allow button to size naturally */
     float: right; /* Changed from left to right */
-    margin-top: 20px;
+    margin-top: 36px; /* Added specific top margin */
+    margin-bottom: 12px; /* Added specific bottom margin */
 }
 
 /* Replace datalist with suggestion dropdown */
