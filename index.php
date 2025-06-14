@@ -230,8 +230,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="form-group">
                         <label for="role">I am a...</label>
                         <select id="role" name="role" required>
-                            <option value="1">Student / Intern</option>
-                            <option value="2">Company Supervisor</option>
+                            <option value="1">Intern / Student</option>
+                            <option value="2">Report / Company Supervisor</option>
                         </select>
                     </div>
 
